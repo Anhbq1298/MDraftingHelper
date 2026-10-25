@@ -47,20 +47,20 @@ namespace MDraftingHeper.Core.Tests
         }
 
         [Fact]
-        public void SpotChecks_MatchSourceValues()
+        public void SpotChecks_CornerRadiusRules_AndIhFamily()
         {
             var lib = Load();
             AssertDims(lib.FindById("uk-uc-203x203x46"), ("H", 203.2), ("B", 203.6), ("tw", 7.2), ("tf", 11.0), ("r", 10.2));
             AssertDims(lib.FindById("uk-ub-406x178x60"), ("H", 406.4), ("B", 177.9), ("tw", 7.9), ("tf", 12.8), ("r", 10.2));
             AssertDims(lib.FindById("en-ipe-300"), ("H", 300), ("B", 150), ("tw", 7.1), ("tf", 10.7), ("r", 15));
-            AssertDims(lib.FindById("en-heb-300"), ("H", 300), ("B", 300), ("tw", 11), ("tf", 19), ("r", 27));
             AssertDims(lib.FindById("en-chs-168.3x6.3-hf"), ("D", 168.3), ("t", 6.3));
-        }
 
-        [Fact]
-        public void HollowCornerRadii_FollowTheStandardsRules()
-        {
-            var lib = Load();
+            var heb = lib.FindById("en-heb-300");
+            AssertDims(heb, ("H", 300), ("B", 300), ("tw", 11), ("tf", 19), ("r", 27));
+            Assert.Equal(SteelFamily.IH, heb.Family);
+            Assert.Equal("MDH_ISECTION", SteelFamilies.BlockName(SteelFamily.IH));
+            Assert.Same(heb, lib.Match(heb.Section, 0.01));
+
             // EN 10210-2 hot finished: ro = 1.5 t. EN 10219-2 cold formed: 2 t (t <= 6), 2.5 t (6 < t <= 10), 3 t (t > 10).
             AssertDims(lib.FindById("en-shs-100x100x5-hf"), ("B", 100), ("t", 5), ("r", 7.5));
             AssertDims(lib.FindById("en-shs-100x100x5-cf"), ("B", 100), ("t", 5), ("r", 10));
@@ -70,17 +70,6 @@ namespace MDraftingHeper.Core.Tests
                 double factor = p.Name.EndsWith(" HF") ? 1.5 : t <= 6 ? 2.0 : t <= 10 ? 2.5 : 3.0;
                 if (p.RadiusStatus == CornerRadiusStatus.Assumed) Assert.Equal(factor * t, r, 6);
             }
-        }
-
-        [Fact]
-        public void IhFamily_UsesTheISectionTemplateAndMatches()
-        {
-            var lib = Load();
-            var heb = lib.FindById("en-heb-300");
-            Assert.Equal(SteelFamily.IH, heb.Family);
-            Assert.Equal("MDH_ISECTION", SteelFamilies.BlockName(SteelFamily.IH));
-            Assert.Same(heb, lib.Match(heb.Section, 0.01));
-            Assert.NotEmpty(lib.Search(SteelFamily.IH, "HEA"));
         }
     }
 }

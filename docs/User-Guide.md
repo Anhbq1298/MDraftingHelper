@@ -21,18 +21,18 @@ Each tool opens its own small dialog. When the tool needs a selection, the dialo
 A 2D drafting tool: it draws tie and hoop **centrelines** around existing longitudinal bar circles. It performs no structural or code checks, no 3D work and no scheduling.
 
 1. Choose **Open Tie** or **Closed Hoop**.
-2. Choose the tie diameter (H10–H20), the **Start A** and **End B** hook angles (90°, 135°, 180°, independently) and, optionally, a clear gap and **Flip direction**.
+2. Choose the tie diameter (H10–H20), the **Start A** and **End B** hook angles (90°, 135°, 180°, independently) and, optionally, **Flip direction**.
    - Open Tie: **Hook position** — both ends, Start A only or End B only.
    - Closed Hoop: **Closure corner** — the corner bar that carries both hooks.
 3. Click **Select 2 Circles…** (open tie: pick Circle A, then Circle B) or **Select Bars…** (hoop: select the bar circles, e.g. with a window). The window reopens with a live preview.
 4. Click **Apply & Draw**. Cancelling the selection returns to the window without drawing.
 
-Mandrel diameter and tail lengths are calculated automatically and shown read-only, using EC2 **drafting rules**: inside mandrel 4φ for φ ≤ 16 mm, 7φ above; tail max(10φ, 70 mm) for hooks up to 150°, max(5φ, 50 mm) above 150°. These size the drawing only; the result is not a verified EC2 design.
+Bend diameter and tail lengths are calculated automatically and shown read-only. For visualisation, every bend is drawn with **bend Ø = largest bar Ø + 5 mm**. Tails follow the EC2 **drafting rule**: max(10φ, 70 mm) for hooks up to 150°, max(5φ, 50 mm) above 150°. These size the drawing only; the result is not a verified EC2 design.
 
 Geometry rules:
 
-- Bar centres never move. The largest selected bar diameter sizes every bend, and the actual tie diameter is used to place the centreline.
-- Straight legs run Ø/2 + clear gap + tie/2 from the bar centres, so the tie touches the largest bar. Where the mandrel bend is larger than the bar, the bar nests in the bend (touching the inside of the arc) instead of the tie being pushed away from it.
+- Bar centres never move. The largest selected bar diameter sizes every bend.
+- Bends are concentric with the bar centres, so the drawn line runs 2.5 mm outside the largest bar (bend radius = (Ø + 5)/2) and straight legs are tangent between the bends.
 - Open tie: the straight tie runs between the two bars; a 180° hook is a semicircular return with its tail running back parallel to the tie.
 - Closed hoop: wraps the outer bars of the selection (bars inside it are ignored), with one bend per corner. Both hooks sit on the closure corner, each measured from its own leg: 135°/135° gives the usual two parallel tails into the core; a 90° hook laps along the adjacent leg.
 - Invalid drafting output (tails crossing, a tail through a bar, bends too large for the bar spacing) is refused; tails are never shortened silently.

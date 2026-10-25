@@ -65,14 +65,11 @@
                               Margin="0,2" HorizontalAlignment="Left" Width="200"
                               Visibility="{Binding IsHoop, Converter={StaticResource Visible}}" />
 
-                    <TextBlock Grid.Row="4" Text="Clear gap (mm):" VerticalAlignment="Center" Margin="0,2,8,2" />
-                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding GapText, UpdateSourceTrigger=PropertyChanged}" Margin="0,2" />
-                    <CheckBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Content="Flip direction" IsChecked="{Binding Flip}"
-                              VerticalAlignment="Center" Margin="10,2,0,2" />
+                    <CheckBox Grid.Row="4" Grid.ColumnSpan="2" Content="Flip direction" IsChecked="{Binding Flip}"
+                              VerticalAlignment="Center" Margin="0,4,0,2" />
 
-                    <TextBlock Grid.Row="5" Text="Mandrel Ø:" VerticalAlignment="Center" Margin="0,2,8,2" />
-                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding MandrelText}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding RadiusText}" VerticalAlignment="Center" Margin="10,2,0,2" />
+                    <TextBlock Grid.Row="5" Text="Bend Ø:" VerticalAlignment="Center" Margin="0,2,8,2" />
+                    <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding BendText}" VerticalAlignment="Center" />
                 </Grid>
 
                 <TextBlock Text="{Binding RulesNote}" Style="{StaticResource Muted}" FontSize="11" Margin="0,6,0,0" />

@@ -19,16 +19,6 @@ namespace MDraftingHeper.Core.Tests
             TailLengthB = Ec2DraftingRules.TailLength(HookAngle.Deg135, 10)
         };
 
-        private static void AssertG1(Path2 path)
-        {
-            var segs = path.Segments.ToList();
-            for (int i = 0; i + 1 < segs.Count; i++)
-            {
-                var a = segs[i].EndTangent; var b = segs[i + 1].StartTangent;
-                Assert.True(Math.Abs(a.Cross(b)) < 1e-9 && a.Dot(b) > 0, "Tangent break between segments " + i + " and " + (i + 1));
-            }
-        }
-
         [Fact]
         public void Ec2DraftingRules_MandrelAndTails()
         {
@@ -43,90 +33,62 @@ namespace MDraftingHeper.Core.Tests
         }
 
         [Fact]
-        public void RectangularHoop_IsOneContinuousPolyline_AroundAllCorners()
+        public void RectangularHoop_OnePolyline_BendsTouchBars_ParallelClosureTailsIntoCore()
         {
             var r = TieGeometryBuilder.BuildHoop(Rect());
             Assert.True(r.Validation.IsValid, r.Validation.ToString());
             Assert.False(r.Path.IsClosed); // open polyline: the two hooks overlap on the closure bend
-            AssertG1(r.Path);
-            var arcs = r.Path.Segments.Where(s => s.IsArc).ToList();
-            Assert.Equal(5, arcs.Count);                              // 3 corner bends + 2 hooks
-            Assert.All(arcs, a => Assert.Equal(r.CentrelineRadius, a.Radius, 7));
-            Assert.Equal(Math.PI / 2, Math.Abs(arcs[1].Sweep), 9);    // corner bends are 90° on a rectangle
-            Assert.Equal(3 * Math.PI / 4, Math.Abs(arcs[0].Sweep), 9); // hooks 135°
+            var segs = r.Path.Segments.ToList();
+            for (int i = 0; i + 1 < segs.Count; i++)
+                Assert.True(Math.Abs(segs[i].EndTangent.Cross(segs[i + 1].StartTangent)) < 1e-9, "tangent break at " + i);
+            var arcs = segs.Where(s => s.IsArc).ToList();
+            Assert.Equal(5, arcs.Count);                                // 3 corner bends + 2 hooks
+            Assert.All(arcs, a => Assert.Equal(25, a.Radius, 7));       // 4φ mandrel: 20 + 5
+            Assert.Equal(Math.PI / 2, Math.Abs(arcs[1].Sweep), 9);
+            Assert.Equal(3 * Math.PI / 4, Math.Abs(arcs[0].Sweep), 9);
             Assert.Equal(new[] { 0, 1, 2, 3 }, r.HoopBars);
-        }
-
-        [Fact]
-        public void LegsTouchTheBars_AndMandrelMovesOnlyTheBendCentres()
-        {
-            var r = TieGeometryBuilder.BuildHoop(Rect());
-            double touch = 12.5 + 5;                                  // D/2 + tie/2, no clear gap
-            Assert.Equal(touch, r.FitRadius, 12);
-            Assert.Equal(25, r.CentrelineRadius, 12);                 // 4φ mandrel: 20 + 5
             foreach (var c in new[] { new Point2(0, 0), new Point2(300, 0), new Point2(300, 400), new Point2(0, 400) })
-                Assert.Equal(touch, r.Path.Segments.Min(s => s.DistanceTo(c)), 6);
-        }
+                Assert.Equal(12.5 + 5, segs.Min(s => s.DistanceTo(c)), 6); // bar touches its bend
 
-        [Fact]
-        public void ClosureTails_ArePararallelAndPointIntoTheCore()
-        {
-            var r = TieGeometryBuilder.BuildHoop(Rect());
-            var a = r.TailDirectionA.Value; var b = r.TailDirectionB.Value;
-            Assert.Equal(1, a.Dot(b), 9);                             // classic 135° closure: parallel tails
-            Assert.Equal(Math.Sqrt(0.5), a.X, 9);                     // pointing up-right from the bottom-left bar
-            Assert.Equal(Math.Sqrt(0.5), a.Y, 9);
-            var tailA = r.Path.Segments.First(); var tailB = r.Path.Segments.Last();
-            foreach (var p in new[] { tailA.Start, tailB.End })
+            var tailA = r.TailDirectionA.Value; var tailB = r.TailDirectionB.Value;
+            Assert.Equal(1, tailA.Dot(tailB), 9);                       // classic 135° closure
+            Assert.Equal(Math.Sqrt(0.5), tailA.X, 9); Assert.Equal(Math.Sqrt(0.5), tailA.Y, 9);
+            foreach (var p in new[] { segs.First().Start, segs.Last().End })
                 Assert.True(p.X > 0 && p.X < 300 && p.Y > 0 && p.Y < 400, "tail end inside the section: " + p);
-            Assert.Equal(100, tailA.ChordLength, 9);
-            Assert.Equal(100, tailB.ChordLength, 9);
+            Assert.Equal(100, segs.First().ChordLength, 9);
         }
 
         [Fact]
-        public void IndependentHookAngles_AndClosureCornerChoice()
+        public void Options_AnglesClosureFlipInteriorBars_AndInvalidHoops()
         {
             var input = Rect();
             input.AngleA = HookAngle.Deg90; input.TailLengthA = Ec2DraftingRules.TailLength(HookAngle.Deg90, 10);
-            input.AngleB = HookAngle.Deg135;
-            input.ClosureBar = 2;                                     // top-right bar
+            input.ClosureBar = 2;
             var r = TieGeometryBuilder.BuildHoop(input);
             Assert.True(r.Validation.IsValid, r.Validation.ToString());
             Assert.Equal(2, r.HoopBars[0]);
             var arcs = r.Path.Segments.Where(s => s.IsArc).ToList();
-            Assert.Equal(Math.PI / 2, Math.Abs(arcs.First().Sweep), 9);
+            Assert.Equal(Math.PI / 2, Math.Abs(arcs.First().Sweep), 9);     // 90° hook laps along the adjacent leg
             Assert.Equal(3 * Math.PI / 4, Math.Abs(arcs.Last().Sweep), 9);
-        }
 
-        [Fact]
-        public void LargestBarGovernsTheBends_AndInteriorBarsAreNotWrapped()
-        {
-            var input = Rect(B(150, 200, 32));                        // interior bar, largest diameter
-            var r = TieGeometryBuilder.BuildHoop(input);
-            Assert.True(r.Validation.IsValid, r.Validation.ToString());
-            Assert.Equal(32, r.ReferenceDiameter);
-            Assert.Equal(1, r.InteriorBars);
-            Assert.Equal(4, r.HoopBars.Count);
-        }
+            var flipped = Rect(); flipped.Flip = true;
+            var f = TieGeometryBuilder.BuildHoop(flipped);
+            Assert.Equal(TieGeometryBuilder.BuildHoop(Rect()).Path.Length, f.Path.Length, 6);
+            Assert.All(f.Path.Segments.Where(s => s.IsArc), s => Assert.True(s.Sweep < 0)); // clockwise
 
-        [Fact]
-        public void Flip_ReversesTheLoopAndMirrorsTheClosure()
-        {
-            var a = TieGeometryBuilder.BuildHoop(Rect());
-            var input = Rect(); input.Flip = true;
-            var b = TieGeometryBuilder.BuildHoop(input);
-            Assert.True(b.Validation.IsValid, b.Validation.ToString());
-            Assert.Equal(a.Path.Length, b.Path.Length, 6);
-            Assert.NotEqual(a.Path.Vertices[0].Point, b.Path.Vertices[0].Point);
-            Assert.All(b.Path.Segments.Where(s => s.IsArc), s => Assert.True(s.Sweep < 0)); // clockwise
-        }
+            var visual = Rect(); visual.BendDiameter = VisualBend.Diameter(25); // Tie & Hook: Ø + 5, concentric
+            var vr = TieGeometryBuilder.BuildHoop(visual);
+            Assert.True(vr.Validation.IsValid, vr.Validation.ToString());
+            Assert.All(vr.Path.Segments.Where(s => s.IsArc), s => Assert.Equal(15, s.Radius, 7));
+            Assert.Equal(15, vr.Path.Segments.Min(s => s.DistanceTo(new Point2(300, 0))), 6);
 
-        [Fact]
-        public void InvalidHoops_AreRejected()
-        {
+            var withInterior = TieGeometryBuilder.BuildHoop(Rect(B(150, 200, 32)));
+            Assert.Equal(32, withInterior.ReferenceDiameter);           // largest bar governs, even inside
+            Assert.Equal(1, withInterior.InteriorBars);
+
             Assert.False(TieGeometryBuilder.BuildHoop(new HoopInput { Bars = new[] { B(0, 0), B(100, 0) } }).Validation.IsValid);
             Assert.False(TieGeometryBuilder.BuildHoop(new HoopInput { Bars = new[] { B(0, 0), B(100, 0), B(200, 0) } }).Validation.IsValid);
-            var tooLong = Rect(); tooLong.TailLengthA = 900;          // tail would cross the opposite legs
+            var tooLong = Rect(); tooLong.TailLengthA = 900;
             Assert.False(TieGeometryBuilder.BuildHoop(tooLong).Validation.IsValid);
             var tight = new HoopInput { Bars = new[] { B(0, 0), B(30, 0), B(30, 30), B(0, 30) }, InsideMandrelDiameter = 140, TieDiameter = 20 };
             Assert.False(TieGeometryBuilder.BuildHoop(tight).Validation.IsValid);

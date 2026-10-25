@@ -36,6 +36,12 @@ namespace MDraftingHeper.Core.Hooks
         /// <summary>Optional per-end straight tail lengths. When omitted, <see cref="TailLength"/> is used.</summary>
         public double? TailLengthA { get; set; }
         public double? TailLengthB { get; set; }
+
+        /// <summary>
+        /// Visualisation mode: when set, every bend is drawn concentric with its bar with this centreline
+        /// diameter (e.g. largest bar Ø + 5 mm), and tie diameter, clear gap and mandrel do not affect the shape.
+        /// </summary>
+        public double? BendDiameter { get; set; }
     }
 
     public sealed class TieResult
@@ -90,7 +96,7 @@ namespace MDraftingHeper.Core.Hooks
             var result = new TieResult { Validation = v };
 
             if (!(input.DiameterA > 0) || !(input.DiameterB > 0)) v.Error("Both longitudinal bar diameters must be positive.");
-            CheckCommon(input.TieDiameter, input.ClearGap, input.InsideMandrelDiameter, v);
+            CheckCommon(input.TieDiameter, input.ClearGap, input.InsideMandrelDiameter, input.BendDiameter, v);
             double tailA = input.TailLengthA ?? input.TailLength;
             double tailB = input.TailLengthB ?? input.TailLength;
             if (!(tailA >= 0) || !(tailB >= 0)) v.Error("Tail length cannot be negative.");
@@ -99,10 +105,11 @@ namespace MDraftingHeper.Core.Hooks
             if (!v.IsValid) return result;
 
             double dref = Math.Max(input.DiameterA, input.DiameterB);
-            Size(result, dref, input.TieDiameter, input.ClearGap, input.InsideMandrelDiameter);
+            if (!Size(result, dref, input.TieDiameter, input.ClearGap, input.InsideMandrelDiameter, input.BendDiameter, v)) return result;
             double d = result.FitRadius, rc = result.CentrelineRadius;
-            result.ClearanceA = d - input.TieDiameter / 2 - input.DiameterA / 2;
-            result.ClearanceB = d - input.TieDiameter / 2 - input.DiameterB / 2;
+            double halfTie = input.BendDiameter.HasValue ? 0 : input.TieDiameter / 2; // visual mode: line vs bar outline
+            result.ClearanceA = d - halfTie - input.DiameterA / 2;
+            result.ClearanceB = d - halfTie - input.DiameterB / 2;
 
             double spacing = axis.Length;
             if (spacing < (input.DiameterA + input.DiameterB) / 2)
@@ -151,7 +158,7 @@ namespace MDraftingHeper.Core.Hooks
 
             var path = new Path2(vertices, false);
             CheckClashes(path, input.TieDiameter, v);
-            CheckBarsClear(path, new[] { (input.CenterA, input.DiameterA, "A"), (input.CenterB, input.DiameterB, "B") }, input.TieDiameter, v);
+            CheckBarsClear(path, new[] { (input.CenterA, input.DiameterA, "A"), (input.CenterB, input.DiameterB, "B") }, 2 * halfTie, v);
             if (!v.IsValid) return result;
 
             result.Path = path;
@@ -172,7 +179,7 @@ namespace MDraftingHeper.Core.Hooks
             var bars = input.Bars ?? new List<HoopBar>();
             if (bars.Count < 3) v.Error("A closed hoop needs at least three longitudinal bars.");
             if (bars.Any(b => !(b.Diameter > 0))) v.Error("Every longitudinal bar diameter must be positive.");
-            CheckCommon(input.TieDiameter, input.ClearGap, input.InsideMandrelDiameter, v);
+            CheckCommon(input.TieDiameter, input.ClearGap, input.InsideMandrelDiameter, input.BendDiameter, v);
             if (!(input.TailLengthA >= 0) || !(input.TailLengthB >= 0)) v.Error("Tail length cannot be negative.");
             if (!v.IsValid) return result;
 
@@ -186,9 +193,10 @@ namespace MDraftingHeper.Core.Hooks
             result.InteriorBars = bars.Count - hull.Count;
 
             double dref = bars.Max(b => b.Diameter);
-            Size(result, dref, input.TieDiameter, input.ClearGap, input.InsideMandrelDiameter);
+            if (!Size(result, dref, input.TieDiameter, input.ClearGap, input.InsideMandrelDiameter, input.BendDiameter, v)) return result;
             double d = result.FitRadius, rc = result.CentrelineRadius;
-            result.ClearanceA = d - input.TieDiameter / 2 - bars[hull[0]].Diameter / 2;
+            double halfTie = input.BendDiameter.HasValue ? 0 : input.TieDiameter / 2; // visual mode: line vs bar outline
+            result.ClearanceA = d - halfTie - bars[hull[0]].Diameter / 2;
             result.ClearanceB = result.ClearanceA;
 
             // σ = +1 for a counter-clockwise loop (outside = right of travel, left turns), −1 when flipped.
@@ -261,7 +269,7 @@ namespace MDraftingHeper.Core.Hooks
             result.TailDirectionB = hookB.TailDirection;
 
             var path = new Path2(Dedupe(vertices), false);
-            CheckBarsClear(path, bars.Select((b, i) => (b.Center, b.Diameter, "#" + (i + 1))), input.TieDiameter, v);
+            CheckBarsClear(path, bars.Select((b, i) => (b.Center, b.Diameter, "#" + (i + 1))), 2 * halfTie, v);
             CheckTailsCrossLegs(path, input.TailLengthA > 1e-9, input.TailLengthB > 1e-9, v);
             if (!v.IsValid) return result;
 
@@ -311,17 +319,31 @@ namespace MDraftingHeper.Core.Hooks
             return new HookPoints { Rim = rim, TailDirection = tailDir, TailEnd = rim + tailDir * tail };
         }
 
-        private static void Size(TieResult r, double dref, double tie, double gap, double mandrel)
+        /// <summary>Sets the bend sizes; false (with an error) when a visual bend would not clear the largest bar.</summary>
+        private static bool Size(TieResult r, double dref, double tie, double gap, double mandrel, double? bendDiameter, ValidationResult v)
         {
             r.ReferenceDiameter = dref;
+            if (bendDiameter.HasValue)
+            {
+                // Visualisation: concentric bends of the given diameter; legs run at the same distance.
+                if (!(bendDiameter.Value > dref))
+                {
+                    v.Error("The bend diameter must be larger than the largest bar diameter.");
+                    return false;
+                }
+                r.FitRadius = r.MandrelRadius = r.CentrelineRadius = bendDiameter.Value / 2;
+                return true;
+            }
             r.FitRadius = dref / 2 + gap + tie / 2;
             r.MandrelRadius = mandrel / 2 + tie / 2;
             r.CentrelineRadius = Math.Max(r.FitRadius, r.MandrelRadius);
+            return true;
         }
 
-        private static void CheckCommon(double tie, double gap, double mandrel, ValidationResult v)
+        private static void CheckCommon(double tie, double gap, double mandrel, double? bendDiameter, ValidationResult v)
         {
             if (!(tie > 0)) v.Error("Tie diameter must be positive.");
+            if (bendDiameter.HasValue) return; // visual mode: gap and mandrel do not apply
             if (gap < 0) v.Error("Clear gap cannot be negative.");
             if (!(mandrel > 0)) v.Error("Inside mandrel diameter must be positive.");
         }
@@ -432,5 +454,15 @@ namespace MDraftingHeper.Core.Hooks
         public double InsideMandrelDiameter { get; set; } = 40;
         public double TailLengthA { get; set; } = 100;
         public double TailLengthB { get; set; } = 100;
+
+        /// <summary>Visualisation mode, as <see cref="TieInput.BendDiameter"/>.</summary>
+        public double? BendDiameter { get; set; }
+    }
+
+    /// <summary>Visual bend size used by Tie &amp; Hook: largest bar diameter plus this margin (mm).</summary>
+    public static class VisualBend
+    {
+        public const double MarginMm = 5;
+        public static double Diameter(double largestBarDiameter) => largestBarDiameter + MarginMm;
     }
 }

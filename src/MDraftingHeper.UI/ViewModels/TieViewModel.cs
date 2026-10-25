@@ -22,7 +22,7 @@ namespace MDraftingHeper.UI.ViewModels
 
     /// <summary>
     /// Tie &amp; Hook: 2D drafting of tie / closed-hoop centrelines around fixed longitudinal bars.
-    /// Mandrel and tail lengths come from <see cref="Ec2DraftingRules"/> (drafting rules, not a design check).
+    /// For visualisation every bend is drawn with diameter = largest bar Ø + 5 mm; tail lengths come from <see cref="Ec2DraftingRules"/>.
     /// </summary>
     public sealed class TieViewModel : DialogViewModel
     {
@@ -32,8 +32,7 @@ namespace MDraftingHeper.UI.ViewModels
         private HookEnds _ends = HookEnds.Both;
         private ClosureCorner _closure;
         private bool _flip;
-        private string _gapText = "0";
-        private bool _hasBars, _hasHoopBars;
+       private bool _hasBars, _hasHoopBars;
         private Point2 _ca, _cb;
         private double _da, _db;
         private List<HoopBar> _hoopBars = new List<HoopBar>();
@@ -80,16 +79,18 @@ namespace MDraftingHeper.UI.ViewModels
         public HookEnds Ends { get => _ends; set { if (Set(ref _ends, value)) Recalculate(); } }
         public ClosureCorner Closure { get => _closure; set { if (value != null && Set(ref _closure, value)) Recalculate(); } }
         public bool Flip { get => _flip; set { if (Set(ref _flip, value)) Recalculate(); } }
-        public string GapText { get => _gapText; set { if (Set(ref _gapText, value)) Recalculate(); } }
 
-        /// <summary>Automatically calculated by the EC2 drafting rules (read-only in the dialog).</summary>
-        public double InsideMandrelDiameter => Ec2DraftingRules.InsideMandrelDiameter(_tieSize.Diameter);
+        /// <summary>Drawn bend diameter: largest selected bar Ø + 5 mm (visualisation only).</summary>
+        public double BendDiameter => VisualBend.Diameter(LargestBar);
+        private double LargestBar => IsHoop ? (_hoopBars.Count > 0 ? _hoopBars.Max(b => b.Diameter) : 0) : Math.Max(_da, _db);
+
+        /// <summary>Tail lengths: EC2 drafting rule (read-only in the dialog).</summary>
         public double TailLengthA => Ec2DraftingRules.TailLength(_angleA, _tieSize.Diameter);
         public double TailLengthB => Ec2DraftingRules.TailLength(_angleB, _tieSize.Diameter);
-        public string MandrelText => Mm(InsideMandrelDiameter, "0.#");
+        public string BendText => HasBars ? Mm(BendDiameter, "0.##") + "  (largest bar Ø + 5 mm)" : "largest bar Ø + 5 mm";
         public string TailAText => Mm(TailLengthA, "0.#");
         public string TailBText => Mm(TailLengthB, "0.#");
-        public string RulesNote => "EC2 drafting rules (not a design check): mandrel 4φ up to φ16, 7φ above; tail max(10φ, 70) up to 150°, max(5φ, 50) above.";
+        public string RulesNote => "Drawn for visualisation. Tails: max(10φ, 70) up to 150°, max(5φ, 50) above (EC2 drafting rule, not a design check).";
 
         public bool HasBars => IsHoop ? _hasHoopBars : _hasBars;
 
@@ -111,8 +112,6 @@ namespace MDraftingHeper.UI.ViewModels
             }
         }
 
-        public string RadiusText => _result == null || _result.CentrelineRadius <= 0 ? "—"
-            : Mm(_result.CentrelineRadius, "0.#") + " centreline bend radius";
 
         public string LineweightText =>
             "Lineweight " + (_tieSize.LineweightHundredthsMm / 100.0).ToString("0.00", CultureInfo.InvariantCulture) + " mm (graphical only).";
@@ -159,24 +158,22 @@ namespace MDraftingHeper.UI.ViewModels
 
         public TieInput BuildInput()
         {
-            TryParse(_gapText, out double gap);
-            return new TieInput
+           return new TieInput
             {
                 CenterA = _ca, CenterB = _cb, DiameterA = _da, DiameterB = _db,
                 TieDiameter = _tieSize.Diameter, Angle = _angleA, AngleA = _angleA, AngleB = _angleB,
-                Ends = _ends, Flip = _flip, ClearGap = gap,
-                InsideMandrelDiameter = InsideMandrelDiameter, TailLengthA = TailLengthA, TailLengthB = TailLengthB
+                Ends = _ends, Flip = _flip, BendDiameter = BendDiameter,
+                TailLengthA = TailLengthA, TailLengthB = TailLengthB
             };
         }
 
         public HoopInput BuildHoopInput()
         {
-            TryParse(_gapText, out double gap);
-            return new HoopInput
+           return new HoopInput
             {
                 Bars = _hoopBars, TieDiameter = _tieSize.Diameter, AngleA = _angleA, AngleB = _angleB,
-                ClosureBar = _closure?.BarIndex ?? 0, Flip = _flip, ClearGap = gap,
-                InsideMandrelDiameter = InsideMandrelDiameter, TailLengthA = TailLengthA, TailLengthB = TailLengthB
+                ClosureBar = _closure?.BarIndex ?? 0, Flip = _flip, BendDiameter = BendDiameter,
+                TailLengthA = TailLengthA, TailLengthB = TailLengthB
             };
         }
 
@@ -202,15 +199,13 @@ namespace MDraftingHeper.UI.ViewModels
         {
             _inputError = null;
             _result = null;
-            if (!TryParse(_gapText, out double gap) || gap < 0)
-                _inputError = "Clear gap must be a number ≥ 0 (mm).";
-            else if (IsHoop && _hasHoopBars)
+            if (IsHoop && _hasHoopBars)
                 _result = TieGeometryBuilder.BuildHoop(BuildHoopInput());
             else if (!IsHoop && _hasBars)
                 _result = TieGeometryBuilder.Build(BuildInput());
-            foreach (var n in new[] { nameof(MandrelText), nameof(TailAText), nameof(TailBText), nameof(RadiusText), nameof(Messages),
+            foreach (var n in new[] { nameof(BendText), nameof(TailAText), nameof(TailBText), nameof(Messages),
                                       nameof(CanDraw), nameof(Preview), nameof(LineweightText), nameof(Result), nameof(BarsText),
-                                      nameof(InsideMandrelDiameter), nameof(TailLengthA), nameof(TailLengthB) })
+                                      nameof(BendDiameter), nameof(TailLengthA), nameof(TailLengthB) })
                 Raise(n);
         }
     }

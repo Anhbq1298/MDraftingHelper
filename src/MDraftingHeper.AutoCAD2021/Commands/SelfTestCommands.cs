@@ -31,7 +31,20 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         private static int _pass, _fail;
         private static ObjectId _undoBlock;
 
+        /// <summary>Non-null while a feature group runs: its assertions report as one check.</summary>
+        private static List<string> _groupFailures;
+
         private static void Check(string name, bool ok, string detail = "")
+        {
+            if (_groupFailures != null)
+            {
+                if (!ok) _groupFailures.Add(name + (string.IsNullOrEmpty(detail) ? "" : " (" + detail + ")"));
+                return;
+            }
+            Report(name, ok, detail);
+        }
+
+        private static void Report(string name, bool ok, string detail)
         {
             if (ok) _pass++; else _fail++;
             var line = "MDH-SELFTEST " + (ok ? "PASS " : "FAIL ") + name + (ok || string.IsNullOrEmpty(detail) ? "" : " :: " + detail);
@@ -46,20 +59,28 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         public void SelfTest() => MdhCommands.Run(doc =>
         {
             _pass = _fail = 0;
-            Guard("ribbon", () => TestRibbon());
-            Guard("rebar", () => TestRebar(doc));
-            Guard("tie", () => TestTie(doc));
-            Guard("rectangular", () => TestRectangular(doc));
-            Guard("steel", () => TestSteel(doc));
-            Guard("wblock", () => TestWblock(doc));
+            Guard("ribbon tab", () => TestRibbon());
+            Guard("rebar percentage and table", () => TestRebar(doc));
+            Guard("tie and closed hoop", () => TestTie(doc));
+            Guard("rectangular column", () => TestRectangular(doc));
+            Guard("steel insert", () => TestSteel(doc));
+            Guard("wblock to another drawing", () => TestWblock(doc));
             doc.Editor.WriteMessage("\nMDH-SELFTEST SUMMARY pass=" + _pass + " fail=" + _fail);
             Log.Info("MDH-SELFTEST SUMMARY pass=" + _pass + " fail=" + _fail);
         });
 
+        /// <summary>Runs a feature's assertions as ONE reported check; failing assertions are listed in its detail.</summary>
         private static void Guard(string name, Action a)
         {
+            _groupFailures = new List<string>();
             try { a(); }
-            catch (System.Exception ex) { Check(name + " threw", false, ex.GetType().Name + ": " + ex.Message); Log.Error("selftest " + name, ex); }
+            catch (System.Exception ex) { _groupFailures.Add("threw " + ex.GetType().Name + ": " + ex.Message); Log.Error("selftest " + name, ex); }
+            finally
+            {
+                var failures = _groupFailures;
+                _groupFailures = null;
+                Report(name, failures.Count == 0, string.Join("; ", failures));
+            }
         }
 
         // ---------------------------------------------------------------- rectangular column
@@ -125,9 +146,11 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         public void RibbonCheck() => MdhCommands.Run(doc =>
         {
             if (Autodesk.Windows.ComponentManager.Ribbon == null) { doc.Editor.WriteMessage("\nMDH-SELFTEST INFO ribbon not available"); return; }
-            Check("ribbon tab created by startup/Idle path exactly once", RibbonManager.TabCount() == 1, "count=" + RibbonManager.TabCount());
-            Check("ribbon startup includes four tools and MDH_RECT", RibbonManager.ButtonCount() == 4 && RibbonManager.HasButton("MDH_RECT"),
-                "buttons=" + RibbonManager.ButtonCount());
+            Guard("ribbon created once at startup with four tools", () =>
+            {
+                Check("tab count", RibbonManager.TabCount() == 1, "count=" + RibbonManager.TabCount());
+                Check("tools", RibbonManager.ButtonCount() == 4 && RibbonManager.HasButton("MDH_RECT"), "buttons=" + RibbonManager.ButtonCount());
+            });
         });
 
         // ---------------------------------------------------------------- rebar
@@ -208,8 +231,8 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 tr.Commit();
             }
 
-            foreach (var angle in new[] { HookAngle.Deg90, HookAngle.Deg135, HookAngle.Deg180 })
-            foreach (var flip in new[] { false, true })
+            // Two representative cases; every angle/flip combination is covered by the unit tests.
+            foreach (var (angle, flip) in new[] { (HookAngle.Deg135, false), (HookAngle.Deg180, true) })
             {
                 string tag = "tie " + (int)angle + (flip ? " flipped" : "");
                 using (var tr = db.TransactionManager.StartTransaction())
@@ -223,7 +246,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                     {
                         CenterA = frame.ToCore(ca.Center), CenterB = frame.ToCore(cb.Center),
                         DiameterA = 20, DiameterB = 25, TieDiameter = size.Diameter, Angle = angle, Flip = flip,
-                        InsideMandrelDiameter = 20, TailLength = 80, Ends = HookEnds.Both // fit radius governs
+                        BendDiameter = VisualBend.Diameter(25), TailLength = 80, Ends = HookEnds.Both // largest bar Ø + 5
                     };
                     var res = TieGeometryBuilder.Build(input);
                     Check(tag + " geometry valid", res.Validation.IsValid, res.Validation.ToString());
@@ -241,7 +264,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                     var arcB = pl.GetArcSegmentAt(3);
                     Check(tag + " hooks concentric with actual bar centres (WCS)", arcA.Center.IsEqualTo(wa, new Tolerance(1e-6, 1e-6)) && arcB.Center.IsEqualTo(wb, new Tolerance(1e-6, 1e-6)),
                           arcA.Center + " vs " + wa);
-                    Check(tag + " both hooks use Dref = max(DA, DB)", Near(arcA.Radius, arcB.Radius, 1e-9) && Near(arcA.Radius, 12.5 + 5, 1e-9), F(arcA.Radius) + "," + F(arcB.Radius));
+                    Check(tag + " both hooks use Dref = max(DA, DB)", Near(arcA.Radius, arcB.Radius, 1e-9) && Near(arcA.Radius, (25 + 5) / 2.0, 1e-9), F(arcA.Radius) + "," + F(arcB.Radius));
                     Check(tag + " lineweight H10 = 0.18 mm", pl.LineWeight == LineWeight.LineWeight018, pl.LineWeight.ToString());
                     Check(tag + " plain polyline (no metadata)", pl.ExtensionDictionary.IsNull);
                     tr.Commit();
@@ -276,7 +299,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 {
                     Bars = circles.Select(c => new HoopBar(frame.ToCore(c.Center), 2 * c.Radius)).ToList(),
                     TieDiameter = size.Diameter, AngleA = HookAngle.Deg135, AngleB = HookAngle.Deg135, ClosureBar = 0,
-                    InsideMandrelDiameter = Ec2DraftingRules.InsideMandrelDiameter(size.Diameter),
+                    BendDiameter = VisualBend.Diameter(circles.Max(c => 2 * c.Radius)),
                     TailLengthA = Ec2DraftingRules.TailLength(HookAngle.Deg135, size.Diameter),
                     TailLengthB = Ec2DraftingRules.TailLength(HookAngle.Deg135, size.Diameter)
                 };
@@ -289,9 +312,9 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 Check("hoop is one open polyline in the bar plane", !pl.Closed && pl.Normal.IsParallelTo(n));
                 int arcs = Enumerable.Range(0, pl.NumberOfVertices - 1).Count(i => Math.Abs(pl.GetBulgeAt(i)) > 1e-12);
                 Check("hoop has 3 corner bends + 2 hooks", arcs == 5, arcs.ToString());
-                Check("hoop bend radius from EC2 mandrel (4φ → 25 mm centreline)", Near(pl.GetArcSegmentAt(1).Radius, 25, 1e-9), F(pl.GetArcSegmentAt(1).Radius));
+                Check("hoop bend Ø = largest bar Ø + 5 (radius 15)", Near(pl.GetArcSegmentAt(1).Radius, 15, 1e-9), F(pl.GetArcSegmentAt(1).Radius));
                 double minToBar = circles.Min(c => pl.GetClosestPointTo(c.Center, false).DistanceTo(c.Center));
-                Check("hoop touches the corner bars (Ø/2 + tie/2)", Near(minToBar, 12.5 + 5, 1e-6), F(minToBar));
+                Check("hoop drawn 2.5 mm outside the largest bar", Near(minToBar, 15, 1e-6), F(minToBar));
                 Check("hoop plain polyline (no metadata)", pl.ExtensionDictionary.IsNull);
                 tr.Commit();
             }
@@ -361,7 +384,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         }
 
         [CommandMethod("MDH", "MDH_SELFTEST_STEEL2", CommandFlags.Modal)]
-        public void Steel2() => MdhCommands.Run(doc => Guard("steel2", () =>
+        public void Steel2() => MdhCommands.Run(doc => Guard("steel blocks follow parameters, sync and anchor", () =>
         {
             foreach (var (f, p, id) in _families)
             {
@@ -395,7 +418,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         }));
 
         [CommandMethod("MDH", "MDH_SELFTEST_STEEL3", CommandFlags.Modal | CommandFlags.NoUndoMarker)]
-        public void Steel3() => MdhCommands.Run(doc => Guard("steel3", () =>
+        public void Steel3() => MdhCommands.Run(doc => Guard("steel re-match and invalid detection", () =>
         {
             var ub = ProfileCache.Library.FindById("uk-ub-406x178x60");
             var back = Read(doc, _ubA, (tr, br) => SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key)));
@@ -468,8 +491,11 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 var st = SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key));
                 return (s["B"], st.Status);
             });
-            Check("undo/redo B=" + F(expect), Near(r.Item1, expect), "B=" + F(r.Item1));
-            Check("undo/redo geometry consistent at B=" + F(expect), r.Status != SteelStatus.Invalid, r.Status.ToString());
+            Guard("undo/redo at B=" + F(expect), () =>
+            {
+                Check("B", Near(r.Item1, expect), "B=" + F(r.Item1));
+                Check("geometry consistent", r.Status != SteelStatus.Invalid, r.Status.ToString());
+            });
         });
 
         [CommandMethod("MDH", "MDH_SELFTEST_REOPEN", CommandFlags.Modal | CommandFlags.NoUndoMarker)]
@@ -491,8 +517,11 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 }
                 tr.Commit();
             }
-            Check("reopen finds steel dynamic blocks", n > 0 && dyn == n, "n=" + n);
-            Check("reopen keeps metadata", meta == n, meta + "/" + n);
+            Guard("reopen keeps steel dynamic blocks and metadata", () =>
+            {
+                Check("blocks", n > 0 && dyn == n, "n=" + n);
+                Check("metadata", meta == n, meta + "/" + n);
+            });
             doc.Editor.WriteMessage("\nMDH-SELFTEST INFO reopen invalid-geometry instances=" + invalid);
         });
     }

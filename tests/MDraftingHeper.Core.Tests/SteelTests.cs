@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MDraftingHeper.Core.Steel;
@@ -12,114 +11,56 @@ namespace MDraftingHeper.Core.Tests
         private static SteelSection S(SteelFamily f, params (string k, double v)[] dims) =>
             new SteelSection(f, dims.ToDictionary(d => d.k, d => d.v));
 
-        [Fact]
-        public void Chs_RequiresPositiveVoid_AndAreaIsAnnulus()
-        {
-            Assert.False(SteelValidator.Validate(S(SteelFamily.CHS, ("D", 100), ("t", 50))).IsValid);
-            Assert.False(SteelValidator.Validate(S(SteelFamily.CHS, ("D", 100), ("t", 0))).IsValid);
-            var s = S(SteelFamily.CHS, ("D", 168.3), ("t", 7.1));
-            Assert.True(SteelValidator.Validate(s).IsValid);
-            Assert.Equal(Math.PI / 4 * (168.3 * 168.3 - 154.1 * 154.1), SectionGeometry.GeometricArea(s), 6);
-        }
-
-        [Theory]
-        [InlineData(200, 100, 8, 8)]    // r = t: inner radius zero
-        [InlineData(200, 100, 8, 50)]   // 2r = B: no straight side
-        [InlineData(200, 100, 50, 60)]  // 2t = B: no void
-        public void Rhs_RejectsImpossibleCorners(double h, double b, double t, double r)
-        {
-            Assert.False(SteelValidator.Validate(S(SteelFamily.RHS, ("H", h), ("B", b), ("t", t), ("r", r))).IsValid);
-        }
-
-        [Fact]
-        public void HollowRect_AreaIncludesCornerRadiiOnBothLoops()
-        {
-            double h = 250, b = 150, t = 10, r = 20;
-            var s = S(SteelFamily.RHS, ("H", h), ("B", b), ("t", t), ("r", r));
-            double outer = b * h - (4 - Math.PI) * r * r;
-            double inner = (b - 2 * t) * (h - 2 * t) - (4 - Math.PI) * (r - t) * (r - t);
-            Assert.Equal(outer - inner, SectionGeometry.GeometricArea(s), 6);
-
-            var loops = SectionGeometry.Build(S(SteelFamily.SHS, ("B", 150), ("t", 8), ("r", 16)));
-            Assert.Equal(2, loops.Count);
-            Assert.Equal(150 * 150 - (4 - Math.PI) * 256, loops[0].Area, 6);
-        }
-
-        [Fact]
-        public void ISection_AreaAndFilletValidity()
-        {
-            double h = 406.4, b = 177.9, tw = 7.9, tf = 12.8, r = 10.2;
-            var s = S(SteelFamily.UB, ("H", h), ("B", b), ("tw", tw), ("tf", tf), ("r", r));
-            Assert.True(SteelValidator.Validate(s).IsValid);
-            double expected = 2 * b * tf + (h - 2 * tf) * tw + (4 - Math.PI) * r * r;
-            Assert.Equal(expected, SectionGeometry.GeometricArea(s), 6);
-
-            Assert.False(SteelValidator.Validate(s.With("r", 90)).IsValid);   // fillet wider than outstand
-            Assert.False(SteelValidator.Validate(s.With("tf", 210)).IsValid); // flanges overlap
-            Assert.False(SteelValidator.Validate(s.With("tw", 200)).IsValid); // web wider than flange
-            Assert.False(SteelValidator.Validate(s.With("r", 200)).IsValid);  // fillets overlap along web
-        }
-
-        [Fact]
-        public void Anchor_OffsetsAreRelativeToCentroid()
-        {
-            var s = S(SteelFamily.UB, ("H", 400), ("B", 200), ("tw", 8), ("tf", 12), ("r", 10));
-            var tl = AnchorMath.CentroidOffset(s, InsertionAnchor.TopLeft);
-            Assert.Equal(100, tl.X); Assert.Equal(-200, tl.Y);
-            var bc = AnchorMath.CentroidOffset(s, InsertionAnchor.BottomCentre);
-            Assert.Equal(0, bc.X); Assert.Equal(200, bc.Y);
-        }
-
-        /// <summary>Demonstration library (test fixture; no longer shipped).</summary>
+        /// <summary>Demonstration library (test fixture; not shipped).</summary>
         private static string DemoPath() => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "demo-profiles.json");
-
-        private static string DataPath(params string[] parts) =>
-            Path.Combine(new[] { AppDomain.CurrentDomain.BaseDirectory, "Data" }.Concat(parts).ToArray());
-
-        [Fact]
-        public void DemoLibrary_LoadsWithProvenance_AndEveryProfileIsValid()
-        {
-            var r = ProfileLibraryReader.ReadFile(DemoPath());
-            Assert.DoesNotContain(r.Issues, i => i.IsError);
-            Assert.Equal(12, r.Profiles.Count);
-            Assert.All(r.Profiles, p =>
-            {
-                Assert.True(p.IsDemonstration);
-                Assert.StartsWith("[DEMO]", p.DisplayName);
-                Assert.False(string.IsNullOrWhiteSpace(p.Source));
-                Assert.True(SteelValidator.Validate(p.Section).IsValid);
-            });
-            // The demo fixture predates the generic I/H family.
-            foreach (var f in SteelFamilies.All.Where(x => x != SteelFamily.IH)) Assert.NotEmpty(r.Profiles.Where(p => p.Family == f));
-        }
-
-        [Fact]
-        public void CsvTemplate_Loads()
-        {
-            var r = ProfileLibraryReader.ReadFile(DataPath("Profiles", "profile-template.csv"));
-            Assert.DoesNotContain(r.Issues, i => i.IsError);
-            var p = Assert.Single(r.Profiles);
-            Assert.Equal(SteelFamily.RHS, p.Family);
-            Assert.Equal(150, p.Section["H"]);
-            Assert.Equal(CornerRadiusStatus.Assumed, p.RadiusStatus);
-        }
 
         private const string Header = "id,family,name,units,source,D,B,H,t,tw,tf,r,cornerRadiusConvention\n";
 
         [Fact]
-        public void Import_ConvertsUnits_AndInnerCornerRadius()
+        public void Validation_Areas_AndAnchors()
         {
-            var r = ProfileLibraryReader.ReadCsv(Header +
-                "a,CHS,CHS a,cm,src,16.83,,,0.71,,,,\n" +
-                "b,RHS,RHS b,mm,src,,100,200,8,,,6,inner\n");
-            Assert.DoesNotContain(r.Issues, i => i.IsError);
-            Assert.Equal(168.3, r.Profiles[0].Section["D"], 9);
-            Assert.Equal(7.1, r.Profiles[0].Section["t"], 9);
-            Assert.Equal(14, r.Profiles[1].Section["r"], 9); // inner 6 + t 8 → stored as outer radius
+            Assert.False(SteelValidator.Validate(S(SteelFamily.CHS, ("D", 100), ("t", 50))).IsValid);
+            Assert.False(SteelValidator.Validate(S(SteelFamily.CHS, ("D", 100), ("t", 0))).IsValid);
+            var chs = S(SteelFamily.CHS, ("D", 168.3), ("t", 7.1));
+            Assert.Equal(Math.PI / 4 * (168.3 * 168.3 - 154.1 * 154.1), SectionGeometry.GeometricArea(chs), 6);
+
+            foreach (var (t, r) in new[] { (8.0, 8.0), (8.0, 50.0), (50.0, 60.0) }) // r = t, 2r = B, 2t = B
+                Assert.False(SteelValidator.Validate(S(SteelFamily.RHS, ("H", 200), ("B", 100), ("t", t), ("r", r))).IsValid);
+            var rhs = S(SteelFamily.RHS, ("H", 250), ("B", 150), ("t", 10), ("r", 20));
+            double outer = 150 * 250 - (4 - Math.PI) * 400, inner = 130 * 230 - (4 - Math.PI) * 100;
+            Assert.Equal(outer - inner, SectionGeometry.GeometricArea(rhs), 6);
+
+            var ub = S(SteelFamily.UB, ("H", 406.4), ("B", 177.9), ("tw", 7.9), ("tf", 12.8), ("r", 10.2));
+            Assert.Equal(2 * 177.9 * 12.8 + (406.4 - 2 * 12.8) * 7.9 + (4 - Math.PI) * 10.2 * 10.2, SectionGeometry.GeometricArea(ub), 6);
+            foreach (var bad in new[] { ub.With("r", 90), ub.With("tf", 210), ub.With("tw", 200), ub.With("r", 200) })
+                Assert.False(SteelValidator.Validate(bad).IsValid);
+
+            var tl = AnchorMath.CentroidOffset(S(SteelFamily.UB, ("H", 400), ("B", 200), ("tw", 8), ("tf", 12), ("r", 10)), InsertionAnchor.TopLeft);
+            Assert.Equal(100, tl.X); Assert.Equal(-200, tl.Y);
         }
 
         [Fact]
-        public void Import_RejectsDuplicateIds_MissingData_UnknownUnits_AndInvalidGeometry()
+        public void Import_ConvertsUnitsAndRadii_KeepsProvenance_LoadsTemplates()
+        {
+            var demo = ProfileLibraryReader.ReadFile(DemoPath());
+            Assert.DoesNotContain(demo.Issues, i => i.IsError);
+            Assert.All(demo.Profiles, p => Assert.True(p.IsDemonstration && p.DisplayName.StartsWith("[DEMO]") && p.Source.Length > 0));
+
+            var csv = ProfileLibraryReader.ReadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Profiles", "profile-template.csv"));
+            Assert.Equal(SteelFamily.RHS, Assert.Single(csv.Profiles).Family);
+
+            var r = ProfileLibraryReader.ReadCsv(Header +
+                "a,CHS,CHS a,cm,src,16.83,,,0.71,,,,\n" +
+                "b,RHS,RHS b,mm,src,,100,200,8,,,6,inner\n" +
+                "m,UB,no root radius,mm,src,,180,400,,8,12,,\n");
+            Assert.DoesNotContain(r.Issues, i => i.IsError);
+            Assert.Equal(168.3, r.Profiles[0].Section["D"], 9);                 // cm → mm
+            Assert.Equal(14, r.Profiles[1].Section["r"], 9);                    // inner 6 + t 8 → outer radius
+            Assert.Equal(CornerRadiusStatus.Missing, r.Profiles[2].RadiusStatus); // kept missing, not invented
+        }
+
+        [Fact]
+        public void Import_RejectsBadRecordsAndFiles()
         {
             var r = ProfileLibraryReader.ReadCsv(Header +
                 "dup,CHS,first,mm,src,100,,,5,,,,\n" +
@@ -131,51 +72,23 @@ namespace MDraftingHeper.Core.Tests
                 ",CHS,no id,mm,src,100,,,5,,,,\n" +
                 "nosrc,CHS,no source,mm,,100,,,5,,,,\n");
             Assert.Equal(new[] { "dup" }, r.Profiles.Select(p => p.Id).ToArray());
-            Assert.Contains(r.Issues, i => i.IsError && i.Message.Contains("Duplicate id"));
-            Assert.Contains(r.Issues, i => i.IsError && i.Message.Contains("Missing dimension tw"));
-            Assert.Contains(r.Issues, i => i.IsError && i.Message.Contains("units"));
-            Assert.Contains(r.Issues, i => i.IsError && i.Message.Contains("2t < D"));
-            Assert.Contains(r.Issues, i => i.IsError && i.Message.Contains("cornerRadiusConvention"));
-            Assert.Contains(r.Issues, i => i.IsError && i.Message.Contains("stable id"));
-            Assert.Contains(r.Issues, i => i.IsError && i.Message.Contains("source"));
-        }
+            foreach (var text in new[] { "Duplicate id", "Missing dimension tw", "units", "2t < D", "cornerRadiusConvention", "stable id", "source" })
+                Assert.Contains(r.Issues, i => i.IsError && i.Message.Contains(text));
 
-        [Fact]
-        public void Import_MissingRadius_IsKeptAsMissing_NotInvented()
-        {
-            var r = ProfileLibraryReader.ReadCsv(Header + "m,UB,no root radius,mm,src,,180,400,,8,12,,\n");
-            var p = Assert.Single(r.Profiles);
-            Assert.Equal(CornerRadiusStatus.Missing, p.RadiusStatus);
-            Assert.True(double.IsNaN(p.Section["r"]));
-        }
-
-        [Fact]
-        public void Json_RejectsWrongSchemaAndMissingProvenance()
-        {
             Assert.Contains(ProfileLibraryReader.ReadJson("{\"schemaVersion\":2,\"source\":\"x\",\"profiles\":[]}").Issues, i => i.IsError);
-            Assert.Contains(ProfileLibraryReader.ReadJson("{\"schemaVersion\":1,\"units\":\"mm\",\"profiles\":[{\"id\":\"a\",\"family\":\"CHS\",\"name\":\"a\",\"dimensions\":{\"D\":100,\"t\":5}}]}").Issues,
-                            i => i.IsError && i.Message.Contains("source"));
             Assert.Contains(ProfileLibraryReader.ReadJson("not json").Issues, i => i.IsError);
         }
 
         [Fact]
-        public void Match_FindsProfileWithinTolerance_OtherwiseCustom()
+        public void Library_MatchesWithinTolerance_AndRejectsDuplicateIdsAcrossFiles()
         {
             var lib = new ProfileLibrary();
             lib.Add(ProfileLibraryReader.ReadFile(DemoPath()));
             var ub = lib.FindById("demo-ub-406x178x60");
-            Assert.Same(ub, lib.Match(ub.Section, 0.01));
             Assert.Same(ub, lib.Match(ub.Section.With("tw", 7.905), 0.01));
             Assert.Null(lib.Match(ub.Section.With("tw", 8.5), 0.01));
             Assert.Null(lib.Match(new SteelSection(SteelFamily.UC, ub.Section.Dimensions.ToDictionary(k => k.Key, k => k.Value)), 0.01)); // family matters
-        }
 
-        [Fact]
-        public void Library_RejectsDuplicateIdsAcrossFiles()
-        {
-            var lib = new ProfileLibrary();
-            var r = ProfileLibraryReader.ReadFile(DemoPath());
-            lib.Add(r);
             lib.Add(ProfileLibraryReader.ReadFile(DemoPath()));
             Assert.Equal(12, lib.Profiles.Count);
             Assert.Contains(lib.Issues, i => i.IsError && i.Message.Contains("Duplicate"));

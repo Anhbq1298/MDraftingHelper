@@ -227,7 +227,6 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             if (Enum.IsDefined(typeof(HookAngle), s.AngleB)) vm.AngleB = (HookAngle)s.AngleB;
             vm.TieSize = TieBarSize.Find(s.TieSize) ?? vm.TieSize;
             if (Enum.TryParse(s.Ends, out HookEnds ends)) vm.Ends = ends;
-            vm.GapText = s.ClearGap.ToString(CultureInfo.InvariantCulture);
         }
 
         private static void StoreTieSettings(TieViewModel vm, Core.Settings.TieSettings s)
@@ -237,7 +236,6 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             s.AngleB = (int)vm.AngleB;
             s.TieSize = vm.TieSize.Name;
             s.Ends = vm.Ends.ToString();
-            s.ClearGap = vm.BuildInput().ClearGap;
         }
 
         // ------------------------------------------------------------------ Steel Section
