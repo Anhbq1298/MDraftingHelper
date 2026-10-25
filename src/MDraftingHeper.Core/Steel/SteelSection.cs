@@ -67,6 +67,7 @@ namespace MDraftingHeper.Core.Steel
 
                 case SteelFamily.UB:
                 case SteelFamily.UC:
+                case SteelFamily.IH:
                 {
                     double h = s["H"], b = s["B"], tw = s["tw"], tf = s["tf"], r = s["r"];
                     v.Require(tw < b, "The web is wider than the flange (requires tw < B).");

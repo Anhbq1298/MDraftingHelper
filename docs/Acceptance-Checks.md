@@ -8,7 +8,7 @@ Status as of 2026-10-25. Machine: Windows 11, AutoCAD 2021 (R24.0) full. "Host" 
 
 - **Rebar:** mixed diameters, tolerance grouping without chaining, nominal labels only when every bar fits, duplicate ids, As/Ag/ρ at full precision, target ρ, invalid input; boundary area including arc bulges, open/self-intersecting/degenerate rejection, inside/crossing/outside classification.
 - **Tie:** all three angles × flip are tangent-continuous; exact sweeps; arcs centred on the actual bars; Dref = max(DA, DB) at both ends; 90/135/180 tail directions; flip mirroring; rotation + translation invariance; single-hook ends; degenerate input; clashing tails rejected (not shortened); preset rule selection.
-- **Steel:** CHS/RHS/SHS/I validation (void, corner, fillet overlap); geometric areas against closed-form formulas; anchor offsets; demo library loads with provenance; CSV template; unit conversion; inner→outer radius; duplicate ids, missing data, unknown units, invalid geometry, missing source; missing radius kept as missing; profile matching and Custom.
+- **Steel:** CHS/RHS/SHS/I validation (void, corner, fillet overlap); geometric areas against closed-form formulas; anchor offsets; demo fixture loads with provenance; shipped open libraries (1,749 profiles) load without errors, unique ids, family counts, spot checks, standard corner-radius rules; CSV template; unit conversion; inner→outer radius; duplicate ids, missing data, unknown units, invalid geometry, missing source; missing radius kept as missing; profile matching and Custom.
 - **Settings and presets:** round trip; corrupt or partial file falls back to defaults; shipped presets include Manual and none claims verification.
 
 ## 2. Host-verified in AutoCAD 2021
@@ -59,7 +59,7 @@ After those fixes, one interactive run through the dialog → *Preview & Draw* �
 
 ## 4. Blocked or outstanding
 
-- **Profile data:** no Dlubal data was obtained. Only clearly labelled demonstration data ships. An import adapter (JSON/CSV, schema v1, provenance required) is ready for an authorised export.
+- **Profile data:** Dlubal library data is not available for reuse (online app only, no licence). Shipped data comes from openly licensed datasets (MPL-2.0 / MIT); UB/UC upstream does not name its catalogue. AISC W/HP/M not bundled (redistribution terms unclear); importable by the user. Taper-flange series need a new block. HF hollow sections: inner corner drawn as r − t (0.5 t) instead of 1.0 t.
 - **Hook preset compliance:** the "EC2 + Singapore NA" preset holds unverified candidate values with no clause references. It must be checked against the authorised code text and National Annex before `IsVerified` is set. Manual input is the default.
 - **Parameter limits:** the templates have no min/max value sets. Invalid values are detected by the add-in, not prevented by the block.
 

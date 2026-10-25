@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <None Include="..\..\src\MDraftingHeper.Data\**\*.*" LinkBase="Data" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="TestData\**\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

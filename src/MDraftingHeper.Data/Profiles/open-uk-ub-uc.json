@@ -1,0 +1,2305 @@
+{
+ "schemaVersion": 1,
+ "source": "p-horne/steel-sections uk_sections.csv",
+ "sourceVersion": "https://github.com/p-horne/steel-sections @ 7c5864f (MPL-2.0)",
+ "isDemonstration": false,
+ "units": "mm",
+ "notes": "UB/UC geometry (H, B, tw, tf, root radius r) converted unchanged from steel-sections, licensed MPL-2.0 (this file is Covered Software under MPL-2.0; see THIRD-PARTY-NOTICES.md). The upstream project does not state which catalogue the values come from; check critical sizes against the manufacturer's current data.",
+ "profiles": [
+  {
+   "id": "uk-uc-356x406x1299",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x1299",
+   "dimensions": {
+    "H": 600,
+    "B": 476,
+    "tw": 100,
+    "tf": 140,
+    "r": 15.4
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x1202",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x1202",
+   "dimensions": {
+    "H": 580,
+    "B": 471,
+    "tw": 95,
+    "tf": 130,
+    "r": 15.4
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x1086",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x1086",
+   "dimensions": {
+    "H": 569,
+    "B": 454,
+    "tw": 78,
+    "tf": 125,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x990",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x990",
+   "dimensions": {
+    "H": 550,
+    "B": 448,
+    "tw": 71.9,
+    "tf": 115,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x900",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x900",
+   "dimensions": {
+    "H": 531,
+    "B": 442,
+    "tw": 65.9,
+    "tf": 106,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x818",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x818",
+   "dimensions": {
+    "H": 514,
+    "B": 437,
+    "tw": 60.5,
+    "tf": 97,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x744",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x744",
+   "dimensions": {
+    "H": 498,
+    "B": 432,
+    "tw": 55.6,
+    "tf": 88.9,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x677",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x677",
+   "dimensions": {
+    "H": 483,
+    "B": 428,
+    "tw": 51.2,
+    "tf": 81.5,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x634",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x634",
+   "dimensions": {
+    "H": 474.6,
+    "B": 424,
+    "tw": 47.6,
+    "tf": 77,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x592",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x592",
+   "dimensions": {
+    "H": 465,
+    "B": 421,
+    "tw": 45,
+    "tf": 72.3,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x551",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x551",
+   "dimensions": {
+    "H": 455.6,
+    "B": 418.5,
+    "tw": 42.1,
+    "tf": 67.5,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x509",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x509",
+   "dimensions": {
+    "H": 446,
+    "B": 416,
+    "tw": 39.1,
+    "tf": 62.7,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x467",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x467",
+   "dimensions": {
+    "H": 436.6,
+    "B": 412.2,
+    "tw": 35.8,
+    "tf": 58,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x393",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x393",
+   "dimensions": {
+    "H": 419,
+    "B": 407,
+    "tw": 30.6,
+    "tf": 49.2,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x340",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x340",
+   "dimensions": {
+    "H": 406.4,
+    "B": 403,
+    "tw": 26.6,
+    "tf": 42.9,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x287",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x287",
+   "dimensions": {
+    "H": 393.6,
+    "B": 399,
+    "tw": 22.6,
+    "tf": 36.5,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x406x235",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x406x235",
+   "dimensions": {
+    "H": 381,
+    "B": 394.8,
+    "tw": 18.4,
+    "tf": 30.2,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x368x202",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x368x202",
+   "dimensions": {
+    "H": 374.6,
+    "B": 374.7,
+    "tw": 16.5,
+    "tf": 27,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x368x177",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x368x177",
+   "dimensions": {
+    "H": 368.2,
+    "B": 372.6,
+    "tw": 14.4,
+    "tf": 23.8,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x368x153",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x368x153",
+   "dimensions": {
+    "H": 362,
+    "B": 370.5,
+    "tw": 12.3,
+    "tf": 20.7,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-356x368x129",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 356x368x129",
+   "dimensions": {
+    "H": 355.6,
+    "B": 368.6,
+    "tw": 10.4,
+    "tf": 17.5,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-305x305x283",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 305x305x283",
+   "dimensions": {
+    "H": 365.3,
+    "B": 322.2,
+    "tw": 26.8,
+    "tf": 44.1,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-305x305x240",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 305x305x240",
+   "dimensions": {
+    "H": 352.5,
+    "B": 318.4,
+    "tw": 23,
+    "tf": 37.7,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-305x305x198",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 305x305x198",
+   "dimensions": {
+    "H": 339.9,
+    "B": 314.5,
+    "tw": 19.1,
+    "tf": 31.4,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-305x305x158",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 305x305x158",
+   "dimensions": {
+    "H": 327.1,
+    "B": 311.2,
+    "tw": 15.8,
+    "tf": 25,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-305x305x137",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 305x305x137",
+   "dimensions": {
+    "H": 320.5,
+    "B": 309.2,
+    "tw": 13.8,
+    "tf": 21.7,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-305x305x118",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 305x305x118",
+   "dimensions": {
+    "H": 314.5,
+    "B": 307.4,
+    "tw": 12,
+    "tf": 18.7,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-305x305x97",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 305x305x97",
+   "dimensions": {
+    "H": 307.9,
+    "B": 305.3,
+    "tw": 9.9,
+    "tf": 15.4,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-254x254x167",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 254x254x167",
+   "dimensions": {
+    "H": 289.1,
+    "B": 265.2,
+    "tw": 19.2,
+    "tf": 31.7,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-254x254x132",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 254x254x132",
+   "dimensions": {
+    "H": 276.3,
+    "B": 261.3,
+    "tw": 15.3,
+    "tf": 25.3,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-254x254x107",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 254x254x107",
+   "dimensions": {
+    "H": 266.7,
+    "B": 258.8,
+    "tw": 12.8,
+    "tf": 20.5,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-254x254x89",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 254x254x89",
+   "dimensions": {
+    "H": 260.3,
+    "B": 256.3,
+    "tw": 10.3,
+    "tf": 17.3,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-254x254x73",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 254x254x73",
+   "dimensions": {
+    "H": 254.1,
+    "B": 254.6,
+    "tw": 8.6,
+    "tf": 14.2,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-203x203x127",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 203x203x127",
+   "dimensions": {
+    "H": 241.4,
+    "B": 213.9,
+    "tw": 18.1,
+    "tf": 30.1,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-203x203x113",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 203x203x113",
+   "dimensions": {
+    "H": 235,
+    "B": 212.1,
+    "tw": 16.3,
+    "tf": 26.9,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-203x203x100",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 203x203x100",
+   "dimensions": {
+    "H": 228.6,
+    "B": 210.3,
+    "tw": 14.5,
+    "tf": 23.7,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-203x203x86",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 203x203x86",
+   "dimensions": {
+    "H": 222.2,
+    "B": 209.1,
+    "tw": 12.7,
+    "tf": 20.5,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-203x203x71",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 203x203x71",
+   "dimensions": {
+    "H": 215.8,
+    "B": 206.4,
+    "tw": 10,
+    "tf": 17.3,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-203x203x60",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 203x203x60",
+   "dimensions": {
+    "H": 209.6,
+    "B": 205.8,
+    "tw": 9.4,
+    "tf": 14.2,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-203x203x52",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 203x203x52",
+   "dimensions": {
+    "H": 206.2,
+    "B": 204.3,
+    "tw": 7.9,
+    "tf": 12.5,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-203x203x46",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 203x203x46",
+   "dimensions": {
+    "H": 203.2,
+    "B": 203.6,
+    "tw": 7.2,
+    "tf": 11,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-152x152x51",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 152x152x51",
+   "dimensions": {
+    "H": 170.2,
+    "B": 157.4,
+    "tw": 11,
+    "tf": 15.7,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-152x152x44",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 152x152x44",
+   "dimensions": {
+    "H": 166,
+    "B": 155.9,
+    "tw": 9.5,
+    "tf": 13.6,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-152x152x37",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 152x152x37",
+   "dimensions": {
+    "H": 161.8,
+    "B": 154.4,
+    "tw": 8,
+    "tf": 11.5,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-152x152x30",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 152x152x30",
+   "dimensions": {
+    "H": 157.6,
+    "B": 152.9,
+    "tw": 6.5,
+    "tf": 9.4,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-uc-152x152x23",
+   "family": "UC",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UC",
+   "name": "UC 152x152x23",
+   "dimensions": {
+    "H": 152.4,
+    "B": 152.2,
+    "tw": 5.8,
+    "tf": 6.8,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x584",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x584",
+   "dimensions": {
+    "H": 1056,
+    "B": 314,
+    "tw": 36,
+    "tf": 64,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x494",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x494",
+   "dimensions": {
+    "H": 1036,
+    "B": 309,
+    "tw": 31,
+    "tf": 54,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x438",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x438",
+   "dimensions": {
+    "H": 1026,
+    "B": 305,
+    "tw": 26.9,
+    "tf": 49,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x415",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x415",
+   "dimensions": {
+    "H": 1020,
+    "B": 304,
+    "tw": 26,
+    "tf": 46,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x393",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x393",
+   "dimensions": {
+    "H": 1015.9,
+    "B": 303,
+    "tw": 24.4,
+    "tf": 43.9,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x350",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x350",
+   "dimensions": {
+    "H": 1008,
+    "B": 302,
+    "tw": 21.1,
+    "tf": 40,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x314",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x314",
+   "dimensions": {
+    "H": 999.9,
+    "B": 300,
+    "tw": 19.1,
+    "tf": 35.9,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x272",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x272",
+   "dimensions": {
+    "H": 990.1,
+    "B": 300,
+    "tw": 16.5,
+    "tf": 31,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x249",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x249",
+   "dimensions": {
+    "H": 980.1,
+    "B": 300,
+    "tw": 16.5,
+    "tf": 26,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-1016x305x222",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 1016x305x222",
+   "dimensions": {
+    "H": 970.3,
+    "B": 300,
+    "tw": 16,
+    "tf": 21.1,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x419x388",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x419x388",
+   "dimensions": {
+    "H": 921,
+    "B": 420.5,
+    "tw": 21.4,
+    "tf": 36.6,
+    "r": 24.1
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x419x343",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x419x343",
+   "dimensions": {
+    "H": 911.8,
+    "B": 418.5,
+    "tw": 19.4,
+    "tf": 32,
+    "r": 24.1
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x576",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x576",
+   "dimensions": {
+    "H": 993,
+    "B": 322,
+    "tw": 36.1,
+    "tf": 65,
+    "r": 19
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x521",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x521",
+   "dimensions": {
+    "H": 981,
+    "B": 319,
+    "tw": 33,
+    "tf": 58.9,
+    "r": 19
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x474",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x474",
+   "dimensions": {
+    "H": 971,
+    "B": 316,
+    "tw": 30,
+    "tf": 54.1,
+    "r": 19
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x425",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x425",
+   "dimensions": {
+    "H": 961,
+    "B": 313,
+    "tw": 26.9,
+    "tf": 49,
+    "r": 19
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x381",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x381",
+   "dimensions": {
+    "H": 951,
+    "B": 310,
+    "tw": 24.4,
+    "tf": 43.9,
+    "r": 19
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x345",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x345",
+   "dimensions": {
+    "H": 943,
+    "B": 308,
+    "tw": 22.1,
+    "tf": 39.9,
+    "r": 19
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x313",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x313",
+   "dimensions": {
+    "H": 932,
+    "B": 309,
+    "tw": 21.1,
+    "tf": 34.5,
+    "r": 19
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x289",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x289",
+   "dimensions": {
+    "H": 926.6,
+    "B": 307.7,
+    "tw": 19.5,
+    "tf": 32,
+    "r": 19.1
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x271",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x271",
+   "dimensions": {
+    "H": 923,
+    "B": 307,
+    "tw": 18.4,
+    "tf": 30,
+    "r": 19
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x253",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x253",
+   "dimensions": {
+    "H": 918.4,
+    "B": 305.5,
+    "tw": 17.3,
+    "tf": 27.9,
+    "r": 19.1
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x238",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x238",
+   "dimensions": {
+    "H": 915,
+    "B": 305,
+    "tw": 16.5,
+    "tf": 25.9,
+    "r": 19
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x224",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x224",
+   "dimensions": {
+    "H": 910.4,
+    "B": 304.1,
+    "tw": 15.9,
+    "tf": 23.9,
+    "r": 19.1
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-914x305x201",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 914x305x201",
+   "dimensions": {
+    "H": 903,
+    "B": 303.3,
+    "tw": 15.1,
+    "tf": 20.2,
+    "r": 19.1
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-838x292x226",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 838x292x226",
+   "dimensions": {
+    "H": 850.9,
+    "B": 293.8,
+    "tw": 16.1,
+    "tf": 26.8,
+    "r": 17.8
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-838x292x194",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 838x292x194",
+   "dimensions": {
+    "H": 840.7,
+    "B": 292.4,
+    "tw": 14.7,
+    "tf": 21.7,
+    "r": 17.8
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-838x292x176",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 838x292x176",
+   "dimensions": {
+    "H": 834.9,
+    "B": 291.7,
+    "tw": 14,
+    "tf": 18.8,
+    "r": 17.8
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-762x267x197",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 762x267x197",
+   "dimensions": {
+    "H": 769.8,
+    "B": 268,
+    "tw": 15.6,
+    "tf": 25.4,
+    "r": 16.5
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-762x267x173",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 762x267x173",
+   "dimensions": {
+    "H": 762.2,
+    "B": 266.7,
+    "tw": 14.3,
+    "tf": 21.6,
+    "r": 16.5
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-762x267x147",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 762x267x147",
+   "dimensions": {
+    "H": 754,
+    "B": 265.2,
+    "tw": 12.8,
+    "tf": 17.5,
+    "r": 16.5
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-762x267x134",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 762x267x134",
+   "dimensions": {
+    "H": 750,
+    "B": 264.4,
+    "tw": 12,
+    "tf": 15.5,
+    "r": 16.5
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-686x254x170",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 686x254x170",
+   "dimensions": {
+    "H": 692.9,
+    "B": 255.8,
+    "tw": 14.5,
+    "tf": 23.7,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-686x254x152",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 686x254x152",
+   "dimensions": {
+    "H": 687.5,
+    "B": 254.5,
+    "tw": 13.2,
+    "tf": 21,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-686x254x140",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 686x254x140",
+   "dimensions": {
+    "H": 683.5,
+    "B": 253.7,
+    "tw": 12.4,
+    "tf": 19,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-686x254x125",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 686x254x125",
+   "dimensions": {
+    "H": 677.9,
+    "B": 253,
+    "tw": 11.7,
+    "tf": 16.2,
+    "r": 15.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x305x238",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x305x238",
+   "dimensions": {
+    "H": 635.8,
+    "B": 311.4,
+    "tw": 18.4,
+    "tf": 31.4,
+    "r": 16.5
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x305x179",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x305x179",
+   "dimensions": {
+    "H": 620.2,
+    "B": 307.1,
+    "tw": 14.1,
+    "tf": 23.6,
+    "r": 16.5
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x305x149",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x305x149",
+   "dimensions": {
+    "H": 612.4,
+    "B": 304.8,
+    "tw": 11.8,
+    "tf": 19.7,
+    "r": 16.5
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x229x140",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x229x140",
+   "dimensions": {
+    "H": 617.2,
+    "B": 230.2,
+    "tw": 13.1,
+    "tf": 22.1,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x229x125",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x229x125",
+   "dimensions": {
+    "H": 612.2,
+    "B": 229,
+    "tw": 11.9,
+    "tf": 19.6,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x229x113",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x229x113",
+   "dimensions": {
+    "H": 607.6,
+    "B": 228.2,
+    "tw": 11.1,
+    "tf": 17.3,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x229x101",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x229x101",
+   "dimensions": {
+    "H": 602.6,
+    "B": 227.6,
+    "tw": 10.5,
+    "tf": 14.8,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x178x100",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x178x100",
+   "dimensions": {
+    "H": 607.4,
+    "B": 179.2,
+    "tw": 11.3,
+    "tf": 17.2,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x178x92",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x178x92",
+   "dimensions": {
+    "H": 603,
+    "B": 178.8,
+    "tw": 10.9,
+    "tf": 15,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-610x178x82",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 610x178x82",
+   "dimensions": {
+    "H": 598.6,
+    "B": 177.9,
+    "tw": 10,
+    "tf": 12.8,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x312x273",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x312x273",
+   "dimensions": {
+    "H": 577.1,
+    "B": 320.2,
+    "tw": 21.1,
+    "tf": 37.6,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x312x219",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x312x219",
+   "dimensions": {
+    "H": 560.3,
+    "B": 317.4,
+    "tw": 18.3,
+    "tf": 29.2,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x312x182",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x312x182",
+   "dimensions": {
+    "H": 550.7,
+    "B": 314.5,
+    "tw": 15.2,
+    "tf": 24.4,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x312x151",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x312x151",
+   "dimensions": {
+    "H": 542.5,
+    "B": 312,
+    "tw": 12.7,
+    "tf": 20.3,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x210x138",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x210x138",
+   "dimensions": {
+    "H": 549.1,
+    "B": 213.9,
+    "tw": 14.7,
+    "tf": 23.6,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x210x122",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x210x122",
+   "dimensions": {
+    "H": 544.5,
+    "B": 211.9,
+    "tw": 12.7,
+    "tf": 21.3,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x210x109",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x210x109",
+   "dimensions": {
+    "H": 539.5,
+    "B": 210.8,
+    "tw": 11.6,
+    "tf": 18.8,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x210x101",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x210x101",
+   "dimensions": {
+    "H": 536.7,
+    "B": 210,
+    "tw": 10.8,
+    "tf": 17.4,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x210x92",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x210x92",
+   "dimensions": {
+    "H": 533.1,
+    "B": 209.3,
+    "tw": 10.1,
+    "tf": 15.6,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x210x82",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x210x82",
+   "dimensions": {
+    "H": 528.3,
+    "B": 208.8,
+    "tw": 9.6,
+    "tf": 13.2,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x165x85",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x165x85",
+   "dimensions": {
+    "H": 534.9,
+    "B": 166.5,
+    "tw": 10.3,
+    "tf": 16.5,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x165x75",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x165x75",
+   "dimensions": {
+    "H": 529.1,
+    "B": 165.9,
+    "tw": 9.7,
+    "tf": 13.6,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-533x165x66",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 533x165x66",
+   "dimensions": {
+    "H": 524.7,
+    "B": 165.1,
+    "tw": 8.9,
+    "tf": 11.4,
+    "r": 12.7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x191x161",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x191x161",
+   "dimensions": {
+    "H": 492,
+    "B": 199.4,
+    "tw": 18,
+    "tf": 32,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x191x133",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x191x133",
+   "dimensions": {
+    "H": 480.6,
+    "B": 196.7,
+    "tw": 15.3,
+    "tf": 26.3,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x191x106",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x191x106",
+   "dimensions": {
+    "H": 469.2,
+    "B": 194,
+    "tw": 12.6,
+    "tf": 20.6,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x191x98",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x191x98",
+   "dimensions": {
+    "H": 467.2,
+    "B": 192.8,
+    "tw": 11.4,
+    "tf": 19.6,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x191x89",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x191x89",
+   "dimensions": {
+    "H": 463.4,
+    "B": 191.9,
+    "tw": 10.5,
+    "tf": 17.7,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x191x82",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x191x82",
+   "dimensions": {
+    "H": 460,
+    "B": 191.3,
+    "tw": 9.9,
+    "tf": 16,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x191x74",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x191x74",
+   "dimensions": {
+    "H": 457,
+    "B": 190.4,
+    "tw": 9,
+    "tf": 14.5,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x191x67",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x191x67",
+   "dimensions": {
+    "H": 453.4,
+    "B": 189.9,
+    "tw": 8.5,
+    "tf": 12.7,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x152x82",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x152x82",
+   "dimensions": {
+    "H": 465.8,
+    "B": 155.3,
+    "tw": 10.5,
+    "tf": 18.9,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x152x74",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x152x74",
+   "dimensions": {
+    "H": 462,
+    "B": 154.4,
+    "tw": 9.6,
+    "tf": 17,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x152x67",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x152x67",
+   "dimensions": {
+    "H": 458,
+    "B": 153.8,
+    "tw": 9,
+    "tf": 15,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x152x60",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x152x60",
+   "dimensions": {
+    "H": 454.6,
+    "B": 152.9,
+    "tw": 8.1,
+    "tf": 13.3,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-457x152x52",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 457x152x52",
+   "dimensions": {
+    "H": 449.8,
+    "B": 152.4,
+    "tw": 7.6,
+    "tf": 10.9,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-406x178x85",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 406x178x85",
+   "dimensions": {
+    "H": 417.2,
+    "B": 181.9,
+    "tw": 10.9,
+    "tf": 18.2,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-406x178x74",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 406x178x74",
+   "dimensions": {
+    "H": 412.8,
+    "B": 179.5,
+    "tw": 9.5,
+    "tf": 16,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-406x178x67",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 406x178x67",
+   "dimensions": {
+    "H": 409.4,
+    "B": 178.8,
+    "tw": 8.8,
+    "tf": 14.3,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-406x178x60",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 406x178x60",
+   "dimensions": {
+    "H": 406.4,
+    "B": 177.9,
+    "tw": 7.9,
+    "tf": 12.8,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-406x178x54",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 406x178x54",
+   "dimensions": {
+    "H": 402.6,
+    "B": 177.7,
+    "tw": 7.7,
+    "tf": 10.9,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-406x140x53",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 406x140x53",
+   "dimensions": {
+    "H": 406.6,
+    "B": 143.3,
+    "tw": 7.9,
+    "tf": 12.9,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-406x140x46",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 406x140x46",
+   "dimensions": {
+    "H": 403.2,
+    "B": 142.2,
+    "tw": 6.8,
+    "tf": 11.2,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-406x140x39",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 406x140x39",
+   "dimensions": {
+    "H": 398,
+    "B": 141.8,
+    "tw": 6.4,
+    "tf": 8.6,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-356x171x67",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 356x171x67",
+   "dimensions": {
+    "H": 363.4,
+    "B": 173.2,
+    "tw": 9.1,
+    "tf": 15.7,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-356x171x57",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 356x171x57",
+   "dimensions": {
+    "H": 358,
+    "B": 172.2,
+    "tw": 8.1,
+    "tf": 13,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-356x171x51",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 356x171x51",
+   "dimensions": {
+    "H": 355,
+    "B": 171.5,
+    "tw": 7.4,
+    "tf": 11.5,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-356x171x45",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 356x171x45",
+   "dimensions": {
+    "H": 351.4,
+    "B": 171.1,
+    "tw": 7,
+    "tf": 9.7,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-356x127x39",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 356x127x39",
+   "dimensions": {
+    "H": 353.4,
+    "B": 126,
+    "tw": 6.6,
+    "tf": 10.7,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-356x127x33",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 356x127x33",
+   "dimensions": {
+    "H": 349,
+    "B": 125.4,
+    "tw": 6,
+    "tf": 8.5,
+    "r": 10.2
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-305x165x54",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 305x165x54",
+   "dimensions": {
+    "H": 310.4,
+    "B": 166.9,
+    "tw": 7.9,
+    "tf": 13.7,
+    "r": 8.9
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-305x165x46",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 305x165x46",
+   "dimensions": {
+    "H": 306.6,
+    "B": 165.7,
+    "tw": 6.7,
+    "tf": 11.8,
+    "r": 8.9
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-305x165x40",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 305x165x40",
+   "dimensions": {
+    "H": 303.4,
+    "B": 165,
+    "tw": 6,
+    "tf": 10.2,
+    "r": 8.9
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-305x127x48",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 305x127x48",
+   "dimensions": {
+    "H": 311,
+    "B": 125.3,
+    "tw": 9,
+    "tf": 14,
+    "r": 8.9
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-305x127x42",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 305x127x42",
+   "dimensions": {
+    "H": 307.2,
+    "B": 124.3,
+    "tw": 8,
+    "tf": 12.1,
+    "r": 8.9
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-305x127x37",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 305x127x37",
+   "dimensions": {
+    "H": 304.4,
+    "B": 123.4,
+    "tw": 7.1,
+    "tf": 10.7,
+    "r": 8.9
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-305x102x33",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 305x102x33",
+   "dimensions": {
+    "H": 312.7,
+    "B": 102.4,
+    "tw": 6.6,
+    "tf": 10.8,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-305x102x28",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 305x102x28",
+   "dimensions": {
+    "H": 308.7,
+    "B": 101.8,
+    "tw": 6,
+    "tf": 8.8,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-305x102x25",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 305x102x25",
+   "dimensions": {
+    "H": 305.1,
+    "B": 101.6,
+    "tw": 5.8,
+    "tf": 7,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-254x146x43",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 254x146x43",
+   "dimensions": {
+    "H": 259.6,
+    "B": 147.3,
+    "tw": 7.2,
+    "tf": 12.7,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-254x146x37",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 254x146x37",
+   "dimensions": {
+    "H": 256,
+    "B": 146.4,
+    "tw": 6.3,
+    "tf": 10.9,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-254x146x31",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 254x146x31",
+   "dimensions": {
+    "H": 251.4,
+    "B": 146.1,
+    "tw": 6,
+    "tf": 8.6,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-254x102x28",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 254x102x28",
+   "dimensions": {
+    "H": 260.4,
+    "B": 102.2,
+    "tw": 6.3,
+    "tf": 10,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-254x102x25",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 254x102x25",
+   "dimensions": {
+    "H": 257.2,
+    "B": 101.9,
+    "tw": 6,
+    "tf": 8.4,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-254x102x22",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 254x102x22",
+   "dimensions": {
+    "H": 254,
+    "B": 101.6,
+    "tw": 5.7,
+    "tf": 6.8,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-203x133x30",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 203x133x30",
+   "dimensions": {
+    "H": 206.8,
+    "B": 133.9,
+    "tw": 6.4,
+    "tf": 9.6,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-203x133x25",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 203x133x25",
+   "dimensions": {
+    "H": 203.2,
+    "B": 133.2,
+    "tw": 5.7,
+    "tf": 7.8,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-203x102x23",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 203x102x23",
+   "dimensions": {
+    "H": 203.2,
+    "B": 101.8,
+    "tw": 5.4,
+    "tf": 9.3,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-178x102x19",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 178x102x19",
+   "dimensions": {
+    "H": 177.8,
+    "B": 101.2,
+    "tw": 4.8,
+    "tf": 7.9,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-152x89x16",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 152x89x16",
+   "dimensions": {
+    "H": 152.4,
+    "B": 88.7,
+    "tw": 4.5,
+    "tf": 7.7,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "uk-ub-127x76x13",
+   "family": "UB",
+   "standard": "BS 4-1 (designation; upstream does not name its catalogue)",
+   "series": "UB",
+   "name": "UB 127x76x13",
+   "dimensions": {
+    "H": 127,
+    "B": 76,
+    "tw": 4,
+    "tf": 7.6,
+    "r": 7.6
+   },
+   "cornerRadiusStatus": "published"
+  }
+ ]
+}

@@ -70,13 +70,16 @@ namespace MDraftingHeper.Core.Tests
             Assert.Equal(0, bc.X); Assert.Equal(200, bc.Y);
         }
 
+        /// <summary>Demonstration library (test fixture; no longer shipped).</summary>
+        private static string DemoPath() => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "demo-profiles.json");
+
         private static string DataPath(params string[] parts) =>
             Path.Combine(new[] { AppDomain.CurrentDomain.BaseDirectory, "Data" }.Concat(parts).ToArray());
 
         [Fact]
         public void DemoLibrary_LoadsWithProvenance_AndEveryProfileIsValid()
         {
-            var r = ProfileLibraryReader.ReadFile(DataPath("Profiles", "demo-profiles.json"));
+            var r = ProfileLibraryReader.ReadFile(DemoPath());
             Assert.DoesNotContain(r.Issues, i => i.IsError);
             Assert.Equal(12, r.Profiles.Count);
             Assert.All(r.Profiles, p =>
@@ -86,7 +89,8 @@ namespace MDraftingHeper.Core.Tests
                 Assert.False(string.IsNullOrWhiteSpace(p.Source));
                 Assert.True(SteelValidator.Validate(p.Section).IsValid);
             });
-            foreach (var f in SteelFamilies.All) Assert.NotEmpty(r.Profiles.Where(p => p.Family == f));
+            // The demo fixture predates the generic I/H family.
+            foreach (var f in SteelFamilies.All.Where(x => x != SteelFamily.IH)) Assert.NotEmpty(r.Profiles.Where(p => p.Family == f));
         }
 
         [Fact]
@@ -158,7 +162,7 @@ namespace MDraftingHeper.Core.Tests
         public void Match_FindsProfileWithinTolerance_OtherwiseCustom()
         {
             var lib = new ProfileLibrary();
-            lib.Add(ProfileLibraryReader.ReadFile(DataPath("Profiles", "demo-profiles.json")));
+            lib.Add(ProfileLibraryReader.ReadFile(DemoPath()));
             var ub = lib.FindById("demo-ub-406x178x60");
             Assert.Same(ub, lib.Match(ub.Section, 0.01));
             Assert.Same(ub, lib.Match(ub.Section.With("tw", 7.905), 0.01));
@@ -170,9 +174,9 @@ namespace MDraftingHeper.Core.Tests
         public void Library_RejectsDuplicateIdsAcrossFiles()
         {
             var lib = new ProfileLibrary();
-            var r = ProfileLibraryReader.ReadFile(DataPath("Profiles", "demo-profiles.json"));
+            var r = ProfileLibraryReader.ReadFile(DemoPath());
             lib.Add(r);
-            lib.Add(ProfileLibraryReader.ReadFile(DataPath("Profiles", "demo-profiles.json")));
+            lib.Add(ProfileLibraryReader.ReadFile(DemoPath()));
             Assert.Equal(12, lib.Profiles.Count);
             Assert.Contains(lib.Issues, i => i.IsError && i.Message.Contains("Duplicate"));
         }

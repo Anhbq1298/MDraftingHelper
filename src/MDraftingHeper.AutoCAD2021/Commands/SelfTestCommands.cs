@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -125,7 +125,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 Check("rebar As and rho", Near(r.As, expectedAs, 1e-6) && Near(r.Ag, 240000) && Near(r.RhoPercent, 100 * expectedAs / 240000, 1e-9),
                       "As=" + F(r.As) + " Ag=" + F(r.Ag));
 
-                // Table in a rotated UCS (30° about Z).
+                // Table in a rotated UCS (30Â° about Z).
                 var ucs = Matrix3d.Rotation(Math.PI / 6, Vector3d.ZAxis, Point3d.Origin);
                 DrawingGuards.EnsureLayer(tr, db, "MDH_REBAR_TABLE", 7);
                 var tid = RebarTableWriter.Insert(tr, db, r, new Point3d(600, 0, 0), ucs, MdhApp.Settings.Rebar, "MDH_REBAR_TABLE");
@@ -257,7 +257,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         private static void TestSteel(Document doc)
         {
             var lib = ProfileCache.Library;
-            Check("steel demo library loaded", lib.Profiles.Count >= 12, lib.Profiles.Count.ToString());
+            Check("steel profile library loaded", lib.Profiles.Count >= 12, lib.Profiles.Count.ToString());
             _families.Clear();
             double x = 3000;
             foreach (var f in SteelFamilies.All)
@@ -266,11 +266,11 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 _families.Add((f, p, InsertSteel(doc, p.Section, p, new Point3d(x, 0, 0))));
                 x += 600;
             }
-            var ub = lib.FindById("demo-ub-406x178x60");
+            var ub = lib.FindById("uk-ub-406x178x60");
             _ubA = InsertSteel(doc, ub.Section, ub, new Point3d(3000, 2000, 0));
             _ubB = InsertSteel(doc, ub.Section, ub, new Point3d(3600, 2000, 0));
             SetDims(doc, _ubA, ("tw", 9.5), ("H", 450.0));
-            var rhs = lib.FindById("demo-rhs-200x100x8.0");
+            var rhs = lib.FindById("en-rhs-200x100x8-hf");
             _invalid = InsertSteel(doc, rhs.Section, rhs, new Point3d(3000, 4000, 0));
             _topLeft = InsertSteel(doc, rhs.Section, rhs, new Point3d(3000, 6000, 0), InsertionAnchor.TopLeft);
         }
@@ -293,7 +293,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 Check("steel " + f + " label shows profile", ok.Item6 == p.Name, ok.Item6);
             }
 
-            var ub = ProfileCache.Library.FindById("demo-ub-406x178x60");
+            var ub = ProfileCache.Library.FindById("uk-ub-406x178x60");
             var a = Read(doc, _ubA, (tr, br) => (SteelBlocks.ReadSection(br, SteelFamily.UB), LabelOf(tr, br), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
             var b = Read(doc, _ubB, (tr, br) => (SteelBlocks.ReadSection(br, SteelFamily.UB), LabelOf(tr, br)));
             Check("steel edited instance only changes itself", Near(a.Item1["H"], 450) && Near(b.Item1["H"], ub.Section["H"]), F(a.Item1["H"]) + "/" + F(b.Item1["H"]));
@@ -312,7 +312,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         [CommandMethod("MDH", "MDH_SELFTEST_STEEL3", CommandFlags.Modal | CommandFlags.NoUndoMarker)]
         public void Steel3() => MdhCommands.Run(doc => Guard("steel3", () =>
         {
-            var ub = ProfileCache.Library.FindById("demo-ub-406x178x60");
+            var ub = ProfileCache.Library.FindById("uk-ub-406x178x60");
             var back = Read(doc, _ubA, (tr, br) => (LabelOf(tr, br), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
             Check("steel restoring dimensions re-matches the profile", back.Item2 == "profile" && back.Item1 == ub.Name, back.Item2 + " / " + back.Item1);
             var inv = Read(doc, _invalid, (tr, br) => (SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key)), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
@@ -324,7 +324,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
 
         private static void TestWblock(Document doc)
         {
-            var rhs = ProfileCache.Library.FindById("demo-rhs-250x150x10");
+            var rhs = ProfileCache.Library.FindById("en-rhs-250x150x10-hf");
             var id = InsertSteel(doc, rhs.Section, rhs, new Point3d(6000, 0, 0));
             SetDims(doc, id, ("B", 170.0));
             var path = Path.Combine(Path.GetTempPath(), "MDH_selftest_wblock.dwg");
@@ -356,7 +356,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         [CommandMethod("MDH", "MDH_SELFTEST_UNDO1", CommandFlags.Modal)]
         public void Undo1() => MdhCommands.Run(doc =>
         {
-            var rhs = ProfileCache.Library.FindById("demo-rhs-200x100x8.0");
+            var rhs = ProfileCache.Library.FindById("en-rhs-200x100x8-hf");
             _undoBlock = InsertSteel(doc, rhs.Section, rhs, new Point3d(8000, 0, 0));
             doc.Editor.WriteMessage("\nMDH-SELFTEST INFO undo block inserted");
         });

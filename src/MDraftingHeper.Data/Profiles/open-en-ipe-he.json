@@ -1,0 +1,1360 @@
+{
+ "schemaVersion": 1,
+ "source": "ulmewix/Steel_Section_Database (IPE, HEA, HEB, HEM)",
+ "sourceVersion": "https://github.com/ulmewix/Steel_Section_Database @ 524172a (MIT)",
+ "isDemonstration": false,
+ "units": "mm",
+ "notes": "Parallel-flange European I/H sections converted unchanged from Steel_Section_Database (MIT). Upstream: nominal dimensions per EN 10365:2017, not re-checked against EN 10365:2026.",
+ "profiles": [
+  {
+   "id": "en-ipe-80",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 80",
+   "dimensions": {
+    "H": 80,
+    "B": 46,
+    "tw": 3.8,
+    "tf": 5.2,
+    "r": 5
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-100",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 100",
+   "dimensions": {
+    "H": 100,
+    "B": 55,
+    "tw": 4.1,
+    "tf": 5.7,
+    "r": 7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-120",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 120",
+   "dimensions": {
+    "H": 120,
+    "B": 64,
+    "tw": 4.4,
+    "tf": 6.3,
+    "r": 7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-140",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 140",
+   "dimensions": {
+    "H": 140,
+    "B": 73,
+    "tw": 4.7,
+    "tf": 6.9,
+    "r": 7
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-160",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 160",
+   "dimensions": {
+    "H": 160,
+    "B": 82,
+    "tw": 5,
+    "tf": 7.4,
+    "r": 9
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-180",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 180",
+   "dimensions": {
+    "H": 180,
+    "B": 91,
+    "tw": 5.3,
+    "tf": 8,
+    "r": 9
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-200",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 200",
+   "dimensions": {
+    "H": 200,
+    "B": 100,
+    "tw": 5.6,
+    "tf": 8.5,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-220",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 220",
+   "dimensions": {
+    "H": 220,
+    "B": 110,
+    "tw": 5.9,
+    "tf": 9.2,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-240",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 240",
+   "dimensions": {
+    "H": 240,
+    "B": 120,
+    "tw": 6.2,
+    "tf": 9.8,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-270",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 270",
+   "dimensions": {
+    "H": 270,
+    "B": 135,
+    "tw": 6.6,
+    "tf": 10.2,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-300",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 300",
+   "dimensions": {
+    "H": 300,
+    "B": 150,
+    "tw": 7.1,
+    "tf": 10.7,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-330",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 330",
+   "dimensions": {
+    "H": 330,
+    "B": 160,
+    "tw": 7.5,
+    "tf": 11.5,
+    "r": 18
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-360",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 360",
+   "dimensions": {
+    "H": 360,
+    "B": 170,
+    "tw": 8,
+    "tf": 12.7,
+    "r": 18
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-400",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 400",
+   "dimensions": {
+    "H": 400,
+    "B": 180,
+    "tw": 8.6,
+    "tf": 13.5,
+    "r": 21
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-450",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 450",
+   "dimensions": {
+    "H": 450,
+    "B": 190,
+    "tw": 9.4,
+    "tf": 14.6,
+    "r": 21
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-500",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 500",
+   "dimensions": {
+    "H": 500,
+    "B": 200,
+    "tw": 10.2,
+    "tf": 16,
+    "r": 21
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-550",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 550",
+   "dimensions": {
+    "H": 550,
+    "B": 210,
+    "tw": 11.1,
+    "tf": 17.2,
+    "r": 24
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-ipe-600",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "IPE",
+   "name": "IPE 600",
+   "dimensions": {
+    "H": 600,
+    "B": 220,
+    "tw": 12,
+    "tf": 19,
+    "r": 24
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-100",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 100",
+   "dimensions": {
+    "H": 96,
+    "B": 100,
+    "tw": 5,
+    "tf": 8,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-120",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 120",
+   "dimensions": {
+    "H": 114,
+    "B": 120,
+    "tw": 5,
+    "tf": 8,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-140",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 140",
+   "dimensions": {
+    "H": 133,
+    "B": 140,
+    "tw": 5.5,
+    "tf": 8.5,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-160",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 160",
+   "dimensions": {
+    "H": 152,
+    "B": 160,
+    "tw": 6,
+    "tf": 9,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-180",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 180",
+   "dimensions": {
+    "H": 171,
+    "B": 180,
+    "tw": 6,
+    "tf": 9.5,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-200",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 200",
+   "dimensions": {
+    "H": 190,
+    "B": 200,
+    "tw": 6.5,
+    "tf": 10,
+    "r": 18
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-220",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 220",
+   "dimensions": {
+    "H": 210,
+    "B": 220,
+    "tw": 7,
+    "tf": 11,
+    "r": 18
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-240",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 240",
+   "dimensions": {
+    "H": 230,
+    "B": 240,
+    "tw": 7.5,
+    "tf": 12,
+    "r": 21
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-260",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 260",
+   "dimensions": {
+    "H": 250,
+    "B": 260,
+    "tw": 7.5,
+    "tf": 12.5,
+    "r": 24
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-280",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 280",
+   "dimensions": {
+    "H": 270,
+    "B": 280,
+    "tw": 8,
+    "tf": 13,
+    "r": 24
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-300",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 300",
+   "dimensions": {
+    "H": 290,
+    "B": 300,
+    "tw": 8.5,
+    "tf": 14,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-320",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 320",
+   "dimensions": {
+    "H": 310,
+    "B": 300,
+    "tw": 9,
+    "tf": 15.5,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-340",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 340",
+   "dimensions": {
+    "H": 330,
+    "B": 300,
+    "tw": 9.5,
+    "tf": 16.5,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-360",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 360",
+   "dimensions": {
+    "H": 350,
+    "B": 300,
+    "tw": 10,
+    "tf": 17.5,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-400",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 400",
+   "dimensions": {
+    "H": 390,
+    "B": 300,
+    "tw": 11,
+    "tf": 19,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-450",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 450",
+   "dimensions": {
+    "H": 440,
+    "B": 300,
+    "tw": 11.5,
+    "tf": 21,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-500",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 500",
+   "dimensions": {
+    "H": 490,
+    "B": 300,
+    "tw": 12,
+    "tf": 23,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-550",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 550",
+   "dimensions": {
+    "H": 540,
+    "B": 300,
+    "tw": 12.5,
+    "tf": 24,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-600",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 600",
+   "dimensions": {
+    "H": 590,
+    "B": 300,
+    "tw": 13,
+    "tf": 25,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-650",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 650",
+   "dimensions": {
+    "H": 640,
+    "B": 300,
+    "tw": 13.5,
+    "tf": 26,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-700",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 700",
+   "dimensions": {
+    "H": 690,
+    "B": 300,
+    "tw": 14.5,
+    "tf": 27,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-800",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 800",
+   "dimensions": {
+    "H": 790,
+    "B": 300,
+    "tw": 15,
+    "tf": 28,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-900",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 900",
+   "dimensions": {
+    "H": 890,
+    "B": 300,
+    "tw": 16,
+    "tf": 30,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hea-1000",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEA",
+   "name": "HEA 1000",
+   "dimensions": {
+    "H": 990,
+    "B": 300,
+    "tw": 16.5,
+    "tf": 31,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-100",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 100",
+   "dimensions": {
+    "H": 100,
+    "B": 100,
+    "tw": 6,
+    "tf": 10,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-120",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 120",
+   "dimensions": {
+    "H": 120,
+    "B": 120,
+    "tw": 6.5,
+    "tf": 11,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-140",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 140",
+   "dimensions": {
+    "H": 140,
+    "B": 140,
+    "tw": 7,
+    "tf": 12,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-160",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 160",
+   "dimensions": {
+    "H": 160,
+    "B": 160,
+    "tw": 8,
+    "tf": 13,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-180",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 180",
+   "dimensions": {
+    "H": 180,
+    "B": 180,
+    "tw": 8.5,
+    "tf": 14,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-200",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 200",
+   "dimensions": {
+    "H": 200,
+    "B": 200,
+    "tw": 9,
+    "tf": 15,
+    "r": 18
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-220",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 220",
+   "dimensions": {
+    "H": 220,
+    "B": 220,
+    "tw": 9.5,
+    "tf": 16,
+    "r": 18
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-240",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 240",
+   "dimensions": {
+    "H": 240,
+    "B": 240,
+    "tw": 10,
+    "tf": 17,
+    "r": 21
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-260",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 260",
+   "dimensions": {
+    "H": 260,
+    "B": 260,
+    "tw": 10,
+    "tf": 17.5,
+    "r": 24
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-280",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 280",
+   "dimensions": {
+    "H": 280,
+    "B": 280,
+    "tw": 10.5,
+    "tf": 18,
+    "r": 24
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-300",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 300",
+   "dimensions": {
+    "H": 300,
+    "B": 300,
+    "tw": 11,
+    "tf": 19,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-320",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 320",
+   "dimensions": {
+    "H": 320,
+    "B": 300,
+    "tw": 11.5,
+    "tf": 20.5,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-340",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 340",
+   "dimensions": {
+    "H": 340,
+    "B": 300,
+    "tw": 12,
+    "tf": 21.5,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-360",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 360",
+   "dimensions": {
+    "H": 360,
+    "B": 300,
+    "tw": 12.5,
+    "tf": 22.5,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-400",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 400",
+   "dimensions": {
+    "H": 400,
+    "B": 300,
+    "tw": 13.5,
+    "tf": 24,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-450",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 450",
+   "dimensions": {
+    "H": 450,
+    "B": 300,
+    "tw": 14,
+    "tf": 26,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-500",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 500",
+   "dimensions": {
+    "H": 500,
+    "B": 300,
+    "tw": 14.5,
+    "tf": 28,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-550",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 550",
+   "dimensions": {
+    "H": 550,
+    "B": 300,
+    "tw": 15,
+    "tf": 29,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-600",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 600",
+   "dimensions": {
+    "H": 600,
+    "B": 300,
+    "tw": 15.5,
+    "tf": 30,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-650",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 650",
+   "dimensions": {
+    "H": 650,
+    "B": 300,
+    "tw": 16,
+    "tf": 31,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-700",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 700",
+   "dimensions": {
+    "H": 700,
+    "B": 300,
+    "tw": 17,
+    "tf": 32,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-800",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 800",
+   "dimensions": {
+    "H": 800,
+    "B": 300,
+    "tw": 17.5,
+    "tf": 33,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-900",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 900",
+   "dimensions": {
+    "H": 900,
+    "B": 300,
+    "tw": 18.5,
+    "tf": 35,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-heb-1000",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEB",
+   "name": "HEB 1000",
+   "dimensions": {
+    "H": 1000,
+    "B": 300,
+    "tw": 19,
+    "tf": 36,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-100",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 100",
+   "dimensions": {
+    "H": 120,
+    "B": 106,
+    "tw": 12,
+    "tf": 20,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-120",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 120",
+   "dimensions": {
+    "H": 140,
+    "B": 126,
+    "tw": 12.5,
+    "tf": 21,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-140",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 140",
+   "dimensions": {
+    "H": 160,
+    "B": 146,
+    "tw": 13,
+    "tf": 22,
+    "r": 12
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-160",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 160",
+   "dimensions": {
+    "H": 180,
+    "B": 166,
+    "tw": 14,
+    "tf": 23,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-180",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 180",
+   "dimensions": {
+    "H": 200,
+    "B": 186,
+    "tw": 14.5,
+    "tf": 24,
+    "r": 15
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-200",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 200",
+   "dimensions": {
+    "H": 220,
+    "B": 206,
+    "tw": 15,
+    "tf": 25,
+    "r": 18
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-220",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 220",
+   "dimensions": {
+    "H": 240,
+    "B": 226,
+    "tw": 15.5,
+    "tf": 26,
+    "r": 18
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-240",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 240",
+   "dimensions": {
+    "H": 270,
+    "B": 248,
+    "tw": 18,
+    "tf": 32,
+    "r": 21
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-260",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 260",
+   "dimensions": {
+    "H": 290,
+    "B": 268,
+    "tw": 18,
+    "tf": 32.5,
+    "r": 24
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-280",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 280",
+   "dimensions": {
+    "H": 310,
+    "B": 288,
+    "tw": 18.5,
+    "tf": 33,
+    "r": 24
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-300",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 300",
+   "dimensions": {
+    "H": 340,
+    "B": 310,
+    "tw": 21,
+    "tf": 39,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-320",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 320",
+   "dimensions": {
+    "H": 359,
+    "B": 309,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-340",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 340",
+   "dimensions": {
+    "H": 377,
+    "B": 309,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-360",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 360",
+   "dimensions": {
+    "H": 395,
+    "B": 308,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-400",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 400",
+   "dimensions": {
+    "H": 432,
+    "B": 307,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-450",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 450",
+   "dimensions": {
+    "H": 478,
+    "B": 307,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-500",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 500",
+   "dimensions": {
+    "H": 524,
+    "B": 306,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-550",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 550",
+   "dimensions": {
+    "H": 572,
+    "B": 306,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-600",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 600",
+   "dimensions": {
+    "H": 620,
+    "B": 305,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-650",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 650",
+   "dimensions": {
+    "H": 668,
+    "B": 305,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-700",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 700",
+   "dimensions": {
+    "H": 716,
+    "B": 304,
+    "tw": 21,
+    "tf": 40,
+    "r": 27
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-800",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 800",
+   "dimensions": {
+    "H": 814,
+    "B": 303,
+    "tw": 21,
+    "tf": 40,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-900",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 900",
+   "dimensions": {
+    "H": 910,
+    "B": 302,
+    "tw": 21,
+    "tf": 40,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  },
+  {
+   "id": "en-hem-1000",
+   "family": "IH",
+   "standard": "EN 10365:2017",
+   "series": "HEM",
+   "name": "HEM 1000",
+   "dimensions": {
+    "H": 1008,
+    "B": 302,
+    "tw": 21,
+    "tf": 40,
+    "r": 30
+   },
+   "cornerRadiusStatus": "published"
+  }
+ ]
+}

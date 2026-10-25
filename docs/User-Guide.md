@@ -36,7 +36,7 @@ Geometry rules:
 ## Steel Section (`MDH_STEEL`)
 
 1. Choose the family (CHS, SHS, RHS, UB, UC), search and pick a profile, or tick **Custom dimensions** and type them.
-2. Check the preview, provenance (source, DEMO flag, assumed/missing radius) and validation messages.
+2. Check the preview, provenance (source, assumed/missing radius) and validation messages.
 3. Choose the insertion anchor (centroid, top-left, bottom-centre), rotation, centre axes and label, then **Insert Block…** and pick the point.
 
 After insertion, select the block and press **Ctrl+1**. Under **Custom** the Properties palette lists the numeric parameters, which change the real geometry:
@@ -57,7 +57,17 @@ After insertion, select the block and press **Ctrl+1**. Under **Custom** the Pro
 
 ### Profile data
 
-The shipped library (`demo-profiles.json`) is **demonstration data** shown with a `[DEMO]` prefix. It is not a published or licensed source. Put authorised data in `%APPDATA%\MDraftingHeper\Profiles` as JSON (schema below) or CSV (see `profile-template.csv` in the install's `Resources\Profiles`). Records missing data are rejected with reasons in the log; duplicate ids are rejected.
+The shipped libraries are converted from openly licensed datasets (`tools/Profiles/convert_open_profiles.py`, pinned commits; notices in `Resources\Profiles\THIRD-PARTY-NOTICES.md`):
+
+| File | Families / series | Source (licence) |
+| --- | --- | --- |
+| `open-uk-ub-uc.json` | UB (107), UC (46) | p-horne/steel-sections (MPL-2.0) |
+| `open-en-ipe-he.json` | IH: IPE, HEA, HEB, HEM (90), EN 10365:2017 | ulmewix/Steel_Section_Database (MIT) |
+| `open-en-hollow.json` | CHS (344), SHS (406), RHS (756); HF = EN 10210-2, CF = EN 10219-2, names end in HF/CF | ulmewix/Steel_Section_Database (MIT) |
+
+Hollow-section corner radii left empty upstream use the standards' calculation rule (HF ro = 1.5 t; CF 2t/2.5t/3t) and are shown as *assumed*. The block draws a uniform wall (inner radius r − t): exact for CF; for HF the standard's inner radius 1.0 t is drawn as 0.5 t. Taper-flange series (IPN, S, RSJ) and AISC/other national series are not included. Dlubal's online library has no reuse licence and is not included.
+
+Put other authorised data in `%APPDATA%\MDraftingHeper\Profiles` as JSON (schema below) or CSV (see `profile-template.csv` in the install's `Resources\Profiles`). Records missing data are rejected with reasons in the log; duplicate ids are rejected.
 
 JSON schema version 1:
 
