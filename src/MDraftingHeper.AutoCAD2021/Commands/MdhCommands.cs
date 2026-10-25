@@ -112,13 +112,13 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             RestoreTieSettings(vm, settings.Tie);
 
             PlaneFrame frame = null;
-            bool select = true;
+            bool select = false;
             while (true)
             {
                 if (select)
                 {
                     var bars = SelectBars(doc, units);
-                    if (bars == null && frame == null) return;
+                    select = false;
                     if (bars != null)
                     {
                         frame = bars.Value.frame;
@@ -134,17 +134,10 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 if (vm.Action != DialogAction.Commit || vm.Result?.Path == null) return;
 
                 var layer = settings.Layers.Tie;
-                var f = frame;
-                bool accepted = TiePreview.Confirm(doc.Editor,
-                    () => vm.Result?.Path == null ? null : TieWriter.CreatePolyline(f, vm.Result, vm.TieSize, null),
-                    vm.ToggleFlip);
-                StoreTieSettings(vm, settings.Tie);
-                if (!accepted) { select = false; continue; } // Esc: nothing written, back to the dialog
-
                 using (var tr = doc.Database.TransactionManager.StartTransaction())
                 {
                     DrawingGuards.EnsureLayer(tr, doc.Database, layer, 1);
-                    var pl = TieWriter.CreatePolyline(f, vm.Result, vm.TieSize, layer);
+                    var pl = TieWriter.CreatePolyline(frame, vm.Result, vm.TieSize, layer);
                     TieWriter.Append(tr, doc.Database, pl, vm.BuildInput(), vm.Result, vm.TieSize, vm.Preset?.Id);
                     tr.Commit();
                 }
@@ -202,11 +195,10 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             if (Enum.TryParse(s.Ends, out HookEnds ends)) vm.Ends = ends;
             vm.Preset = vm.Presets.FirstOrDefault(p => p.Id == s.PresetId) ?? vm.Preset;
             vm.GapText = s.ClearGap.ToString(CultureInfo.InvariantCulture);
-            if (vm.IsManual)
-            {
+            if (vm.IsMandrelManual)
                 vm.MandrelText = s.ManualInsideMandrelDiameter.ToString(CultureInfo.InvariantCulture);
+            if (vm.IsTailManual)
                 vm.TailText = s.ManualTailLength.ToString(CultureInfo.InvariantCulture);
-            }
         }
 
         private static void StoreTieSettings(TieViewModel vm, Core.Settings.TieSettings s)
@@ -217,11 +209,10 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             s.Ends = vm.Ends.ToString();
             s.PresetId = vm.Preset?.Id;
             s.ClearGap = input.ClearGap;
-            if (vm.IsManual)
-            {
+            if (vm.IsMandrelManual)
                 s.ManualInsideMandrelDiameter = input.InsideMandrelDiameter;
+            if (vm.IsTailManual)
                 s.ManualTailLength = input.TailLength;
-            }
         }
 
         // ------------------------------------------------------------------ Steel Section
@@ -240,8 +231,8 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             if (!string.IsNullOrEmpty(s.ProfileId)) vm.SelectProfileById(s.ProfileId);
             if (Enum.TryParse(s.Anchor, out InsertionAnchor anchor)) vm.Anchor = anchor;
             vm.RotationText = s.RotationDegrees.ToString(CultureInfo.InvariantCulture);
-            vm.CentreAxes = s.CentreAxes;
-            vm.ProfileLabel = s.ProfileLabel;
+            vm.CentreAxes = false;
+            vm.ProfileLabel = false;
 
             while (true)
             {
@@ -250,8 +241,8 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 s.ProfileId = vm.SelectedProfile?.Id;
                 s.Anchor = vm.Anchor.ToString();
                 if (!double.IsNaN(vm.RotationDegrees)) s.RotationDegrees = vm.RotationDegrees;
-                s.CentreAxes = vm.CentreAxes;
-                s.ProfileLabel = vm.ProfileLabel;
+                s.CentreAxes = false;
+                s.ProfileLabel = false;
                 MdhApp.SaveSettings();
                 if (vm.Action != DialogAction.Commit || !vm.CanInsert) return;
 
@@ -267,8 +258,8 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                         Profile = vm.MatchedProfile,
                         Anchor = vm.Anchor,
                         RotationRadians = vm.RotationDegrees * Math.PI / 180,
-                        CentreAxes = vm.CentreAxes,
-                        Label = vm.ProfileLabel,
+                        CentreAxes = false,
+                        Label = false,
                         LabelHeight = s.LabelHeight > 0 ? s.LabelHeight : 2.5,
                         BlockLayer = layers.Steel, AxesLayer = layers.Axes, LabelLayer = layers.Label
                     }, pr.Value.TransformBy(ucs), ucs);
@@ -296,7 +287,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             DrawingGuards.EnsureWritable(doc);
             var units = UnitContext.Resolve(doc);
             if (units == null) return;
-            var vm = new RectangularViewModel();
+            var vm = new RectangularViewModel(ProfileCache.HookPresets);
             while (true)
             {
                 Dialogs.Show(new RectangularWindow(vm));
@@ -325,8 +316,6 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                     DrawingGuards.EnsureLayer(tr, doc.Database, layers.Section, 7);
                     DrawingGuards.EnsureLayer(tr, doc.Database, layers.LongitudinalRebar, 1);
                     DrawingGuards.EnsureLayer(tr, doc.Database, layers.Tie, 2);
-                    DrawingGuards.EnsureLayer(tr, doc.Database, layers.Axes, 8);
-                    DrawingGuards.EnsureLayer(tr, doc.Database, layers.Label, 7);
                     RectangularSectionWriter.Insert(tr, doc.Database, new RectangularInsertOptions
                     {
                         Section = vm.Section,
@@ -334,13 +323,9 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                         Ucs = doc.Editor.CurrentUserCoordinateSystem,
                         RotationRadians = rotation,
                         Units = units,
-                        Axes = vm.ShowAxes,
-                        Dimensions = vm.ShowDimensions,
                         SectionLayer = layers.Section,
                         RebarLayer = layers.LongitudinalRebar,
-                        TieLayer = layers.Tie,
-                        AxesLayer = layers.Axes,
-                        LabelLayer = layers.Label
+                        TieLayer = layers.Tie
                     });
                     tr.Commit();
                 }

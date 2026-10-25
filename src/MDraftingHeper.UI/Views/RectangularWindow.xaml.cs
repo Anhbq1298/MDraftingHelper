@@ -53,10 +53,10 @@ namespace MDraftingHeper.UI.Views
             _pickerOpen = true;
             try
             {
-                var d = new TieBarEditorWindow(_vm.Bars, row?.Tie) { Owner = this };
+                var d = new TieBarEditorWindow(_vm.Bars, row?.Tie, _vm.Presets) { Owner = this };
                 if (d.ShowDialog() != true) return;
-                if (d.IsHoop) ShowValidation(_vm.CommitHoopProperties(row.Tie, d.SizeName, d.HookA, d.HookB, d.Flip, d.Mandrel, d.Tail, d.Gap));
-                else ShowValidation(_vm.CommitCrossTie(row?.Tie, d.BarAId.Value, d.BarBId.Value, d.SizeName, d.HookA, d.HookB, d.Flip, d.Mandrel, d.Tail, d.Gap));
+                if (d.IsHoop) ShowValidation(_vm.CommitHoopProperties(row.Tie, d.SizeName, d.HookA, d.HookB, d.Flip, d.PresetId, d.Mandrel, d.TailA, d.TailB, d.Gap));
+                else ShowValidation(_vm.CommitCrossTie(row?.Tie, d.BarAId.Value, d.BarBId.Value, d.SizeName, d.HookA, d.HookB, d.Flip, d.PresetId, d.Mandrel, d.TailA, d.TailB, d.Gap));
             }
             finally { _pickerOpen = false; }
         }

@@ -23,4 +23,4 @@ Copy-Item $Source $target -Recurse
 # Files from a downloaded/e-mailed zip carry the "from the internet" mark; .NET will not load blocked DLLs.
 Get-ChildItem $target -Recurse -File | Unblock-File
 Write-Host "Installed to $target"
-Write-Host "Start AutoCAD 2021: the MDraftingHeper Ribbon tab and the MDH_REBAR, MDH_TIE, MDH_STEEL commands load automatically."
+Write-Host "Start AutoCAD 2021: the MDraftingHeper Ribbon tab and the MDH_REBAR, MDH_TIE, MDH_STEEL, MDH_RECT commands load automatically."

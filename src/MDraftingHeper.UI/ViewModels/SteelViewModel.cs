@@ -53,7 +53,7 @@ namespace MDraftingHeper.UI.ViewModels
         private bool _suppress;
         private InsertionAnchor _anchor = InsertionAnchor.Centroid;
         private string _rotationText = "0";
-        private bool _axes = true, _label = true;
+        private bool _axes, _label;
 
         public SteelViewModel(ProfileLibrary library, string libraryNote)
         {

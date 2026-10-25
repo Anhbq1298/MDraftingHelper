@@ -18,12 +18,13 @@ Each tool opens its own small dialog. When the tool needs a selection, the dialo
 
 ## Tie & Hook (`MDH_TIE`)
 
-1. Pick **Circle A**, then **Circle B** (the longitudinal bars; both must lie in one plane).
-2. Choose hook angle (90°, 135°, 180°), tie diameter (H10–H20), hook position (A, B or both) and Flip.
-3. Choose a hook preset:
-   - **Manual input** (default): you enter the inside bend (mandrel) diameter and the straight tail length.
+1. The configuration window opens immediately. Choose hook angle (90°, 135°, 180°), tie diameter (H10–H20), hook position (A, B or both) and Flip.
+2. Choose a hook preset:
+   - **Project bend detail (provided)** (default): the straight tail is calculated from data, not command code. Bend angles up to 150° use `max(10φ, 70 mm)`; bend angles above 150° use `max(5φ, 50 mm)`. The inside bend (mandrel) diameter remains editable because the supplied detail does not define it.
+   - **Manual input**: you enter the inside bend (mandrel) diameter and the straight tail length.
    - **EC2 + Singapore NA (candidate values) — UNVERIFIED**: example rules that have not been checked against the authorised code text. Do not present the result as code-compliant.
-4. *Preview & Draw* shows the tie in model space: **Enter** accepts, **F** (Flip) mirrors, **Esc** returns to the dialog with nothing drawn.
+3. Click **Select 2 Circles…**, then pick **Circle A** and **Circle B** (the longitudinal bars; both must lie in one plane). The configuration window reopens with the selected diameters, spacing and preview.
+4. Click **Apply & Draw** to insert the tie immediately. Cancelling the circle selection returns to the configuration window without drawing.
 
 Geometry rules:
 
@@ -37,7 +38,7 @@ Geometry rules:
 
 1. Choose the family (CHS, SHS, RHS, UB, UC), search and pick a profile, or tick **Custom dimensions** and type them.
 2. Check the preview, provenance (source, assumed/missing radius) and validation messages.
-3. Choose the insertion anchor (centroid, top-left, bottom-centre), rotation, centre axes and label, then **Insert Block…** and pick the point.
+3. Choose the insertion anchor (centroid, top-left, bottom-centre) and rotation, then **Insert Block…** and pick the point.
 
 After insertion, select the block and press **Ctrl+1**. Under **Custom** the Properties palette lists the numeric parameters, which change the real geometry:
 
@@ -52,8 +53,8 @@ After insertion, select the block and press **Ctrl+1**. Under **Custom** the Pro
 - These are native Dynamic Block constraint parameters: they also work in AutoCAD without the add-in, and each instance is independent.
 - The block base point is the centroid. The anchor only positions the insertion; later edits keep the centroid fixed.
 - Family and profile are chosen in the dialog only; they are not editable fields in Properties.
-- While the add-in is loaded, edits made in Properties are followed at the end of the command: the label switches to "Custom …" when the dimensions no longer match a library profile (and back when they do), and the axes and label are refitted. These updates belong to the same Undo step as the edit. Changes made by Undo/Redo are not re-processed. `MDH_STEELSYNC` re-checks every steel block in the drawing (also run automatically when a drawing is opened, writing only when something is out of date).
-- If a value cannot be solved (e.g. t ≥ B/2), AutoCAD shows the new value but keeps the previous geometry. MDraftingHeper marks such a block `invalid` in its metadata and does not relabel it. Enter a valid value or Undo.
+- Steel insertion creates the Dynamic Block geometry only—no companion label, centre axes or dimensions. While the add-in is loaded, edits made in Properties are checked at the end of the command and the profile/custom/invalid status is stored in metadata. `MDH_STEELSYNC` re-checks every steel block in the drawing (also run automatically when a drawing is opened, writing only when something is out of date).
+- If a value cannot be solved (e.g. t ≥ B/2), AutoCAD shows the new value but keeps the previous geometry. MDraftingHeper marks such a block `invalid` in its metadata. Enter a valid value or Undo.
 
 ### Profile data
 
@@ -91,13 +92,13 @@ Units may be mm, cm, m or in. `cornerRadiusConvention` (outer/inner) is required
 2. Choose one longitudinal mode:
    - **Specify by Face:** enter counts and diameters for opposite B and H faces, then Apply Layout. Corners are generated once (`C-TL`, `C-TR`, `C-BL`, `C-BR`); intermediate bars use `T1…`, `B1…`, `L1…`, `R1…`.
    - **Custom Coordinates:** add uniquely named individual bars with diameter, X and Y. X/Y are local coordinates about the section centre. Rename-only edits preserve tie references; diameter/coordinate/add/delete changes clear every old tie.
-3. In face mode, configure the tie size and the explicitly labelled centre-to-centre or clear-distance restraint assumption, then **Generate / Replace Auto Ties**. Automatic arrangement is disabled in Custom Coordinates mode.
+3. In face mode, configure the tie size, bend-detail preset and the explicitly labelled centre-to-centre or clear-distance restraint assumption, then **Generate / Replace Auto Ties**. Automatic arrangement is disabled in Custom Coordinates mode.
 4. Use the Tie Bars heading toolbar to add, edit or delete ties. The picker contains longitudinal bars only; click Circle A then Circle B, or use the named lists. Separate Hook A/Hook B and Flip regenerate through the same geometry engine used by `MDH_TIE`.
 5. Check the live bar count, As and ρ, then **Draw in AutoCAD**. Pick an insertion point and rotation.
 
 The longitudinal table remains visible in both modes and is read-only in face mode. The Tie Bars table is the final output list: insertion does not silently regenerate deleted/edited ties. A committed layout change increments its revision and atomically invalidates all previous ties; stale/missing references or impossible hook geometry block insertion. The status reports names that fail the final restraint audit.
 
-Output consists of a concrete boundary, actual rebar Circles, true-bulge tie polylines, bar/tie labels, optional axes and native dimensions. Preview and CAD use the same Core paths. One insertion is one Undo step, and cancelling placement writes nothing.
+Output consists only of the concrete boundary, actual rebar Circles and true-bulge tie polylines. Bar/tie names, axes and dimensions may be shown in the dialog preview but are never inserted into the drawing. Preview and CAD use the same Core paths. One insertion is one Undo step, and cancelling placement writes nothing.
 
 This tool is for 2D drafting and restraint arrangement. It does not perform PMM, shear capacity or longitudinal member design. The default 150 mm centre-to-centre limit is a visible, configurable preview assumption and is not claimed as a verified code interpretation.
 

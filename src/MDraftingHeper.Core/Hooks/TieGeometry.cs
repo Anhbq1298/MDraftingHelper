@@ -31,6 +31,10 @@ namespace MDraftingHeper.Core.Hooks
 
         /// <summary>Straight tail length after each hook (mm).</summary>
         public double TailLength { get; set; } = 100;
+
+        /// <summary>Optional per-end straight tail lengths. When omitted, <see cref="TailLength"/> is used.</summary>
+        public double? TailLengthA { get; set; }
+        public double? TailLengthB { get; set; }
     }
 
     public sealed class TieResult
@@ -79,7 +83,9 @@ namespace MDraftingHeper.Core.Hooks
             if (!(input.TieDiameter > 0)) v.Error("Tie diameter must be positive.");
             if (input.ClearGap < 0) v.Error("Clear gap cannot be negative.");
             if (!(input.InsideMandrelDiameter > 0)) v.Error("Inside mandrel diameter must be positive.");
-            if (!(input.TailLength >= 0)) v.Error("Tail length cannot be negative.");
+            double tailA = input.TailLengthA ?? input.TailLength;
+            double tailB = input.TailLengthB ?? input.TailLength;
+            if (!(tailA >= 0) || !(tailB >= 0)) v.Error("Tail length cannot be negative.");
             var axis = input.CenterB - input.CenterA;
             if (axis.Length < 1e-6) v.Error("The two bars have coincident centres.");
             if (!v.IsValid) return result;
@@ -127,8 +133,8 @@ namespace MDraftingHeper.Core.Hooks
                 // written from the tail end, so the arc runs in the same sense as at B.
                 var rimA = ca + n.Rotate(-s * thetaA) * rc;
                 var tailDirA = (-u).Rotate(-s * thetaA);
-                var tailEndA = rimA + tailDirA * input.TailLength;
-                if (input.TailLength > 1e-9) vertices.Add(new PathVertex(tailEndA));
+                var tailEndA = rimA + tailDirA * tailA;
+                if (tailA > 1e-9) vertices.Add(new PathVertex(tailEndA));
                 vertices.Add(new PathVertex(rimA, bulgeA));
                 result.TailDirectionA = tailDirA;
             }
@@ -140,7 +146,7 @@ namespace MDraftingHeper.Core.Hooks
                 var rimB = cb + n.Rotate(s * thetaB) * rc;
                 var tailDirB = u.Rotate(s * thetaB);
                 vertices.Add(new PathVertex(rimB));
-                if (input.TailLength > 1e-9) vertices.Add(new PathVertex(rimB + tailDirB * input.TailLength));
+                if (tailB > 1e-9) vertices.Add(new PathVertex(rimB + tailDirB * tailB));
                 result.TailDirectionB = tailDirB;
             }
             else

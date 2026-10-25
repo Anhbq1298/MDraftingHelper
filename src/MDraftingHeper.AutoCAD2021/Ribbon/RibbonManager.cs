@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Autodesk.AutoCAD.ApplicationServices;
@@ -51,6 +52,19 @@ namespace MDraftingHeper.AutoCAD2021.Ribbon
             int n = 0;
             foreach (var t in ribbon.Tabs) if (t.Id == TabId) n++;
             return n;
+        }
+
+        public static int ButtonCount()
+        {
+            var tab = ComponentManager.Ribbon?.FindTab(TabId);
+            return tab == null ? 0 : tab.Panels.Sum(p => p.Source.Items.OfType<RibbonButton>().Count());
+        }
+
+        public static bool HasButton(string command)
+        {
+            var id = TabId + "." + command;
+            var tab = ComponentManager.Ribbon?.FindTab(TabId);
+            return tab != null && tab.Panels.SelectMany(p => p.Source.Items).OfType<RibbonButton>().Any(b => b.Id == id);
         }
 
         private static void OnRibbonPaletteSetCreated(object sender, EventArgs e)

@@ -45,6 +45,7 @@ Close AutoCAD and double-click **`Uninstall.cmd`**. Your drawings are not affect
 ## Good to know
 
 - The steel profiles (UB/UC, IPE/HE A/B/M, CHS/SHS/RHS hot finished and cold formed) come from open datasets, not a manufacturer catalogue. Check critical sizes against your supplier's data. Hot-finished SHS/RHS are drawn with inner corner radius r − t (0.5 t), smaller than the 1.0 t of EN 10210-2.
-- The "EC2 + Singapore NA" hook preset is **unverified**. Use *Manual input* unless the values have been checked.
+- The default project bend-detail preset applies the supplied rule from data: `≤150° → max(10φ, 70 mm)` and `>150° → max(5φ, 50 mm)`. The mandrel diameter remains manual.
+- The "EC2 + Singapore NA" hook preset is **unverified** and is not selected by default.
 - Quick Draw Rectangular uses the same hook geometry as Tie & Hook. Its restraint audit and configurable 150 mm distance convention are drafting aids, not structural-design certification.
 - Installed files: `%APPDATA%\Autodesk\ApplicationPlugins\MDraftingHeper.bundle`. Settings and logs: `%APPDATA%\MDraftingHeper` and `%LOCALAPPDATA%\MDraftingHeper`.

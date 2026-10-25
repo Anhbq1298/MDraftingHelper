@@ -15,8 +15,8 @@
             <Grid.ColumnDefinitions><ColumnDefinition Width="410" /><ColumnDefinition Width="8" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
             <DockPanel Grid.Column="0">
                 <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
-                    <CheckBox Content="Axes" IsChecked="{Binding ShowAxes}" Margin="0,0,14,0" />
-                    <CheckBox Content="Dimensions in CAD" IsChecked="{Binding ShowDimensions}" />
+                    <CheckBox Content="Preview axes" IsChecked="{Binding ShowAxes}" Margin="0,0,14,0" />
+                    <CheckBox Content="Preview dimensions" IsChecked="{Binding ShowDimensions}" />
                 </StackPanel>
                 <TextBlock DockPanel.Dock="Bottom" Text="{Binding Summary}" FontWeight="SemiBold" Margin="0,6,0,0" />
                 <p:PathPreview Shapes="{Binding Preview}" Message="Commit a valid layout" />
@@ -72,15 +72,21 @@
                     </GroupBox>
 
                     <GroupBox Header="Auto Tie Settings" IsEnabled="{Binding IsFaceMode}">
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="90" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="150" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="90" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <CheckBox Content="Enabled" IsChecked="{Binding AutoTiesEnabled}" VerticalAlignment="Center" />
-                            <ComboBox Grid.Column="1" ItemsSource="{Binding TieSizes}" SelectedItem="{Binding AutoTieSize}" Margin="8,0,0,0" />
-                            <TextBlock Grid.Column="2" Text="Limit (mm):" Margin="12,0,5,0" VerticalAlignment="Center" /><TextBox Grid.Column="3" Text="{Binding LimitText}" Width="60" HorizontalAlignment="Left" />
-                            <ComboBox Grid.Column="3" ItemsSource="{Binding DistanceConventions}" SelectedItem="{Binding DistanceConvention}" Margin="68,0,0,0" />
-                            <TextBlock Grid.Column="4" Text="Hooks:" Margin="12,0,5,0" VerticalAlignment="Center" /><ComboBox Grid.Column="5" ItemsSource="{Binding HookAngles}" SelectedItem="{Binding AutoHook}" />
-                            <Button Grid.Column="6" Content="Generate / Replace Auto Ties" Command="{Binding GenerateTiesCommand}" HorizontalAlignment="Right" />
-                        </Grid>
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="90" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="150" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="90" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <CheckBox Content="Enabled" IsChecked="{Binding AutoTiesEnabled}" VerticalAlignment="Center" />
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding TieSizes}" SelectedItem="{Binding AutoTieSize}" Margin="8,0,0,0" />
+                                <TextBlock Grid.Column="2" Text="Limit (mm):" Margin="12,0,5,0" VerticalAlignment="Center" /><TextBox Grid.Column="3" Text="{Binding LimitText}" Width="60" HorizontalAlignment="Left" />
+                                <ComboBox Grid.Column="3" ItemsSource="{Binding DistanceConventions}" SelectedItem="{Binding DistanceConvention}" Margin="68,0,0,0" />
+                                <TextBlock Grid.Column="4" Text="Hooks:" Margin="12,0,5,0" VerticalAlignment="Center" /><ComboBox Grid.Column="5" ItemsSource="{Binding HookAngles}" SelectedItem="{Binding AutoHook}" />
+                                <Button Grid.Column="6" Content="Generate / Replace Auto Ties" Command="{Binding GenerateTiesCommand}" HorizontalAlignment="Right" />
+                            </Grid>
+                            <DockPanel Margin="0,6,0,0">
+                                <TextBlock Text="Bend-detail preset:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding AutoPreset}" DisplayMemberPath="DisplayName" />
+                            </DockPanel>
+                        </StackPanel>
                     </GroupBox>
 
                     <GroupBox>

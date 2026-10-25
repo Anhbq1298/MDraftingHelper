@@ -22,7 +22,15 @@ while (-not $app -and (Get-Date) -lt $deadline) {
 }
 if (-not $app) { $p | Stop-Process -Force; throw "AutoCAD COM object not available." }
 
+function Wait-Ready {
+    for ($i = 0; $i -lt 240; $i++) {
+        try { if ($app.GetAcadState().IsQuiescent) { return } } catch { }
+        Start-Sleep -Milliseconds 500
+    }
+    throw "AutoCAD stayed busy while waiting for a quiescent command state."
+}
 function Send([string]$cmd) {
+    Wait-Ready
     for ($i = 0; $i -lt 40; $i++) {
         try { $app.ActiveDocument.SendCommand($cmd + "`n"); return } catch { Start-Sleep -Milliseconds 500 }
     }

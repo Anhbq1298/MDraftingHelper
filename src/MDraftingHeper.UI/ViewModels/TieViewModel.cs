@@ -53,7 +53,8 @@ namespace MDraftingHeper.UI.ViewModels
             AngleOptions = new[] { HookAngle.Deg90, HookAngle.Deg135, HookAngle.Deg180 }.Select(a => new HookAngleOption(a)).ToList();
             _angle = AngleOptions[1];
             _tieSize = TieBarSize.Standard[0];
-            _preset = presets.FirstOrDefault(p => p.IsManual) ?? presets.First();
+            _preset = presets.FirstOrDefault(p => p.Id == "project-bend-detail") ?? presets.FirstOrDefault(p => p.IsManual) ?? presets.First();
+            ApplyPreset();
             SelectBarsCommand = new RelayCommand(() => Finish(DialogAction.Select));
             DrawCommand = new RelayCommand(() => Finish(DialogAction.Commit), () => CanDraw);
             CancelCommand = new RelayCommand(() => Finish(DialogAction.Close));
@@ -82,12 +83,16 @@ namespace MDraftingHeper.UI.ViewModels
                 if (value == null || !Set(ref _preset, value)) return;
                 ApplyPreset();
                 Raise(nameof(IsManual));
+                Raise(nameof(IsMandrelManual));
+                Raise(nameof(IsTailManual));
                 Raise(nameof(PresetProvenance));
                 Recalculate();
             }
         }
 
         public bool IsManual => _preset?.IsManual ?? true;
+        public bool IsMandrelManual => IsManual || _preset?.InsideMandrelDiameter(_tieSize?.Diameter ?? 0) == null;
+        public bool IsTailManual => IsManual || _preset?.TailLength(_angle?.Angle ?? HookAngle.Deg135, _tieSize?.Diameter ?? 0) == null;
 
         public string PresetProvenance
         {
@@ -170,11 +175,13 @@ namespace MDraftingHeper.UI.ViewModels
 
         private void ApplyPreset()
         {
-            if (_preset == null || _preset.IsManual || _tieSize == null) return;
+            if (_preset == null || _tieSize == null) return;
             var m = _preset.InsideMandrelDiameter(_tieSize.Diameter);
             var t = _preset.TailLength(_angle.Angle, _tieSize.Diameter);
             if (m.HasValue) { _mandrelText = m.Value.ToString("0.##", CultureInfo.InvariantCulture); Raise(nameof(MandrelText)); }
             if (t.HasValue) { _tailText = t.Value.ToString("0.##", CultureInfo.InvariantCulture); Raise(nameof(TailText)); }
+            Raise(nameof(IsMandrelManual));
+            Raise(nameof(IsTailManual));
         }
 
         private void Recalculate()

@@ -183,6 +183,20 @@ namespace MDraftingHeper.Core.Tests
         }
 
         [Fact]
+        public void PerEndTailLengths_AreAppliedIndependently()
+        {
+            var input = Input(HookAngle.Deg135);
+            input.AngleA = HookAngle.Deg90;
+            input.AngleB = HookAngle.Deg180;
+            input.TailLengthA = 70;
+            input.TailLengthB = 50;
+            var r = TieGeometryBuilder.Build(input);
+            Assert.True(r.Validation.IsValid, r.Validation.ToString());
+            Assert.Equal(70, r.Path.Segments.First().ChordLength, 9);
+            Assert.Equal(50, r.Path.Segments.Last().ChordLength, 9);
+        }
+
+        [Fact]
         public void PresetRules_SelectMandrelByDiameter_AndTailByAngle()
         {
             var p = new HookPreset

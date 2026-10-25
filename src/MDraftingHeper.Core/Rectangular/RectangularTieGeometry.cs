@@ -60,7 +60,8 @@ namespace MDraftingHeper.Core.Rectangular
             CenterA = a.Center, CenterB = b.Center, DiameterA = a.Diameter, DiameterB = b.Diameter,
             TieDiameter = size.Diameter, Angle = tie.HookA, AngleA = tie.HookA, AngleB = tie.HookB,
             Ends = HookEnds.Both, Flip = tie.Flip, ClearGap = tie.ClearGap,
-            InsideMandrelDiameter = tie.InsideMandrelDiameter, TailLength = tie.TailLength
+            InsideMandrelDiameter = tie.InsideMandrelDiameter,
+            TailLengthA = tie.TailLengthA, TailLengthB = tie.TailLengthB
         };
 
         private static void BuildOuter(RectangularSectionModel section, TieBar tie, TieBarSize size, RectangularTieGeometryResult result)
@@ -102,7 +103,8 @@ namespace MDraftingHeper.Core.Rectangular
             var closureTie = new TieBar
             {
                 HookA = tie.HookA, HookB = tie.HookB, Flip = false, ClearGap = tie.ClearGap,
-                InsideMandrelDiameter = tie.InsideMandrelDiameter, TailLength = tie.TailLength
+                InsideMandrelDiameter = tie.InsideMandrelDiameter,
+                TailLengthA = tie.TailLengthA, TailLengthB = tie.TailLengthB
             };
             var closure = TieGeometryBuilder.Build(Input(closureTie, size, tl, tr));
             result.Validation.Merge(closure.Validation);

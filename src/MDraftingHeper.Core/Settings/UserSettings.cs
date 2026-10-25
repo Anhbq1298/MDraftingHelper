@@ -35,7 +35,7 @@ namespace MDraftingHeper.Core.Settings
         [DataMember] public int AngleDegrees { get; set; } = 135;
         [DataMember] public string TieSize { get; set; } = "H10";
         [DataMember] public string Ends { get; set; } = "Both";
-        [DataMember] public string PresetId { get; set; } = "manual";
+        [DataMember] public string PresetId { get; set; } = "project-bend-detail";
         [DataMember] public double ClearGap { get; set; }
         [DataMember] public double ManualInsideMandrelDiameter { get; set; } = 40;
         [DataMember] public double ManualTailLength { get; set; } = 100;
@@ -48,8 +48,8 @@ namespace MDraftingHeper.Core.Settings
         [DataMember] public string ProfileId { get; set; }
         [DataMember] public string Anchor { get; set; } = "Centroid";
         [DataMember] public double RotationDegrees { get; set; }
-        [DataMember] public bool CentreAxes { get; set; } = true;
-        [DataMember] public bool ProfileLabel { get; set; } = true;
+        [DataMember] public bool CentreAxes { get; set; }
+        [DataMember] public bool ProfileLabel { get; set; }
         [DataMember] public double LabelHeight { get; set; } = 2.5;
         [DataMember] public double MatchTolerance { get; set; } = 0.01;
     }
@@ -58,7 +58,7 @@ namespace MDraftingHeper.Core.Settings
     [DataContract]
     public sealed class UserSettings
     {
-        public const int CurrentVersion = 1;
+        public const int CurrentVersion = 2;
 
         [DataMember(Order = 0)] public int Version { get; set; } = CurrentVersion;
         [DataMember] public LayerSettings Layers { get; set; } = new LayerSettings();
@@ -69,6 +69,7 @@ namespace MDraftingHeper.Core.Settings
         /// <summary>Restores defaults for sections that a partial or old file left empty.</summary>
         public UserSettings Normalised()
         {
+            int loadedVersion = Version;
             Layers = Layers ?? new LayerSettings();
             if (string.IsNullOrWhiteSpace(Layers.RebarTable)) Layers.RebarTable = "MDH_REBAR_TABLE";
             if (string.IsNullOrWhiteSpace(Layers.Tie)) Layers.Tie = "MDH_TIE";
@@ -80,6 +81,9 @@ namespace MDraftingHeper.Core.Settings
             Rebar = Rebar ?? new RebarSettings();
             Tie = Tie ?? new TieSettings();
             Steel = Steel ?? new SteelSettings();
+            if (loadedVersion < 2) Tie.PresetId = "project-bend-detail";
+            Steel.CentreAxes = false;
+            Steel.ProfileLabel = false;
             Version = CurrentVersion;
             return this;
         }

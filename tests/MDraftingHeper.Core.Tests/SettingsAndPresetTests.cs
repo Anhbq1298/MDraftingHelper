@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using MDraftingHeper.Core.Hooks;
 using MDraftingHeper.Core.Settings;
+using MDraftingHeper.UI.ViewModels;
 using Xunit;
 
 namespace MDraftingHeper.Core.Tests
@@ -44,6 +45,9 @@ namespace MDraftingHeper.Core.Tests
             var partial = SettingsStore.Load(path, out problem);
             Assert.NotNull(partial.Rebar);
             Assert.Equal(0.1, partial.Rebar.DiameterTolerance);
+            Assert.Equal("project-bend-detail", partial.Tie.PresetId);
+            Assert.False(partial.Steel.CentreAxes);
+            Assert.False(partial.Steel.ProfileLabel);
         }
 
         [Fact]
@@ -57,6 +61,12 @@ namespace MDraftingHeper.Core.Tests
             Assert.All(presets.Where(p => !p.IsVerified), p => Assert.Contains("UNVERIFIED", p.DisplayName));
             var ec2 = presets.Single(p => p.Id == "ec2-sg-candidate");
             Assert.Equal(40, ec2.InsideMandrelDiameter(10));
+            var project = presets.Single(p => p.Id == "project-bend-detail");
+            Assert.Null(project.InsideMandrelDiameter(10));
+            Assert.Equal(100, project.TailLength(HookAngle.Deg90, 10));
+            Assert.Equal(100, project.TailLength(HookAngle.Deg135, 10));
+            Assert.Equal(50, project.TailLength(HookAngle.Deg180, 10));
+            Assert.Equal(70, project.TailLength(HookAngle.Deg135, 6));
         }
 
         [Fact]
@@ -65,6 +75,27 @@ namespace MDraftingHeper.Core.Tests
             var presets = HookPresetReader.Read("garbage", out var problem);
             Assert.NotNull(problem);
             Assert.True(Assert.Single(presets).IsManual);
+        }
+
+        [Fact]
+        public void ProjectBendDetail_IsDefaultInBothTieWorkflows()
+        {
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "HookPresets", "hook-presets.json");
+            var presets = HookPresetReader.ReadFile(path, out var problem);
+            Assert.Null(problem);
+
+            var tie = new TieViewModel(presets);
+            Assert.Equal("project-bend-detail", tie.Preset.Id);
+            Assert.Equal("100", tie.TailText);
+            Assert.True(tie.IsMandrelManual);
+            Assert.False(tie.IsTailManual);
+
+            var rectangular = new RectangularViewModel(presets);
+            Assert.Equal("project-bend-detail", rectangular.AutoPreset.Id);
+            Assert.Equal(100, rectangular.Section.AutoTieSettings.TailLengthA);
+            rectangular.AutoHook = HookAngle.Deg180;
+            Assert.Equal(50, rectangular.Section.AutoTieSettings.TailLengthA);
+            Assert.Equal(50, rectangular.Section.AutoTieSettings.TailLengthB);
         }
     }
 }

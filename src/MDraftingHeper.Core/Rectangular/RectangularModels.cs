@@ -31,10 +31,12 @@ namespace MDraftingHeper.Core.Rectangular
         public HookAngle HookA { get; set; } = HookAngle.Deg135;
         public HookAngle HookB { get; set; } = HookAngle.Deg135;
         public bool Flip { get; set; }
-        public string PresetId { get; set; } = "manual";
+        public string PresetId { get; set; } = "project-bend-detail";
         public double ClearGap { get; set; }
         public double InsideMandrelDiameter { get; set; } = 20;
-        public double TailLength { get; set; } = 100;
+        public double TailLengthA { get; set; } = 100;
+        public double TailLengthB { get; set; } = 100;
+        public double TailLength { get => TailLengthA; set { TailLengthA = value; TailLengthB = value; } }
     }
 
     public sealed class LongitudinalBar
@@ -81,10 +83,12 @@ namespace MDraftingHeper.Core.Rectangular
         public HookAngle HookA { get; set; } = HookAngle.Deg135;
         public HookAngle HookB { get; set; } = HookAngle.Deg135;
         public bool Flip { get; set; }
-        public string PresetId { get; set; } = "manual";
+        public string PresetId { get; set; } = "project-bend-detail";
         public double ClearGap { get; set; }
         public double InsideMandrelDiameter { get; set; } = 20;
-        public double TailLength { get; set; } = 100;
+        public double TailLengthA { get; set; } = 100;
+        public double TailLengthB { get; set; } = 100;
+        public double TailLength { get => TailLengthA; set { TailLengthA = value; TailLengthB = value; } }
         public long LayoutRevision { get; set; }
 
         public TieBar(Guid? id = null) { TieId = id ?? Guid.NewGuid(); }

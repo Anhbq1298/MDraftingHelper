@@ -53,10 +53,14 @@ namespace MDraftingHeper.UI.ViewModels
         private string _message;
         private LongitudinalBarRow _selectedBar;
         private TieBarRow _selectedTie;
+        private HookPreset _autoPreset;
         private bool _showAxes = true, _showDimensions = true;
 
-        public RectangularViewModel()
+        public RectangularViewModel(IList<HookPreset> presets = null)
         {
+            Presets = (presets ?? new HookPreset[0]).ToList();
+            _autoPreset = Presets.FirstOrDefault(p => p.Id == "project-bend-detail") ?? Presets.FirstOrDefault(p => p.IsManual);
+            ApplyAutoPreset();
             ApplyLayoutCommand = new RelayCommand(ApplyLayout);
             GenerateTiesCommand = new RelayCommand(GenerateTies, () => IsFaceMode);
             DeleteBarCommand = new RelayCommand(DeleteSelectedBar, () => IsCustomMode && SelectedBar != null);
@@ -73,6 +77,7 @@ namespace MDraftingHeper.UI.ViewModels
         public ObservableCollection<TieBarRow> Ties { get; } = new ObservableCollection<TieBarRow>();
         public IList<TieBarSize> TieSizes => TieBarSize.Standard.ToList();
         public IList<HookAngle> HookAngles { get; } = new[] { HookAngle.Deg90, HookAngle.Deg135, HookAngle.Deg180 };
+        public IList<HookPreset> Presets { get; }
         public IList<RestraintDistanceConvention> DistanceConventions { get; } = new[] { RestraintDistanceConvention.CentreToCentre, RestraintDistanceConvention.ClearDistance };
 
         public ICommand ApplyLayoutCommand { get; }
@@ -110,7 +115,7 @@ namespace MDraftingHeper.UI.ViewModels
         public TieBarSize AutoTieSize
         {
             get => TieBarSize.Find(_section.AutoTieSettings.TieSizeName);
-            set { if (value != null && value.Name != _section.AutoTieSettings.TieSizeName) { _section.AutoTieSettings.TieSizeName = value.Name; Raise(); } }
+            set { if (value != null && value.Name != _section.AutoTieSettings.TieSizeName) { _section.AutoTieSettings.TieSizeName = value.Name; ApplyAutoPreset(); Raise(); } }
         }
         public RestraintDistanceConvention DistanceConvention
         {
@@ -120,7 +125,12 @@ namespace MDraftingHeper.UI.ViewModels
         public HookAngle AutoHook
         {
             get => _section.AutoTieSettings.HookA;
-            set { _section.AutoTieSettings.HookA = value; _section.AutoTieSettings.HookB = value; Raise(); }
+            set { _section.AutoTieSettings.HookA = value; _section.AutoTieSettings.HookB = value; ApplyAutoPreset(); Raise(); }
+        }
+        public HookPreset AutoPreset
+        {
+            get => _autoPreset;
+            set { if (value != null && Set(ref _autoPreset, value)) ApplyAutoPreset(); }
         }
 
         public LongitudinalBarRow SelectedBar
@@ -192,7 +202,7 @@ namespace MDraftingHeper.UI.ViewModels
         }
 
         public ValidationResult CommitCrossTie(TieBar existing, Guid barA, Guid barB, string sizeName,
-            HookAngle hookA, HookAngle hookB, bool flip, double mandrel, double tail, double gap)
+            HookAngle hookA, HookAngle hookB, bool flip, string presetId, double mandrel, double tailA, double tailB, double gap)
         {
             var v = new ValidationResult();
             if (barA == barB) return v.Error("Bar A and Bar B must be different.");
@@ -201,8 +211,8 @@ namespace MDraftingHeper.UI.ViewModels
             {
                 TieName = existing?.TieName ?? "ST" + (_section.TieBars.Count + 1), Source = existing == null ? TieSource.Manual : TieSource.AutoModified,
                 Kind = RectangularTieKind.CrossTie, BarAId = barA, BarBId = barB, TieSizeName = sizeName,
-                HookA = hookA, HookB = hookB, Flip = flip, InsideMandrelDiameter = mandrel,
-                TailLength = tail, ClearGap = gap, LayoutRevision = _section.LayoutRevision
+                HookA = hookA, HookB = hookB, Flip = flip, PresetId = presetId, InsideMandrelDiameter = mandrel,
+                TailLengthA = tailA, TailLengthB = tailB, ClearGap = gap, LayoutRevision = _section.LayoutRevision
             };
             draft.DirectlyRestrainedBarIds.Add(barA); draft.DirectlyRestrainedBarIds.Add(barB);
             var geometry = RectangularTieGeometryBuilder.Build(_section, draft);
@@ -216,7 +226,7 @@ namespace MDraftingHeper.UI.ViewModels
         }
 
         public ValidationResult CommitHoopProperties(TieBar existing, string sizeName, HookAngle hookA,
-            HookAngle hookB, bool flip, double mandrel, double tail, double gap)
+            HookAngle hookB, bool flip, string presetId, double mandrel, double tailA, double tailB, double gap)
         {
             var v = new ValidationResult();
             if (existing == null || existing.Kind == RectangularTieKind.CrossTie)
@@ -224,8 +234,8 @@ namespace MDraftingHeper.UI.ViewModels
             var draft = new TieBar(existing.TieId)
             {
                 TieName = existing.TieName, Source = TieSource.AutoModified, Kind = existing.Kind,
-                TieSizeName = sizeName, HookA = hookA, HookB = hookB, Flip = flip,
-                InsideMandrelDiameter = mandrel, TailLength = tail, ClearGap = gap,
+                TieSizeName = sizeName, HookA = hookA, HookB = hookB, Flip = flip, PresetId = presetId,
+                InsideMandrelDiameter = mandrel, TailLengthA = tailA, TailLengthB = tailB, ClearGap = gap,
                 LayoutRevision = _section.LayoutRevision
             };
             draft.OrderedSupportBarIds.AddRange(existing.OrderedSupportBarIds);
@@ -347,6 +357,20 @@ namespace MDraftingHeper.UI.ViewModels
             if (!TryParse(_limit, out var limit)) { why = "Enter a numeric restraint distance limit."; return false; }
             _section.AutoTieSettings.DistanceLimit = limit;
             return true;
+        }
+
+        private void ApplyAutoPreset()
+        {
+            var settings = _section.AutoTieSettings;
+            settings.PresetId = _autoPreset?.Id ?? "manual";
+            var size = TieBarSize.Find(settings.TieSizeName);
+            if (_autoPreset == null || size == null) return;
+            var mandrel = _autoPreset.InsideMandrelDiameter(size.Diameter);
+            var tailA = _autoPreset.TailLength(settings.HookA, size.Diameter);
+            var tailB = _autoPreset.TailLength(settings.HookB, size.Diameter);
+            if (mandrel.HasValue) settings.InsideMandrelDiameter = mandrel.Value;
+            if (tailA.HasValue) settings.TailLengthA = tailA.Value;
+            if (tailB.HasValue) settings.TailLengthB = tailB.Value;
         }
 
         private void RenumberTies()

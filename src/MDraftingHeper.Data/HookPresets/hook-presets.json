@@ -15,6 +15,23 @@
       "Notes": "No code check is performed. Values are drawn exactly as entered."
     },
     {
+      "Id": "project-bend-detail",
+      "Name": "Project bend detail (provided)",
+      "IsManual": false,
+      "IsVerified": false,
+      "CodeBasis": "User-provided bend-detail diagram",
+      "Edition": "Project input",
+      "Clause": "Not specified",
+      "Scope": "Tie/link straight extensions only. The inside mandrel diameter remains a manual input.",
+      "MandrelRules": [],
+      "TailRules": [
+        { "AngleDegrees": 90, "FactorOfTieDiameter": 10, "MinimumMm": 70 },
+        { "AngleDegrees": 135, "FactorOfTieDiameter": 10, "MinimumMm": 70 },
+        { "AngleDegrees": 180, "FactorOfTieDiameter": 5, "MinimumMm": 50 }
+      ],
+      "Notes": "Data-driven project rule: bend angle greater than 150 degrees uses max(5 x tie diameter, 50 mm); bend angle up to 150 degrees uses max(10 x tie diameter, 70 mm)."
+    },
+    {
       "Id": "ec2-sg-candidate",
       "Name": "EC2 + Singapore NA (candidate values)",
       "IsManual": false,

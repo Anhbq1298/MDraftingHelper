@@ -54,8 +54,6 @@
                     <TextBlock Grid.Row="1" Text="Rotation (°):" VerticalAlignment="Center" />
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding RotationText, UpdateSourceTrigger=PropertyChanged}" Margin="0,1" />
                 </Grid>
-                <CheckBox Content="Centre axes" IsChecked="{Binding CentreAxes}" />
-                <CheckBox Content="Profile label" IsChecked="{Binding ProfileLabel}" Margin="0,2,0,4" />
                 <TextBlock Text="{Binding LabelText}" FontWeight="SemiBold" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding Provenance}" Style="{StaticResource Muted}" FontSize="11" Margin="0,3" />
                 <TextBlock Text="{Binding AreaText}" Style="{StaticResource Muted}" FontSize="11" />

@@ -8,9 +8,8 @@ using Xunit;
 namespace MDraftingHeper.Core.Tests
 {
     /// <summary>
-    /// The commands reopen the same view model after each model-space step. Closing a reopened
-    /// dialog with the window's X must not repeat the previous round's action (regression: Esc in the
-    /// tie preview, then X on the dialog, went back into the preview and Enter drew the tie).
+    /// The commands reopen the same view model after each model-space selection step. Closing a
+    /// reopened dialog with the window's X must not repeat the previous round's action.
     /// </summary>
     public class DialogRoundTests
     {
@@ -24,7 +23,7 @@ namespace MDraftingHeper.Core.Tests
             vm.DrawCommand.Execute(null);
             Assert.Equal(DialogAction.Commit, vm.Action);
 
-            // Preview cancelled with Esc: the command shows the dialog again, which the user closes with X.
+            // A new dialog round must not retain the previous Apply action.
             vm.BeginDialog();
             Assert.Equal(DialogAction.None, vm.Action);
         }

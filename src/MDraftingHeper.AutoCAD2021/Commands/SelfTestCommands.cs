@@ -82,23 +82,20 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_SECTION", 7);
                 DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_REBAR", 1);
                 DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_TIE", 2);
-                DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_AXES", 8);
-                DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_LABEL", 7);
                 var ids = RectangularSectionWriter.Insert(tr, doc.Database, new RectangularInsertOptions
                 {
                     Section = s, InsertionPoint = new Point3d(9000, 2500, 0),
                     Ucs = Matrix3d.Rotation(Math.PI / 7, Vector3d.ZAxis, Point3d.Origin),
                     RotationRadians = Math.PI / 9, Units = UnitContextForTests.Millimetres,
-                    Axes = true, Dimensions = true, SectionLayer = "MDH_SECTION", RebarLayer = "MDH_REBAR",
-                    TieLayer = "MDH_TIE", AxesLayer = "MDH_AXES", LabelLayer = "MDH_LABEL"
+                    SectionLayer = "MDH_SECTION", RebarLayer = "MDH_REBAR", TieLayer = "MDH_TIE"
                 });
                 var entities = ids.Select(id => tr.GetObject(id, OpenMode.ForRead)).ToList();
                 Check("rectangular CAD circles equal actual bars", entities.OfType<Circle>().Count() == s.LongitudinalBars.Count,
                     entities.OfType<Circle>().Count().ToString());
                 Check("rectangular CAD output has true arc polylines", entities.OfType<Polyline>().Any(p =>
                     Enumerable.Range(0, p.NumberOfVertices).Any(i => Math.Abs(p.GetBulgeAt(i)) > 1e-9)));
-                Check("rectangular CAD output has two native dimensions", entities.OfType<Dimension>().Count() == 2,
-                    entities.OfType<Dimension>().Count().ToString());
+                Check("rectangular CAD output contains geometry only",
+                    !entities.Any(e => e is DBText || e is MText || e is Dimension || e is Line));
                 tr.Commit();
             }
         }
@@ -116,6 +113,8 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             AcApp.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\nMDH-SELFTEST INFO ribbon tabs before forcing=" + RibbonManager.TabCount());
             RibbonManager.EnsureNow();
             Check("ribbon tab present exactly once", RibbonManager.TabCount() == 1, "count=" + RibbonManager.TabCount());
+            Check("ribbon has four tools including MDH_RECT", RibbonManager.ButtonCount() == 4 && RibbonManager.HasButton("MDH_RECT"),
+                "buttons=" + RibbonManager.ButtonCount());
             RibbonManager.EnsureNow();
             RibbonManager.Start(); // repeated ensure/start must not add a second tab or handler
             Check("ribbon repeated ensure/start keeps one tab", RibbonManager.TabCount() == 1, "count=" + RibbonManager.TabCount());
@@ -127,6 +126,8 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         {
             if (Autodesk.Windows.ComponentManager.Ribbon == null) { doc.Editor.WriteMessage("\nMDH-SELFTEST INFO ribbon not available"); return; }
             Check("ribbon tab created by startup/Idle path exactly once", RibbonManager.TabCount() == 1, "count=" + RibbonManager.TabCount());
+            Check("ribbon startup includes four tools and MDH_RECT", RibbonManager.ButtonCount() == 4 && RibbonManager.HasButton("MDH_RECT"),
+                "buttons=" + RibbonManager.ButtonCount());
         });
 
         // ---------------------------------------------------------------- rebar
@@ -257,7 +258,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             {
                 var id = SteelBlocks.Insert(tr, doc.Database, new SteelInsertOptions
                 {
-                    Section = s, Profile = p, Anchor = anchor, RotationRadians = rot, CentreAxes = true, Label = true
+                    Section = s, Profile = p, Anchor = anchor, RotationRadians = rot, CentreAxes = false, Label = false
                 }, at, Matrix3d.Identity);
                 tr.Commit();
                 return id;
@@ -283,15 +284,6 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 tr.Commit();
                 return r;
             }
-        }
-
-        private static string LabelOf(Transaction tr, BlockReference br)
-        {
-            var m = MetadataStore.Read(tr, br, SteelMetadata.Key);
-            var h = m?["label"];
-            if (string.IsNullOrEmpty(h)) return null;
-            var id = br.Database.GetObjectId(false, new Handle(Convert.ToInt64(h, 16)), 0);
-            return ((MText)tr.GetObject(id, OpenMode.ForRead)).Text;
         }
 
         // Dynamic block constraints are evaluated when the command ends, so steel checks are staged:
@@ -330,22 +322,22 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 {
                     var s = SteelBlocks.ReadSection(br, f);
                     bool dims = SteelFamilies.Parameters(f).All(k => Near(s[k], p.Section[k], 1e-9));
-                    var st = SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key));
-                    return (dims, st.Status, st.Match?.Id, br.IsDynamicBlock, SteelBlocks.EffectiveName(tr, br), LabelOf(tr, br));
+                    var metadata = MetadataStore.Read(tr, br, SteelMetadata.Key);
+                    var st = SteelSync.Evaluate(tr, br, metadata);
+                    bool geometryOnly = string.IsNullOrEmpty(metadata?["axes"]) && string.IsNullOrEmpty(metadata?["label"]);
+                    return (dims, st.Status, st.Match?.Id, br.IsDynamicBlock, SteelBlocks.EffectiveName(tr, br), geometryOnly);
                 });
                 Check("steel " + f + " inserted as dynamic block " + ok.Item5, ok.Item4 && ok.Item5 == SteelFamilies.BlockName(f));
                 Check("steel " + f + " native properties hold profile dimensions", ok.dims);
                 Check("steel " + f + " geometry follows parameters and matches profile", ok.Status == SteelStatus.Profile && ok.Item3 == p.Id, ok.Status + " " + ok.Item3);
-                Check("steel " + f + " label shows profile", ok.Item6 == p.Name, ok.Item6);
+                Check("steel " + f + " inserts no annotation companions", ok.geometryOnly);
             }
 
             var ub = ProfileCache.Library.FindById("uk-ub-406x178x60");
-            var a = Read(doc, _ubA, (tr, br) => (SteelBlocks.ReadSection(br, SteelFamily.UB), LabelOf(tr, br), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
-            var b = Read(doc, _ubB, (tr, br) => (SteelBlocks.ReadSection(br, SteelFamily.UB), LabelOf(tr, br)));
-            Check("steel edited instance only changes itself", Near(a.Item1["H"], 450) && Near(b.Item1["H"], ub.Section["H"]), F(a.Item1["H"]) + "/" + F(b.Item1["H"]));
-            Check("steel edit followed by sync: Custom status", a.Item3 == "custom", a.Item3);
-            Check("steel edit followed by sync: Custom label", a.Item2 != null && a.Item2.StartsWith("Custom UB"), a.Item2);
-            Check("steel untouched instance keeps profile label", b.Item2 == ub.Name, b.Item2);
+            var a = Read(doc, _ubA, (tr, br) => (SteelBlocks.ReadSection(br, SteelFamily.UB), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
+            var b = Read(doc, _ubB, (tr, br) => SteelBlocks.ReadSection(br, SteelFamily.UB));
+            Check("steel edited instance only changes itself", Near(a.Item1["H"], 450) && Near(b["H"], ub.Section["H"]), F(a.Item1["H"]) + "/" + F(b["H"]));
+            Check("steel edit followed by sync: Custom status", a.Item2 == "custom", a.Item2);
 
             var tlPos = Read(doc, _topLeft, (tr, br) => br.Position);
             Check("steel top-left anchor", tlPos.IsEqualTo(new Point3d(3000 + 50, 6000 - 100, 0)), tlPos.ToString());
@@ -359,8 +351,9 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         public void Steel3() => MdhCommands.Run(doc => Guard("steel3", () =>
         {
             var ub = ProfileCache.Library.FindById("uk-ub-406x178x60");
-            var back = Read(doc, _ubA, (tr, br) => (LabelOf(tr, br), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
-            Check("steel restoring dimensions re-matches the profile", back.Item2 == "profile" && back.Item1 == ub.Name, back.Item2 + " / " + back.Item1);
+            var back = Read(doc, _ubA, (tr, br) => SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key)));
+            Check("steel restoring dimensions re-matches the profile", back.Status == SteelStatus.Profile && back.Match?.Id == ub.Id,
+                back.Status + " / " + back.Match?.Id);
             var inv = Read(doc, _invalid, (tr, br) => (SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key)), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
             Check("steel impossible t is reported invalid, not trusted", inv.Item1.Status == SteelStatus.Invalid && inv.Item2 == "invalid",
                   inv.Item1.Status + " / " + inv.Item2 + " " + inv.Item1.Problem);
@@ -426,12 +419,10 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             {
                 var s = SteelBlocks.ReadSection(br, SteelFamily.RHS);
                 var st = SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key));
-                return (s["B"], st.Status, LabelOf(tr, br));
+                return (s["B"], st.Status);
             });
             Check("undo/redo B=" + F(expect), Near(r.Item1, expect), "B=" + F(r.Item1));
             Check("undo/redo geometry consistent at B=" + F(expect), r.Status != SteelStatus.Invalid, r.Status.ToString());
-            bool custom = !Near(expect, 100);
-            Check("undo/redo label consistent at B=" + F(expect), custom ? r.Item3.StartsWith("Custom") : !r.Item3.StartsWith("Custom"), r.Item3);
         });
 
         [CommandMethod("MDH", "MDH_SELFTEST_REOPEN", CommandFlags.Modal | CommandFlags.NoUndoMarker)]

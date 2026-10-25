@@ -276,7 +276,8 @@ namespace MDraftingHeper.Core.Rectangular
             {
                 Kind = kind, Source = source, TieSizeName = a.TieSizeName, HookA = a.HookA, HookB = a.HookB,
                 Flip = a.Flip, PresetId = a.PresetId, ClearGap = a.ClearGap,
-                InsideMandrelDiameter = a.InsideMandrelDiameter, TailLength = a.TailLength,
+                InsideMandrelDiameter = a.InsideMandrelDiameter,
+                TailLengthA = a.TailLengthA, TailLengthB = a.TailLengthB,
                 LayoutRevision = s.LayoutRevision
             };
         }

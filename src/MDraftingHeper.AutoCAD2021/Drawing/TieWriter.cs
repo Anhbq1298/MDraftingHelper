@@ -1,8 +1,6 @@
 using System;
 using System.Globalization;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.GraphicsInterface;
 using Autodesk.AutoCAD.Geometry;
 using Polyline = Autodesk.AutoCAD.DatabaseServices.Polyline;
 using MDraftingHeper.AutoCAD2021.Metadata;
@@ -66,54 +64,12 @@ namespace MDraftingHeper.AutoCAD2021.Drawing
             m["rCentreline"] = N(r.CentrelineRadius);
             m["insideMandrel"] = N(i.InsideMandrelDiameter);
             m["tail"] = N(i.TailLength);
+            m["tailA"] = N(i.TailLengthA ?? i.TailLength);
+            m["tailB"] = N(i.TailLengthB ?? i.TailLength);
             m["clearGap"] = N(i.ClearGap);
             m["note"] = "Snapshot of the hook settings; the tie does not follow moved bars.";
             return m;
         }
     }
 
-    /// <summary>
-    /// Shows the tie as transient graphics and asks Accept/Flip. No database writes happen here;
-    /// every exit path erases the transient so Esc leaves nothing behind.
-    /// </summary>
-    public sealed class TiePreview : IDisposable
-    {
-        private Polyline _shown;
-
-        public void Show(Polyline pl)
-        {
-            Clear();
-            _shown = pl;
-            TransientManager.CurrentTransientManager.AddTransient(_shown, TransientDrawingMode.DirectShortTerm, 128, new IntegerCollection());
-        }
-
-        public void Clear()
-        {
-            if (_shown == null) return;
-            TransientManager.CurrentTransientManager.EraseTransient(_shown, new IntegerCollection());
-            _shown.Dispose();
-            _shown = null;
-        }
-
-        /// <summary>Loops until Accept (true) or Esc (false); <paramref name="flip"/> rebuilds the preview.</summary>
-        public static bool Confirm(Editor ed, Func<Polyline> build, Action flip)
-        {
-            using (var preview = new TiePreview())
-            {
-                while (true)
-                {
-                    var pl = build();
-                    if (pl == null) return false;
-                    preview.Show(pl);
-                    var ko = new PromptKeywordOptions("\nAccept tie or [Accept/Flip] <Accept>: ", "Accept Flip") { AllowNone = true };
-                    var res = ed.GetKeywords(ko);
-                    if (res.Status == PromptStatus.None || (res.Status == PromptStatus.OK && res.StringResult == "Accept")) return true;
-                    if (res.Status == PromptStatus.OK && res.StringResult == "Flip") { flip(); continue; }
-                    return false;
-                }
-            }
-        }
-
-        public void Dispose() => Clear();
-    }
 }
