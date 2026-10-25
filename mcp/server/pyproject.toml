@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mdh-mcp"
+version = "0.1.0"
+description = "MDraftingHelper MCP server for AutoCAD 2021: focused, validated CAD tools on top of acad-cmd"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+  # acad-cmd (external/acad-cmd) is installed separately from the local clone; see mcp/install.ps1.
+  "acad-cmd",
+  # acad-cmd imports mcp.server.fastmcp, which mcp 2.x removed (renamed to MCPServer).
+  "mcp>=1.10,<2",
+  "pywin32>=306",
+]
+
+[project.scripts]
+mdh-mcp = "mdh_mcp.server:main"
+mdh-mcp-diagnose = "mdh_mcp.diagnose:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mdh_mcp"]

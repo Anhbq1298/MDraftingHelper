@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "autocad": {
+      "type": "stdio",
+      "command": "mcp\\server\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "mdh_mcp.server"],
+      "env": {
+        "AUTOCAD_MCP_TARGET_MAJOR": "24",
+        "AUTOCAD_MCP_ALLOW_NEW_INSTANCE": "0",
+        "AUTOCAD_MCP_EVENT_BRIDGE_ENABLED": "0",
+        "MDH_MCP_EXPOSE_RAW_TOOLS": "0",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

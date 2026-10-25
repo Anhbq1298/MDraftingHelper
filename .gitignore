@@ -11,3 +11,12 @@ assets/DynamicBlocks/build_*.log
 *.dwl
 *.dwl2
 plot.log
+
+# AutoCAD MCP server
+mcp/server/.venv/
+mcp/logs/
+mcp/tests/results/
+__pycache__/
+*.egg-info/
+# upstream clone, re-created by mcp/install.ps1 at the pinned commit
+external/acad-cmd/
