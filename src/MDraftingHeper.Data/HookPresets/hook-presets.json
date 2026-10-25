@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "presets": [
+    {
+      "Id": "manual",
+      "Name": "Manual input",
+      "IsManual": true,
+      "IsVerified": false,
+      "CodeBasis": "None - user-entered values",
+      "Edition": "",
+      "Clause": "",
+      "Scope": "Any tie or link. The user is responsible for the inside mandrel diameter and tail length entered.",
+      "MandrelRules": [],
+      "TailRules": [],
+      "Notes": "No code check is performed. Values are drawn exactly as entered."
+    },
+    {
+      "Id": "ec2-sg-candidate",
+      "Name": "EC2 + Singapore NA (candidate values)",
+      "IsManual": false,
+      "IsVerified": false,
+      "CodeBasis": "Intended: EN 1992-1-1 with the Singapore National Annex",
+      "Edition": "Not confirmed - verify against the authorised edition in use",
+      "Clause": "Not recorded - clause references must be taken from the authorised text",
+      "Scope": "Link/tie bends and link anchorage hooks only. Not for longitudinal bar anchorage or lap lengths.",
+      "MandrelRules": [
+        { "MaxTieDiameter": 16, "FactorOfTieDiameter": 4 },
+        { "MaxTieDiameter": null, "FactorOfTieDiameter": 7 }
+      ],
+      "TailRules": [
+        { "AngleDegrees": 90, "FactorOfTieDiameter": 10, "MinimumMm": 70 },
+        { "AngleDegrees": 135, "FactorOfTieDiameter": 5, "MinimumMm": 50 },
+        { "AngleDegrees": 180, "FactorOfTieDiameter": 5, "MinimumMm": 50 }
+      ],
+      "Notes": "UNVERIFIED. Entered from secondary knowledge to exercise the workflow. These values have not been checked against the authorised code text or the Singapore National Annex and must not be presented as compliant. Replace with verified rules and set IsVerified only after that check."
+    }
+  ]
+}

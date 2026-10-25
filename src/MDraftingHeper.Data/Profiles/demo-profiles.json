@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "source": "MDraftingHeper demonstration data - NOT a published or licensed source",
+  "sourceVersion": "demo-1",
+  "isDemonstration": true,
+  "units": "mm",
+  "notes": "Approximate values resembling common catalogue sizes, for exercising the workflow only. Not verified against any standard or manufacturer. Replace with an authorised dataset (for example a permitted Dlubal export) before production use.",
+  "profiles": [
+    { "id": "demo-chs-114.3x6.3", "family": "CHS", "standard": "demo", "series": "CHS", "name": "DEMO CHS 114.3x6.3", "dimensions": { "D": 114.3, "t": 6.3 } },
+    { "id": "demo-chs-168.3x7.1", "family": "CHS", "standard": "demo", "series": "CHS", "name": "DEMO CHS 168.3x7.1", "dimensions": { "D": 168.3, "t": 7.1 } },
+    { "id": "demo-chs-219.1x8.0", "family": "CHS", "standard": "demo", "series": "CHS", "name": "DEMO CHS 219.1x8.0", "dimensions": { "D": 219.1, "t": 8.0 } },
+
+    { "id": "demo-shs-100x100x6.3", "family": "SHS", "standard": "demo", "series": "SHS", "name": "DEMO SHS 100x100x6.3", "dimensions": { "B": 100, "t": 6.3, "r": 9.45 }, "cornerRadiusConvention": "outer", "cornerRadiusStatus": "assumed" },
+    { "id": "demo-shs-150x150x8.0", "family": "SHS", "standard": "demo", "series": "SHS", "name": "DEMO SHS 150x150x8.0", "dimensions": { "B": 150, "t": 8.0, "r": 12.0 }, "cornerRadiusConvention": "outer", "cornerRadiusStatus": "assumed" },
+
+    { "id": "demo-rhs-200x100x8.0", "family": "RHS", "standard": "demo", "series": "RHS", "name": "DEMO RHS 200x100x8.0", "dimensions": { "H": 200, "B": 100, "t": 8.0, "r": 12.0 }, "cornerRadiusConvention": "outer", "cornerRadiusStatus": "assumed" },
+    { "id": "demo-rhs-250x150x10", "family": "RHS", "standard": "demo", "series": "RHS", "name": "DEMO RHS 250x150x10.0", "dimensions": { "H": 250, "B": 150, "t": 10.0, "r": 15.0 }, "cornerRadiusConvention": "outer", "cornerRadiusStatus": "assumed" },
+
+    { "id": "demo-ub-203x133x25", "family": "UB", "standard": "demo", "series": "UB", "name": "DEMO UB 203x133x25", "dimensions": { "H": 203.2, "B": 133.2, "tw": 5.7, "tf": 7.8, "r": 7.6 }, "cornerRadiusStatus": "assumed" },
+    { "id": "demo-ub-305x165x40", "family": "UB", "standard": "demo", "series": "UB", "name": "DEMO UB 305x165x40", "dimensions": { "H": 303.4, "B": 165.0, "tw": 6.0, "tf": 10.2, "r": 8.9 }, "cornerRadiusStatus": "assumed" },
+    { "id": "demo-ub-406x178x60", "family": "UB", "standard": "demo", "series": "UB", "name": "DEMO UB 406x178x60", "dimensions": { "H": 406.4, "B": 177.9, "tw": 7.9, "tf": 12.8, "r": 10.2 }, "cornerRadiusStatus": "assumed" },
+
+    { "id": "demo-uc-152x152x23", "family": "UC", "standard": "demo", "series": "UC", "name": "DEMO UC 152x152x23", "dimensions": { "H": 152.4, "B": 152.2, "tw": 5.8, "tf": 6.8, "r": 7.6 }, "cornerRadiusStatus": "assumed" },
+    { "id": "demo-uc-203x203x46", "family": "UC", "standard": "demo", "series": "UC", "name": "DEMO UC 203x203x46", "dimensions": { "H": 203.2, "B": 203.6, "tw": 7.2, "tf": 11.0, "r": 10.2 }, "cornerRadiusStatus": "assumed" }
+  ]
+}

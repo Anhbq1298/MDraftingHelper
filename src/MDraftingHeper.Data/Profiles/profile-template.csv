@@ -1,0 +1,5 @@
+# MDraftingHeper profile import template (schema 1). Lines starting with # are ignored.
+# Required columns: id, family (CHS|SHS|RHS|UB|UC), name, units (mm|cm|m|in), source.
+# Hollow sections must state cornerRadiusConvention (outer|inner); cornerRadiusStatus is published|assumed|missing.
+id,family,standard,series,name,units,D,B,H,t,tw,tf,r,cornerRadiusConvention,cornerRadiusStatus,publishedArea_mm2,publishedMass_kg_per_m,source,sourceVersion,isDemonstration
+demo-csv-rhs-150x100x6,RHS,demo,RHS,DEMO RHS 150x100x6.0,mm,,100,150,6,,,9,outer,assumed,,,MDraftingHeper demonstration data,demo-1,true

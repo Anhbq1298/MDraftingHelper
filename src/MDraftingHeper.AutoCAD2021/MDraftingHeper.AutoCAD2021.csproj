@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    AutoCAD 2021 (R24.0) adapter. Autodesk assemblies are referenced from $(Acad2021Dir), which comes
+    from (in order): an MSBuild property (/p:Acad2021Dir=...), the Acad2021Dir environment variable,
+    or the git-ignored file Acad.user.props at the repository root. See docs/Build-and-Debug.md.
+  -->
+  <Import Project="..\..\Acad.user.props" Condition="Exists('..\..\Acad.user.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>MDraftingHeper.AutoCAD2021</RootNamespace>
+    <AssemblyName>MDraftingHeper.AutoCAD2021</AssemblyName>
+    <Product>MDraftingHeper</Product>
+    <Company>MDraftingHeper</Company>
+    <Version>0.1.0</Version>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <Target Name="CheckAcad2021Dir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(Acad2021Dir)' == ''"
+           Text="Acad2021Dir is not set. Set the Acad2021Dir environment variable, pass /p:Acad2021Dir=..., or create Acad.user.props (see docs/Build-and-Debug.md)." />
+    <Error Condition="'$(Acad2021Dir)' != '' And !Exists('$(Acad2021Dir)\acdbmgd.dll')"
+           Text="acdbmgd.dll was not found in Acad2021Dir='$(Acad2021Dir)'. Point it at the AutoCAD 2021 install folder or the ObjectARX 2021 inc folder." />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="AcMgd"><HintPath>$(Acad2021Dir)\acmgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="AcDbMgd"><HintPath>$(Acad2021Dir)\acdbmgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="AcCoreMgd"><HintPath>$(Acad2021Dir)\accoremgd.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="AdWindows"><HintPath>$(Acad2021Dir)\AdWindows.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="AcWindows"><HintPath>$(Acad2021Dir)\AcWindows.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MDraftingHeper.Core\MDraftingHeper.Core.csproj" />
+    <ProjectReference Include="..\MDraftingHeper.UI\MDraftingHeper.UI.csproj" />
+  </ItemGroup>
+
+  <!-- Development layout: resources next to the DLL under Resources\ (the bundle uses Contents\Resources). -->
+  <ItemGroup>
+    <None Include="..\MDraftingHeper.Data\Profiles\*.*" Link="Resources\Profiles\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\MDraftingHeper.Data\HookPresets\*.*" Link="Resources\HookPresets\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\assets\DynamicBlocks\*.dwg" Link="Resources\DynamicBlocks\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\assets\Icons\*.png" Link="Resources\Icons\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

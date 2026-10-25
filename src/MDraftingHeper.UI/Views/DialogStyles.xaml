@@ -1,0 +1,28 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v="clr-namespace:MDraftingHeper.UI.Views">
+    <!-- Setter properties are owner-qualified: unqualified names failed to resolve when the BAML
+         was loaded inside AutoCAD ("Setter.Property ... Value cannot be null"). -->
+    <v:NotConverter x:Key="Not" />
+    <Style TargetType="{x:Type GroupBox}">
+        <Setter Property="FrameworkElement.Margin" Value="0,0,0,8" />
+        <Setter Property="Control.Padding" Value="6,4" />
+    </Style>
+    <Style TargetType="{x:Type Button}">
+        <Setter Property="FrameworkElement.MinWidth" Value="84" />
+        <Setter Property="Control.Padding" Value="10,3" />
+        <Setter Property="FrameworkElement.Margin" Value="6,0,0,0" />
+    </Style>
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="Control.Padding" Value="2,1" />
+        <Setter Property="Control.VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style TargetType="{x:Type TextBlock}" x:Key="Muted">
+        <Setter Property="TextBlock.Foreground" Value="#FF5A5A5A" />
+        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+    </Style>
+    <Style TargetType="{x:Type TextBlock}" x:Key="Warning">
+        <Setter Property="TextBlock.Foreground" Value="#FFB3261E" />
+        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+    </Style>
+</ResourceDictionary>

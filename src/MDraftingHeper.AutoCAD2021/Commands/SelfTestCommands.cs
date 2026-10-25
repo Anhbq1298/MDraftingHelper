@@ -1,0 +1,420 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.Runtime;
+using MDraftingHeper.AutoCAD2021.App;
+using MDraftingHeper.AutoCAD2021.Blocks;
+using MDraftingHeper.AutoCAD2021.Drawing;
+using MDraftingHeper.AutoCAD2021.Metadata;
+using MDraftingHeper.AutoCAD2021.Ribbon;
+using MDraftingHeper.AutoCAD2021.Selection;
+using MDraftingHeper.Core.Hooks;
+using MDraftingHeper.Core.Rebar;
+using MDraftingHeper.Core.Steel;
+using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
+
+namespace MDraftingHeper.AutoCAD2021.Commands
+{
+    /// <summary>
+    /// Developer self-tests run inside AutoCAD (see docs/Acceptance-Checks.md). They exercise the same
+    /// readers/writers as the interactive commands with programmatic geometry and print
+    /// "MDH-SELFTEST PASS|FAIL" lines. Run them in a scratch drawing: they add entities.
+    /// </summary>
+    public sealed class SelfTestCommands
+    {
+        private static int _pass, _fail;
+        private static ObjectId _undoBlock;
+
+        private static void Check(string name, bool ok, string detail = "")
+        {
+            if (ok) _pass++; else _fail++;
+            var line = "MDH-SELFTEST " + (ok ? "PASS " : "FAIL ") + name + (ok || string.IsNullOrEmpty(detail) ? "" : " :: " + detail);
+            AcApp.DocumentManager.MdiActiveDocument?.Editor.WriteMessage("\n" + line);
+            Log.Info(line);
+        }
+
+        private static string F(double v) => v.ToString("0.####", CultureInfo.InvariantCulture);
+        private static bool Near(double a, double b, double tol = 1e-6) => Math.Abs(a - b) <= tol;
+
+        [CommandMethod("MDH", "MDH_SELFTEST", CommandFlags.Modal)]
+        public void SelfTest() => MdhCommands.Run(doc =>
+        {
+            _pass = _fail = 0;
+            Guard("ribbon", () => TestRibbon());
+            Guard("rebar", () => TestRebar(doc));
+            Guard("tie", () => TestTie(doc));
+            Guard("steel", () => TestSteel(doc));
+            Guard("wblock", () => TestWblock(doc));
+            doc.Editor.WriteMessage("\nMDH-SELFTEST SUMMARY pass=" + _pass + " fail=" + _fail);
+            Log.Info("MDH-SELFTEST SUMMARY pass=" + _pass + " fail=" + _fail);
+        });
+
+        private static void Guard(string name, Action a)
+        {
+            try { a(); }
+            catch (System.Exception ex) { Check(name + " threw", false, ex.GetType().Name + ": " + ex.Message); Log.Error("selftest " + name, ex); }
+        }
+
+        private static void TestRibbon()
+        {
+            if (Autodesk.Windows.ComponentManager.Ribbon == null)
+            {
+                AcApp.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\nMDH-SELFTEST INFO ribbon not available in this session");
+                return;
+            }
+            AcApp.DocumentManager.MdiActiveDocument.Editor.WriteMessage("\nMDH-SELFTEST INFO ribbon tabs before forcing=" + RibbonManager.TabCount());
+            RibbonManager.EnsureNow();
+            Check("ribbon tab present exactly once", RibbonManager.TabCount() == 1, "count=" + RibbonManager.TabCount());
+            RibbonManager.EnsureNow();
+            RibbonManager.Start(); // repeated ensure/start must not add a second tab or handler
+            Check("ribbon repeated ensure/start keeps one tab", RibbonManager.TabCount() == 1, "count=" + RibbonManager.TabCount());
+        }
+
+        /// <summary>Checks the tab created by the normal Idle path (run after a DELAY, nothing forced).</summary>
+        [CommandMethod("MDH", "MDH_SELFTEST_RIBBON", CommandFlags.Modal | CommandFlags.NoUndoMarker)]
+        public void RibbonCheck() => MdhCommands.Run(doc =>
+        {
+            if (Autodesk.Windows.ComponentManager.Ribbon == null) { doc.Editor.WriteMessage("\nMDH-SELFTEST INFO ribbon not available"); return; }
+            Check("ribbon tab created by startup/Idle path exactly once", RibbonManager.TabCount() == 1, "count=" + RibbonManager.TabCount());
+        });
+
+        // ---------------------------------------------------------------- rebar
+
+        private static void TestRebar(Document doc)
+        {
+            var db = doc.Database;
+            var units = UnitContextForTests.Millimetres;
+            ObjectId boundary;
+            var circles = new List<ObjectId>();
+            using (var tr = db.TransactionManager.StartTransaction())
+            {
+                var ms = (BlockTableRecord)tr.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite);
+                var pl = new Polyline();
+                var pts = new[] { new Point2d(0, 0), new Point2d(400, 0), new Point2d(400, 600), new Point2d(0, 600) };
+                for (int i = 0; i < 4; i++) pl.AddVertexAt(i, pts[i], 0, 0, 0);
+                pl.Closed = true;
+                boundary = ms.AppendEntity(pl); tr.AddNewlyCreatedDBObject(pl, true);
+                void C(double x, double y, double d, double z = 0)
+                {
+                    var c = new Circle(new Point3d(x, y, z), Vector3d.ZAxis, d / 2);
+                    circles.Add(ms.AppendEntity(c)); tr.AddNewlyCreatedDBObject(c, true);
+                }
+                C(50, 50, 20); C(350, 50, 20); C(50, 550, 20); C(350, 550, 20);
+                C(200, 50, 16); C(200, 550, 16);
+                C(5, 300, 20);            // crossing the boundary
+                C(-100, 300, 20);         // outside
+                C(200, 300, 20, 25);      // not coplanar
+                tr.Commit();
+            }
+            using (var tr = db.TransactionManager.StartTransaction())
+            {
+                var sel = RebarReader.Read(tr, boundary, circles, units);
+                Check("rebar non-coplanar circle skipped", sel.Bars.Count == 8 && sel.Notes.Any(n => n.Contains("coplanar")), "bars=" + sel.Bars.Count);
+                var placements = sel.Bars.Select(b => sel.Boundary.Classify(b)).ToList();
+                Check("rebar crossing/outside identified",
+                      placements.Count(p => p == BarPlacement.Inside) == 6 && placements.Count(p => p == BarPlacement.Crossing) == 1 &&
+                      placements.Count(p => p == BarPlacement.Outside) == 1);
+                var inside = sel.Bars.Where(b => sel.Boundary.Classify(b) == BarPlacement.Inside).ToList();
+                var r = RebarCalculator.Calculate(inside, sel.Boundary.Area, targetRhoPercent: 1.0);
+                double expectedAs = 4 * Math.PI * 100 + 2 * Math.PI * 64;
+                Check("rebar As and rho", Near(r.As, expectedAs, 1e-6) && Near(r.Ag, 240000) && Near(r.RhoPercent, 100 * expectedAs / 240000, 1e-9),
+                      "As=" + F(r.As) + " Ag=" + F(r.Ag));
+
+                // Table in a rotated UCS (30° about Z).
+                var ucs = Matrix3d.Rotation(Math.PI / 6, Vector3d.ZAxis, Point3d.Origin);
+                DrawingGuards.EnsureLayer(tr, db, "MDH_REBAR_TABLE", 7);
+                var tid = RebarTableWriter.Insert(tr, db, r, new Point3d(600, 0, 0), ucs, MdhApp.Settings.Rebar, "MDH_REBAR_TABLE");
+                var table = (Table)tr.GetObject(tid, OpenMode.ForRead);
+                int expectedRows = 2 + r.Groups.Count + 3 + 3;
+                Check("rebar native table rows", table.Rows.Count == expectedRows && table.Columns.Count == 4, "rows=" + table.Rows.Count);
+                Check("rebar table rho cell", table.Cells[2 + r.Groups.Count + 2, 3].TextString == r.RhoPercent.ToString("0.000", CultureInfo.InvariantCulture),
+                      table.Cells[2 + r.Groups.Count + 2, 3].TextString);
+                Check("rebar table follows UCS", table.Direction.IsEqualTo(Vector3d.XAxis.TransformBy(ucs)), table.Direction.ToString());
+                Check("rebar table layer", table.Layer == "MDH_REBAR_TABLE", table.Layer);
+                tr.Commit();
+            }
+        }
+
+        // ---------------------------------------------------------------- tie
+
+        private static void TestTie(Document doc)
+        {
+            var db = doc.Database;
+            var units = UnitContextForTests.Millimetres;
+            // Bars in a tilted plane: tests OCS handling (equivalent to an arbitrary rotated UCS).
+            var n = new Vector3d(0, 1, 1).GetNormal();
+            var toWorld = Matrix3d.PlaneToWorld(n);
+            var wa = new Point3d(100, 40, 50).TransformBy(toWorld);
+            var wb = new Point3d(400, 120, 50).TransformBy(toWorld);
+            ObjectId ida, idb;
+            using (var tr = db.TransactionManager.StartTransaction())
+            {
+                var ms = (BlockTableRecord)tr.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite);
+                var ca = new Circle(wa, n, 10); var cb = new Circle(wb, n, 12.5);
+                ida = ms.AppendEntity(ca); tr.AddNewlyCreatedDBObject(ca, true);
+                idb = ms.AppendEntity(cb); tr.AddNewlyCreatedDBObject(cb, true);
+                tr.Commit();
+            }
+
+            foreach (var angle in new[] { HookAngle.Deg90, HookAngle.Deg135, HookAngle.Deg180 })
+            foreach (var flip in new[] { false, true })
+            {
+                string tag = "tie " + (int)angle + (flip ? " flipped" : "");
+                using (var tr = db.TransactionManager.StartTransaction())
+                {
+                    var ca = (Circle)tr.GetObject(ida, OpenMode.ForRead);
+                    var cb = (Circle)tr.GetObject(idb, OpenMode.ForRead);
+                    var frame = PlaneFrame.FromCircle(ca, units);
+                    Check(tag + " coplanar", frame.Contains(cb, out _));
+                    var size = TieBarSize.Find("H10");
+                    var input = new TieInput
+                    {
+                        CenterA = frame.ToCore(ca.Center), CenterB = frame.ToCore(cb.Center),
+                        DiameterA = 20, DiameterB = 25, TieDiameter = size.Diameter, Angle = angle, Flip = flip,
+                        InsideMandrelDiameter = 20, TailLength = 80, Ends = HookEnds.Both // fit radius governs
+                    };
+                    var res = TieGeometryBuilder.Build(input);
+                    Check(tag + " geometry valid", res.Validation.IsValid, res.Validation.ToString());
+                    if (!res.Validation.IsValid) { tr.Abort(); continue; }
+                    DrawingGuards.EnsureLayer(tr, db, "MDH_TIE", 1);
+                    var pl = TieWriter.CreatePolyline(frame, res, size, "MDH_TIE");
+                    TieWriter.Append(tr, db, pl, input, res, size, "manual");
+
+                    Check(tag + " lightweight polyline normal", pl.Normal.IsParallelTo(n), pl.Normal.ToString());
+                    Check(tag + " vertex count", pl.NumberOfVertices == 6, pl.NumberOfVertices.ToString());
+                    double bulge = Math.Tan((int)angle * Math.PI / 180 / 4) * (flip ? 1 : -1);
+                    Check(tag + " genuine arc bulges", Near(pl.GetBulgeAt(1), bulge, 1e-12) && Near(pl.GetBulgeAt(3), bulge, 1e-12),
+                          F(pl.GetBulgeAt(1)) + "," + F(pl.GetBulgeAt(3)));
+                    var arcA = pl.GetArcSegmentAt(1);
+                    var arcB = pl.GetArcSegmentAt(3);
+                    Check(tag + " hooks concentric with actual bar centres (WCS)", arcA.Center.IsEqualTo(wa, new Tolerance(1e-6, 1e-6)) && arcB.Center.IsEqualTo(wb, new Tolerance(1e-6, 1e-6)),
+                          arcA.Center + " vs " + wa);
+                    Check(tag + " both hooks use Dref = max(DA, DB)", Near(arcA.Radius, arcB.Radius, 1e-9) && Near(arcA.Radius, 12.5 + 5, 1e-9), F(arcA.Radius) + "," + F(arcB.Radius));
+                    Check(tag + " lineweight H10 = 0.18 mm", pl.LineWeight == LineWeight.LineWeight018, pl.LineWeight.ToString());
+                    var meta = MetadataStore.Read(tr, pl, TieMetadata.Key);
+                    Check(tag + " versioned metadata", meta != null && meta.SchemaVersion == 1 && meta["angle"] == ((int)angle).ToString(CultureInfo.InvariantCulture));
+                    tr.Commit();
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------- steel
+
+        private static ObjectId InsertSteel(Document doc, SteelSection s, SteelProfile p, Point3d at, InsertionAnchor anchor = InsertionAnchor.Centroid, double rot = 0)
+        {
+            using (var tr = doc.Database.TransactionManager.StartTransaction())
+            {
+                var id = SteelBlocks.Insert(tr, doc.Database, new SteelInsertOptions
+                {
+                    Section = s, Profile = p, Anchor = anchor, RotationRadians = rot, CentreAxes = true, Label = true
+                }, at, Matrix3d.Identity);
+                tr.Commit();
+                return id;
+            }
+        }
+
+        private static void SetDims(Document doc, ObjectId id, params (string k, double v)[] values)
+        {
+            using (var tr = doc.Database.TransactionManager.StartTransaction())
+            {
+                var br = (BlockReference)tr.GetObject(id, OpenMode.ForWrite);
+                var props = SteelBlocks.Properties(br);
+                foreach (var (k, v) in values) props[k].Value = v;
+                tr.Commit();
+            }
+        }
+
+        private static T Read<T>(Document doc, ObjectId id, Func<Transaction, BlockReference, T> f)
+        {
+            using (var tr = doc.Database.TransactionManager.StartTransaction())
+            {
+                var r = f(tr, (BlockReference)tr.GetObject(id, OpenMode.ForRead));
+                tr.Commit();
+                return r;
+            }
+        }
+
+        private static string LabelOf(Transaction tr, BlockReference br)
+        {
+            var m = MetadataStore.Read(tr, br, SteelMetadata.Key);
+            var h = m?["label"];
+            if (string.IsNullOrEmpty(h)) return null;
+            var id = br.Database.GetObjectId(false, new Handle(Convert.ToInt64(h, 16)), 0);
+            return ((MText)tr.GetObject(id, OpenMode.ForRead)).Text;
+        }
+
+        // Dynamic block constraints are evaluated when the command ends, so steel checks are staged:
+        // MDH_SELFTEST inserts/edits, MDH_SELFTEST_STEEL2 checks and edits again (the edits are then
+        // followed by the normal CommandEnded sync), MDH_SELFTEST_STEEL3 checks the result.
+        private static readonly List<(SteelFamily f, SteelProfile p, ObjectId id)> _families = new List<(SteelFamily, SteelProfile, ObjectId)>();
+        private static ObjectId _ubA, _ubB, _invalid, _topLeft;
+
+        private static void TestSteel(Document doc)
+        {
+            var lib = ProfileCache.Library;
+            Check("steel demo library loaded", lib.Profiles.Count >= 12, lib.Profiles.Count.ToString());
+            _families.Clear();
+            double x = 3000;
+            foreach (var f in SteelFamilies.All)
+            {
+                var p = lib.ForFamily(f).First();
+                _families.Add((f, p, InsertSteel(doc, p.Section, p, new Point3d(x, 0, 0))));
+                x += 600;
+            }
+            var ub = lib.FindById("demo-ub-406x178x60");
+            _ubA = InsertSteel(doc, ub.Section, ub, new Point3d(3000, 2000, 0));
+            _ubB = InsertSteel(doc, ub.Section, ub, new Point3d(3600, 2000, 0));
+            SetDims(doc, _ubA, ("tw", 9.5), ("H", 450.0));
+            var rhs = lib.FindById("demo-rhs-200x100x8.0");
+            _invalid = InsertSteel(doc, rhs.Section, rhs, new Point3d(3000, 4000, 0));
+            _topLeft = InsertSteel(doc, rhs.Section, rhs, new Point3d(3000, 6000, 0), InsertionAnchor.TopLeft);
+        }
+
+        [CommandMethod("MDH", "MDH_SELFTEST_STEEL2", CommandFlags.Modal)]
+        public void Steel2() => MdhCommands.Run(doc => Guard("steel2", () =>
+        {
+            foreach (var (f, p, id) in _families)
+            {
+                var ok = Read(doc, id, (tr, br) =>
+                {
+                    var s = SteelBlocks.ReadSection(br, f);
+                    bool dims = SteelFamilies.Parameters(f).All(k => Near(s[k], p.Section[k], 1e-9));
+                    var st = SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key));
+                    return (dims, st.Status, st.Match?.Id, br.IsDynamicBlock, SteelBlocks.EffectiveName(tr, br), LabelOf(tr, br));
+                });
+                Check("steel " + f + " inserted as dynamic block " + ok.Item5, ok.Item4 && ok.Item5 == SteelFamilies.BlockName(f));
+                Check("steel " + f + " native properties hold profile dimensions", ok.dims);
+                Check("steel " + f + " geometry follows parameters and matches profile", ok.Status == SteelStatus.Profile && ok.Item3 == p.Id, ok.Status + " " + ok.Item3);
+                Check("steel " + f + " label shows profile", ok.Item6 == p.Name, ok.Item6);
+            }
+
+            var ub = ProfileCache.Library.FindById("demo-ub-406x178x60");
+            var a = Read(doc, _ubA, (tr, br) => (SteelBlocks.ReadSection(br, SteelFamily.UB), LabelOf(tr, br), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
+            var b = Read(doc, _ubB, (tr, br) => (SteelBlocks.ReadSection(br, SteelFamily.UB), LabelOf(tr, br)));
+            Check("steel edited instance only changes itself", Near(a.Item1["H"], 450) && Near(b.Item1["H"], ub.Section["H"]), F(a.Item1["H"]) + "/" + F(b.Item1["H"]));
+            Check("steel edit followed by sync: Custom status", a.Item3 == "custom", a.Item3);
+            Check("steel edit followed by sync: Custom label", a.Item2 != null && a.Item2.StartsWith("Custom UB"), a.Item2);
+            Check("steel untouched instance keeps profile label", b.Item2 == ub.Name, b.Item2);
+
+            var tlPos = Read(doc, _topLeft, (tr, br) => br.Position);
+            Check("steel top-left anchor", tlPos.IsEqualTo(new Point3d(3000 + 50, 6000 - 100, 0)), tlPos.ToString());
+
+            // Next stage: restore UB dimensions; make the RHS impossible (t too large for B).
+            SetDims(doc, _ubA, ("tw", ub.Section["tw"]), ("H", ub.Section["H"]));
+            SetDims(doc, _invalid, ("t", 60.0));
+        }));
+
+        [CommandMethod("MDH", "MDH_SELFTEST_STEEL3", CommandFlags.Modal | CommandFlags.NoUndoMarker)]
+        public void Steel3() => MdhCommands.Run(doc => Guard("steel3", () =>
+        {
+            var ub = ProfileCache.Library.FindById("demo-ub-406x178x60");
+            var back = Read(doc, _ubA, (tr, br) => (LabelOf(tr, br), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
+            Check("steel restoring dimensions re-matches the profile", back.Item2 == "profile" && back.Item1 == ub.Name, back.Item2 + " / " + back.Item1);
+            var inv = Read(doc, _invalid, (tr, br) => (SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key)), MetadataStore.Read(tr, br, SteelMetadata.Key)["status"]));
+            Check("steel impossible t is reported invalid, not trusted", inv.Item1.Status == SteelStatus.Invalid && inv.Item2 == "invalid",
+                  inv.Item1.Status + " / " + inv.Item2 + " " + inv.Item1.Problem);
+        }));
+
+        // ---------------------------------------------------------------- WBLOCK to another drawing
+
+        private static void TestWblock(Document doc)
+        {
+            var rhs = ProfileCache.Library.FindById("demo-rhs-250x150x10");
+            var id = InsertSteel(doc, rhs.Section, rhs, new Point3d(6000, 0, 0));
+            SetDims(doc, id, ("B", 170.0));
+            var path = Path.Combine(Path.GetTempPath(), "MDH_selftest_wblock.dwg");
+            using (var side = doc.Database.Wblock(new ObjectIdCollection { id }, Point3d.Origin))
+                side.SaveAs(path, DwgVersion.Current);
+
+            using (var other = new Database(false, true))
+            {
+                other.ReadDwgFile(path, FileOpenMode.OpenForReadAndAllShare, true, "");
+                other.CloseInput(true);
+                using (var tr = other.TransactionManager.StartTransaction())
+                {
+                    var ms = (BlockTableRecord)tr.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(other), OpenMode.ForRead);
+                    var br = ms.Cast<ObjectId>().Select(o => tr.GetObject(o, OpenMode.ForRead)).OfType<BlockReference>().FirstOrDefault();
+                    Check("wblock keeps a dynamic block", br != null && br.IsDynamicBlock);
+                    if (br != null)
+                    {
+                        var s = SteelBlocks.ReadSection(br, SteelFamily.RHS);
+                        Check("wblock keeps edited parameter values", Near(s["B"], 170) && Near(s["H"], 250), s.DimensionText());
+                        Check("wblock keeps metadata", MetadataStore.Read(tr, br, SteelMetadata.Key)?["family"] == "RHS");
+                    }
+                    tr.Commit();
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------- undo / redo across commands
+
+        [CommandMethod("MDH", "MDH_SELFTEST_UNDO1", CommandFlags.Modal)]
+        public void Undo1() => MdhCommands.Run(doc =>
+        {
+            var rhs = ProfileCache.Library.FindById("demo-rhs-200x100x8.0");
+            _undoBlock = InsertSteel(doc, rhs.Section, rhs, new Point3d(8000, 0, 0));
+            doc.Editor.WriteMessage("\nMDH-SELFTEST INFO undo block inserted");
+        });
+
+        [CommandMethod("MDH", "MDH_SELFTEST_UNDO2", CommandFlags.Modal)]
+        public void Undo2() => MdhCommands.Run(doc =>
+        {
+            SetDims(doc, _undoBlock, ("B", 150.0));
+            doc.Editor.WriteMessage("\nMDH-SELFTEST INFO undo block B set to 150");
+        });
+
+        /// <summary>Checks B and the label without creating an undo marker (so REDO still applies).</summary>
+        [CommandMethod("MDH", "MDH_SELFTEST_UNDOCHECK", CommandFlags.Modal | CommandFlags.NoUndoMarker)]
+        public void UndoCheck() => MdhCommands.Run(doc =>
+        {
+            var ed = doc.Editor;
+            var pr = ed.GetString("\nExpected B: ");
+            if (pr.Status != Autodesk.AutoCAD.EditorInput.PromptStatus.OK) return;
+            double expect = double.Parse(pr.StringResult, CultureInfo.InvariantCulture);
+            var r = Read(doc, _undoBlock, (tr, br) =>
+            {
+                var s = SteelBlocks.ReadSection(br, SteelFamily.RHS);
+                var st = SteelSync.Evaluate(tr, br, MetadataStore.Read(tr, br, SteelMetadata.Key));
+                return (s["B"], st.Status, LabelOf(tr, br));
+            });
+            Check("undo/redo B=" + F(expect), Near(r.Item1, expect), "B=" + F(r.Item1));
+            Check("undo/redo geometry consistent at B=" + F(expect), r.Status != SteelStatus.Invalid, r.Status.ToString());
+            bool custom = !Near(expect, 100);
+            Check("undo/redo label consistent at B=" + F(expect), custom ? r.Item3.StartsWith("Custom") : !r.Item3.StartsWith("Custom"), r.Item3);
+        });
+
+        [CommandMethod("MDH", "MDH_SELFTEST_REOPEN", CommandFlags.Modal | CommandFlags.NoUndoMarker)]
+        public void Reopen() => MdhCommands.Run(doc =>
+        {
+            int n = 0, dyn = 0, meta = 0, invalid = 0;
+            using (var tr = doc.Database.TransactionManager.StartTransaction())
+            {
+                var ms = (BlockTableRecord)tr.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(doc.Database), OpenMode.ForRead);
+                foreach (ObjectId id in ms)
+                {
+                    if (!(tr.GetObject(id, OpenMode.ForRead) is BlockReference br) || !br.IsDynamicBlock) continue;
+                    if (!SteelBlocks.IsTemplateName(SteelBlocks.EffectiveName(tr, br))) continue;
+                    n++; dyn++;
+                    var m = MetadataStore.Read(tr, br, SteelMetadata.Key);
+                    if (m != null) meta++;
+                    var st = SteelSync.Evaluate(tr, br, m);
+                    if (st != null && st.Status == SteelStatus.Invalid) invalid++;
+                }
+                tr.Commit();
+            }
+            Check("reopen finds steel dynamic blocks", n > 0 && dyn == n, "n=" + n);
+            Check("reopen keeps metadata", meta == n, meta + "/" + n);
+            doc.Editor.WriteMessage("\nMDH-SELFTEST INFO reopen invalid-geometry instances=" + invalid);
+        });
+    }
+
+    internal static class UnitContextForTests
+    {
+        public static UnitContext Millimetres => UnitContext.Millimetres();
+    }
+}

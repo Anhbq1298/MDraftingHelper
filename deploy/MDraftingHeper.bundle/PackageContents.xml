@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage
+    SchemaVersion="1.0"
+    AutodeskProduct="AutoCAD"
+    ProductType="Application"
+    Name="MDraftingHeper"
+    Description="2D drafting helpers: rebar percentage, tie and hook, native dynamic steel sections."
+    AppVersion="0.1.0"
+    Author="MDraftingHeper"
+    ProductCode="{6F3C2A1E-8B4D-4C7A-9E21-5D0B7A4C3F91}"
+    UpgradeCode="{0B9E7D52-31A6-4F0C-8D4E-2C61F5A9B7E3}">
+
+  <CompanyDetails Name="MDraftingHeper" />
+
+  <!-- Validated for AutoCAD 2021 (R24.0) only; not advertised for later releases. -->
+  <RuntimeRequirements OS="Win64" Platform="AutoCAD" SeriesMin="R24.0" SeriesMax="R24.0" />
+
+  <Components Description="AutoCAD 2021 x64">
+    <RuntimeRequirements OS="Win64" Platform="AutoCAD" SeriesMin="R24.0" SeriesMax="R24.0" />
+    <ComponentEntry AppName="MDraftingHeper"
+                    ModuleName="./Contents/Windows/MDraftingHeper.AutoCAD2021.dll"
+                    AppDescription="MDraftingHeper drafting tools"
+                    LoadOnAutoCADStartup="True"
+                    LoadOnCommandInvocation="False">
+      <Commands GroupName="MDH">
+        <Command Global="MDH_REBAR" Local="MDH_REBAR" />
+        <Command Global="MDH_TIE" Local="MDH_TIE" />
+        <Command Global="MDH_STEEL" Local="MDH_STEEL" />
+        <Command Global="MDH_STEELSYNC" Local="MDH_STEELSYNC" />
+      </Commands>
+    </ComponentEntry>
+  </Components>
+</ApplicationPackage>

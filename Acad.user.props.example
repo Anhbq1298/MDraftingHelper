@@ -1,0 +1,6 @@
+<!-- Copy to Acad.user.props (git-ignored) and adjust the path for this machine. -->
+<Project>
+  <PropertyGroup>
+    <Acad2021Dir Condition="'$(Acad2021Dir)' == ''">C:\Program Files\Autodesk\AutoCAD 2021</Acad2021Dir>
+  </PropertyGroup>
+</Project>

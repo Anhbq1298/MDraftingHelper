@@ -1,0 +1,13 @@
+bin/
+obj/
+*.user
+Acad.user.props
+/Drawing1.dwg
+.vs/
+TestResults/
+deploy/MDraftingHeper.bundle/Contents/
+assets/DynamicBlocks/build_*.log
+*.bak
+*.dwl
+*.dwl2
+plot.log
