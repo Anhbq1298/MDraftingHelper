@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+
+message_file=$1
+author=$(git var GIT_AUTHOR_IDENT | sed 's/ [0-9][0-9]* [+-][0-9][0-9][0-9][0-9]$//')
+timestamp=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+temporary_file="${message_file}.hook-tmp"
+
+trap 'rm -f "$temporary_file"' EXIT HUP INT TERM
+awk '!/^Commit time \(UTC\): / && !/^Author: /' "$message_file" > "$temporary_file"
+cat "$temporary_file" > "$message_file"
+printf '\nCommit time (UTC): %s\nAuthor: %s\n' "$timestamp" "$author" >> "$message_file"

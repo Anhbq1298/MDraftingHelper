@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+message_file=$1
+subject=$(sed -n '1p' "$message_file")
+
+case "$subject" in
+    "feat: "*)
+        description=${subject#feat: }
+        case "$description" in
+            *[![:space:]]*)
+                exit 0
+                ;;
+        esac
+        ;;
+esac
+
+printf '%s\n' "Commit subject must use 'feat: <description>'." >&2
+exit 1
