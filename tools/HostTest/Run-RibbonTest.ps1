@@ -29,7 +29,12 @@ function Send([string]$cmd) {
     throw "AutoCAD stayed busy; could not send '$cmd'."
 }
 try {
-    while (-not $app.GetAcadState().IsQuiescent) { Start-Sleep -Milliseconds 500 }
+    # AutoCAD rejects COM calls (RPC_E_CALL_REJECTED) while it is still starting up.
+    $ready = $false
+    for ($i = 0; $i -lt 240 -and -not $ready; $i++) {
+        try { $ready = [bool]$app.GetAcadState().IsQuiescent } catch { }
+        if (-not $ready) { Start-Sleep -Milliseconds 500 }
+    }
     Start-Sleep -Seconds 5                     # let Idle fire after startup
     Send "MDH_SELFTEST_RIBBON"
     $ws = $app.ActiveDocument.GetVariable("WSCURRENT")

@@ -52,7 +52,15 @@ dotnet test tests\MDraftingHeper.Core.Tests\MDraftingHeper.Core.Tests.csproj
 .\deploy\Uninstall-MDraftingHeper.ps1   # removes only MDraftingHeper.bundle (-RemoveUserData also removes settings/logs)
 ```
 
-Both refuse to run while AutoCAD is open. `ApplicationPlugins` is a default trusted autoload location, so no security setting is changed. `PackageContents.xml` is gated to `SeriesMin=SeriesMax=R24.0` (AutoCAD 2021 only).
+Both refuse to run while AutoCAD is open.
+
+### Delivering to another machine
+
+```powershell
+.\tools\Make-Release.ps1     # → dist\MDraftingHeper-<version>.zip
+```
+
+The zip contains the bundle, `Install.cmd` / `Uninstall.cmd` (double-click; they bypass the PowerShell execution policy for these scripts only), the `.ps1` scripts and end-user instructions (`INSTALL.md`). The installer removes the "downloaded from the internet" mark from the installed files, since .NET will not load blocked DLLs. The target machine only needs AutoCAD 2021; .NET Framework 4.8 comes with it. Bump `AppVersion` in `deploy\MDraftingHeper.bundle\PackageContents.xml` for each release. `ApplicationPlugins` is a default trusted autoload location, so no security setting is changed. `PackageContents.xml` is gated to `SeriesMin=SeriesMax=R24.0` (AutoCAD 2021 only).
 
 ## Files at runtime
 
