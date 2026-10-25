@@ -4,6 +4,9 @@
     <!-- Setter properties are owner-qualified: unqualified names failed to resolve when the BAML
          was loaded inside AutoCAD ("Setter.Property ... Value cannot be null"). -->
     <v:NotConverter x:Key="Not" />
+    <v:VisibleConverter x:Key="Visible" />
+    <v:LabelConverter x:Key="Label" />
+    <DataTemplate x:Key="LabelItem"><TextBlock Text="{Binding Converter={StaticResource Label}}" /></DataTemplate>
     <Style TargetType="{x:Type GroupBox}">
         <Setter Property="FrameworkElement.Margin" Value="0,0,0,8" />
         <Setter Property="Control.Padding" Value="6,4" />

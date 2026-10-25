@@ -1,13 +1,11 @@
 using System;
-using System.Globalization;
 using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
 using Polyline = Autodesk.AutoCAD.DatabaseServices.Polyline;
-using MDraftingHeper.AutoCAD2021.Metadata;
 using MDraftingHeper.Core.Hooks;
 
 namespace MDraftingHeper.AutoCAD2021.Drawing
 {
+    /// <summary>Writes tie / hoop centrelines as plain 2D lightweight polylines (no extra metadata).</summary>
     public static class TieWriter
     {
         public static LineWeight LineweightFor(TieBarSize size)
@@ -23,8 +21,8 @@ namespace MDraftingHeper.AutoCAD2021.Drawing
         }
 
         /// <summary>
-        /// An unsaved polyline for preview or output; geometry from the Core result. Pass a null layer
-        /// for previews: the layer may not exist yet and previews must not write to the drawing.
+        /// An unsaved polyline with genuine arc bulges from the Core result. Pass a null layer for previews:
+        /// the layer may not exist yet and previews must not write to the drawing.
         /// </summary>
         public static Polyline CreatePolyline(PlaneFrame frame, TieResult result, TieBarSize size, string layer)
         {
@@ -34,42 +32,13 @@ namespace MDraftingHeper.AutoCAD2021.Drawing
             return pl;
         }
 
-        /// <summary>Appends the tie and its metadata. Caller owns the transaction (one undo step).</summary>
-        public static ObjectId Append(Transaction tr, Database db, Polyline pl, TieInput input, TieResult result, TieBarSize size, string presetId)
+        /// <summary>Appends the polyline to the current space. Caller owns the transaction (one undo step).</summary>
+        public static ObjectId Append(Transaction tr, Database db, Polyline pl)
         {
             var space = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
             var id = space.AppendEntity(pl);
             tr.AddNewlyCreatedDBObject(pl, true);
-            MetadataStore.Write(tr, pl, TieMetadata.Key, TieMetadata.Create(input, result, size, presetId));
             return id;
         }
     }
-
-    public static class TieMetadata
-    {
-        public const string Key = "MDH_TIE";
-
-        public static MetadataRecord Create(TieInput i, TieResult r, TieBarSize size, string presetId)
-        {
-            string N(double v) => v.ToString("R", CultureInfo.InvariantCulture);
-            var m = new MetadataRecord(1);
-            m["tieSize"] = size.Name;
-            m["angle"] = ((int)i.Angle).ToString(CultureInfo.InvariantCulture);
-            m["ends"] = i.Ends.ToString();
-            m["flip"] = i.Flip ? "1" : "0";
-            m["preset"] = presetId ?? "";
-            m["dA"] = N(i.DiameterA);
-            m["dB"] = N(i.DiameterB);
-            m["dRef"] = N(r.ReferenceDiameter);
-            m["rCentreline"] = N(r.CentrelineRadius);
-            m["insideMandrel"] = N(i.InsideMandrelDiameter);
-            m["tail"] = N(i.TailLength);
-            m["tailA"] = N(i.TailLengthA ?? i.TailLength);
-            m["tailB"] = N(i.TailLengthB ?? i.TailLength);
-            m["clearGap"] = N(i.ClearGap);
-            m["note"] = "Snapshot of the hook settings; the tie does not follow moved bars.";
-            return m;
-        }
-    }
-
 }

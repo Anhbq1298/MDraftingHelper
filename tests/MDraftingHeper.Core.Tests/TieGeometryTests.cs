@@ -50,23 +50,27 @@ namespace MDraftingHeper.Core.Tests
                 Assert.Equal((int)angle * Math.PI / 180, Math.Abs(a.Sweep), 9);
                 Assert.Equal(r.CentrelineRadius, a.Radius, 7);
             }
-            Assert.True(arcs[0].Center.IsEqualTo(new Point2(0, 0), Tol));
-            Assert.True(arcs[1].Center.IsEqualTo(new Point2(300, 0), Tol));
+            // Mandrel governs (R = 25 > d = 15): bend centres move away from the leg by R − d; bars stay put.
+            double shift = r.CentrelineRadius - r.FitRadius;
+            double side = flip ? -1 : 1;
+            Assert.True(arcs[0].Center.IsEqualTo(new Point2(0, -side * shift), Tol));
+            Assert.True(arcs[1].Center.IsEqualTo(new Point2(300, -side * shift), Tol));
         }
 
         [Fact]
         public void Hook180_IsSemicircularReturnWithTailParallelToTie()
         {
             var r = TieGeometryBuilder.Build(Input(HookAngle.Deg180));
-            double rc = r.CentrelineRadius;
+            double rc = r.CentrelineRadius, d = r.FitRadius;
             // Tie on the left (+y) of A→B; the B hook returns on the -y side heading back towards A.
             Assert.Equal(-1, r.TailDirectionB.Value.X, 12);
             Assert.Equal(0, r.TailDirectionB.Value.Y, 12);
             var v = r.Path.Vertices;
-            Assert.True(v[v.Count - 2].Point.IsEqualTo(new Point2(300, -rc), Tol));
-            Assert.True(v[v.Count - 1].Point.IsEqualTo(new Point2(300 - 60, -rc), Tol));
-            // Straight tie is tangent to both bends: offset +rc from the reference axis.
-            var tie = r.Path.Segments.Single(s => !s.IsArc && Math.Abs(s.Start.Y - rc) < Tol && Math.Abs(s.End.Y - rc) < Tol);
+            double returnY = d - 2 * rc; // semicircle of radius rc starting from the leg at +d
+            Assert.True(v[v.Count - 2].Point.IsEqualTo(new Point2(300, returnY), Tol));
+            Assert.True(v[v.Count - 1].Point.IsEqualTo(new Point2(300 - 60, returnY), Tol));
+            // Straight tie touches the bars: offset d = D/2 + tie/2 from the reference axis.
+            var tie = r.Path.Segments.Single(s => !s.IsArc && Math.Abs(s.Start.Y - d) < Tol && Math.Abs(s.End.Y - d) < Tol);
             Assert.Equal(300, tie.ChordLength, 9);
         }
 
@@ -114,7 +118,11 @@ namespace MDraftingHeper.Core.Tests
             input.InsideMandrelDiameter = 64;
             var r = TieGeometryBuilder.Build(input);
             Assert.Equal(32 + 5, r.CentrelineRadius, 12);
-            Assert.Equal(37 - 5 - 10, r.ClearanceA, 12);
+            // No extra clearance: the straight tie still touches the bar; only the bend centre moves.
+            Assert.Equal(0, r.ClearanceA, 12);
+            double touch = 10 + 5;
+            Assert.Equal(touch, r.Path.Segments.Min(s => s.DistanceTo(input.CenterA)), 9);
+            Assert.Equal(touch, r.Path.Segments.Min(s => s.DistanceTo(input.CenterB)), 9);
         }
 
         [Fact]
@@ -156,7 +164,7 @@ namespace MDraftingHeper.Core.Tests
         public void SingleHook_EndsAtTheTangentPointOfTheOtherBar()
         {
             var r = TieGeometryBuilder.Build(Input(HookAngle.Deg135, ends: HookEnds.EndB));
-            Assert.True(r.Path.Vertices[0].Point.IsEqualTo(new Point2(0, r.CentrelineRadius), Tol));
+            Assert.True(r.Path.Vertices[0].Point.IsEqualTo(new Point2(0, r.FitRadius), Tol));
             Assert.Single(r.Path.Segments.Where(s => s.IsArc));
             Assert.Null(r.TailDirectionA);
         }

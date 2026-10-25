@@ -230,7 +230,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                     if (!res.Validation.IsValid) { tr.Abort(); continue; }
                     DrawingGuards.EnsureLayer(tr, db, "MDH_TIE", 1);
                     var pl = TieWriter.CreatePolyline(frame, res, size, "MDH_TIE");
-                    TieWriter.Append(tr, db, pl, input, res, size, "manual");
+                    TieWriter.Append(tr, db, pl);
 
                     Check(tag + " lightweight polyline normal", pl.Normal.IsParallelTo(n), pl.Normal.ToString());
                     Check(tag + " vertex count", pl.NumberOfVertices == 6, pl.NumberOfVertices.ToString());
@@ -243,10 +243,57 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                           arcA.Center + " vs " + wa);
                     Check(tag + " both hooks use Dref = max(DA, DB)", Near(arcA.Radius, arcB.Radius, 1e-9) && Near(arcA.Radius, 12.5 + 5, 1e-9), F(arcA.Radius) + "," + F(arcB.Radius));
                     Check(tag + " lineweight H10 = 0.18 mm", pl.LineWeight == LineWeight.LineWeight018, pl.LineWeight.ToString());
-                    var meta = MetadataStore.Read(tr, pl, TieMetadata.Key);
-                    Check(tag + " versioned metadata", meta != null && meta.SchemaVersion == 1 && meta["angle"] == ((int)angle).ToString(CultureInfo.InvariantCulture));
+                    Check(tag + " plain polyline (no metadata)", pl.ExtensionDictionary.IsNull);
                     tr.Commit();
                 }
+            }
+            TestHoop(doc, n, toWorld);
+        }
+
+        /// <summary>Closed hoop around four bars in the same tilted plane: one polyline, EC2 drafting sizes.</summary>
+        private static void TestHoop(Document doc, Vector3d n, Matrix3d toWorld)
+        {
+            var db = doc.Database;
+            var units = UnitContextForTests.Millimetres;
+            var ocs = new[] { new Point3d(1000, 0, 50), new Point3d(1300, 0, 50), new Point3d(1300, 400, 50), new Point3d(1000, 400, 50) };
+            var ids = new List<ObjectId>();
+            using (var tr = db.TransactionManager.StartTransaction())
+            {
+                var ms = (BlockTableRecord)tr.GetObject(SymbolUtilityServices.GetBlockModelSpaceId(db), OpenMode.ForWrite);
+                foreach (var p in ocs)
+                {
+                    var c = new Circle(p.TransformBy(toWorld), n, 12.5);
+                    ids.Add(ms.AppendEntity(c)); tr.AddNewlyCreatedDBObject(c, true);
+                }
+                tr.Commit();
+            }
+            using (var tr = db.TransactionManager.StartTransaction())
+            {
+                var circles = ids.Select(id => (Circle)tr.GetObject(id, OpenMode.ForRead)).ToList();
+                var frame = PlaneFrame.FromCircle(circles[0], units);
+                var size = TieBarSize.Find("H10");
+                var input = new HoopInput
+                {
+                    Bars = circles.Select(c => new HoopBar(frame.ToCore(c.Center), 2 * c.Radius)).ToList(),
+                    TieDiameter = size.Diameter, AngleA = HookAngle.Deg135, AngleB = HookAngle.Deg135, ClosureBar = 0,
+                    InsideMandrelDiameter = Ec2DraftingRules.InsideMandrelDiameter(size.Diameter),
+                    TailLengthA = Ec2DraftingRules.TailLength(HookAngle.Deg135, size.Diameter),
+                    TailLengthB = Ec2DraftingRules.TailLength(HookAngle.Deg135, size.Diameter)
+                };
+                var res = TieGeometryBuilder.BuildHoop(input);
+                Check("hoop geometry valid", res.Validation.IsValid, res.Validation.ToString());
+                if (!res.Validation.IsValid) { tr.Abort(); return; }
+                DrawingGuards.EnsureLayer(tr, db, "MDH_TIE", 1);
+                var pl = TieWriter.CreatePolyline(frame, res, size, "MDH_TIE");
+                TieWriter.Append(tr, db, pl);
+                Check("hoop is one open polyline in the bar plane", !pl.Closed && pl.Normal.IsParallelTo(n));
+                int arcs = Enumerable.Range(0, pl.NumberOfVertices - 1).Count(i => Math.Abs(pl.GetBulgeAt(i)) > 1e-12);
+                Check("hoop has 3 corner bends + 2 hooks", arcs == 5, arcs.ToString());
+                Check("hoop bend radius from EC2 mandrel (4φ → 25 mm centreline)", Near(pl.GetArcSegmentAt(1).Radius, 25, 1e-9), F(pl.GetArcSegmentAt(1).Radius));
+                double minToBar = circles.Min(c => pl.GetClosestPointTo(c.Center, false).DistanceTo(c.Center));
+                Check("hoop touches the corner bars (Ø/2 + tie/2)", Near(minToBar, 12.5 + 5, 1e-6), F(minToBar));
+                Check("hoop plain polyline (no metadata)", pl.ExtensionDictionary.IsNull);
+                tr.Commit();
             }
         }
 

@@ -8,97 +8,79 @@
     <Window.Resources>
         <ResourceDictionary Source="DialogStyles.xaml" />
     </Window.Resources>
-    <DockPanel Margin="10" Width="700">
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
-            <Button Content="Select 2 Circles…" Command="{Binding SelectBarsCommand}" ToolTip="Temporarily close this window, then pick Circle A and Circle B" />
+    <DockPanel Margin="10" Width="620">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,6,0,0">
+            <Button Content="{Binding SelectButtonText}" Command="{Binding SelectBarsCommand}"
+                    ToolTip="Temporarily close this window and pick the longitudinal bar circles" />
             <Button Content="Apply &amp; Draw" Command="{Binding DrawCommand}" IsDefault="True"
-                    ToolTip="Insert the configured tie immediately" />
+                    ToolTip="Draw the previewed centreline as one polyline" />
             <Button Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True" />
         </StackPanel>
 
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="210" />
+                <ColumnDefinition Width="250" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                <GroupBox Header="Hook angle">
-                    <ListBox ItemsSource="{Binding AngleOptions}" SelectedItem="{Binding SelectedAngle}" BorderThickness="0">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="2">
-                                    <p:PathPreview Shapes="{Binding Schematic}" Width="96" Height="56" />
-                                    <TextBlock Text="{Binding Label}" HorizontalAlignment="Center" FontWeight="SemiBold" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </GroupBox>
+            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <RadioButton Content="Open Tie" IsChecked="{Binding IsOpenTie}" Margin="0,0,16,0" GroupName="Mode" />
+                    <RadioButton Content="Closed Hoop" IsChecked="{Binding IsHoop}" GroupName="Mode" />
+                </StackPanel>
+                <TextBlock Text="{Binding BarsText}" Style="{StaticResource Muted}" Margin="0,0,0,6" />
 
-                <Grid Margin="0,0,0,6">
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" /><ColumnDefinition Width="110" />
                         <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
-                    <TextBlock Text="Tie diameter:" VerticalAlignment="Center" Margin="0,2,6,2" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Tie diameter:" VerticalAlignment="Center" Margin="0,2,8,2" />
                     <ComboBox Grid.Column="1" ItemsSource="{Binding TieSizes}" SelectedItem="{Binding TieSize}" Margin="0,2" />
-                    <TextBlock Grid.Column="2" Text="Hook position:" VerticalAlignment="Center" Margin="12,2,6,2" />
-                    <ComboBox Grid.Column="3" ItemsSource="{Binding EndOptions}" SelectedItem="{Binding Ends}" Margin="0,2" />
-                    <CheckBox Grid.Row="1" Grid.ColumnSpan="2" Content="Flip direction" IsChecked="{Binding Flip}" Margin="0,4" />
-                    <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding LineweightText}" Style="{StaticResource Muted}" Margin="12,4,0,0" FontSize="11" />
+
+                    <TextBlock Grid.Row="1" Text="Start A hook:" VerticalAlignment="Center" Margin="0,2,8,2" />
+                    <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding AngleOptions}" SelectedItem="{Binding AngleA}"
+                              ItemTemplate="{StaticResource LabelItem}" Margin="0,2" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="tail" VerticalAlignment="Center" Margin="10,2,6,2" />
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding TailAText}" VerticalAlignment="Center" />
+
+                    <TextBlock Grid.Row="2" Text="End B hook:" VerticalAlignment="Center" Margin="0,2,8,2" />
+                    <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AngleOptions}" SelectedItem="{Binding AngleB}"
+                              ItemTemplate="{StaticResource LabelItem}" Margin="0,2" />
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="tail" VerticalAlignment="Center" Margin="10,2,6,2" />
+                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding TailBText}" VerticalAlignment="Center" />
+
+                    <TextBlock Grid.Row="3" Text="Hook position:" VerticalAlignment="Center" Margin="0,2,8,2"
+                               Visibility="{Binding IsOpenTie, Converter={StaticResource Visible}}" />
+                    <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding EndOptions}" SelectedItem="{Binding Ends}"
+                              ItemTemplate="{StaticResource LabelItem}" Margin="0,2" HorizontalAlignment="Left" Width="140"
+                              Visibility="{Binding IsOpenTie, Converter={StaticResource Visible}}" />
+                    <TextBlock Grid.Row="3" Text="Closure corner:" VerticalAlignment="Center" Margin="0,2,8,2"
+                               Visibility="{Binding IsHoop, Converter={StaticResource Visible}}" />
+                    <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding ClosureCorners}" SelectedItem="{Binding Closure}"
+                              Margin="0,2" HorizontalAlignment="Left" Width="200"
+                              Visibility="{Binding IsHoop, Converter={StaticResource Visible}}" />
+
+                    <TextBlock Grid.Row="4" Text="Clear gap (mm):" VerticalAlignment="Center" Margin="0,2,8,2" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding GapText, UpdateSourceTrigger=PropertyChanged}" Margin="0,2" />
+                    <CheckBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Content="Flip direction" IsChecked="{Binding Flip}"
+                              VerticalAlignment="Center" Margin="10,2,0,2" />
+
+                    <TextBlock Grid.Row="5" Text="Mandrel Ø:" VerticalAlignment="Center" Margin="0,2,8,2" />
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding MandrelText}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding RadiusText}" VerticalAlignment="Center" Margin="10,2,0,2" />
                 </Grid>
 
-                <GroupBox Header="Selected longitudinal bars">
-                    <Grid>
-                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
-                        <TextBlock Text="Circle A diameter:" Margin="0,1,8,1" />
-                        <TextBlock Grid.Column="1" Text="{Binding DiameterAText}" />
-                        <TextBlock Grid.Row="1" Text="Circle B diameter:" Margin="0,1,8,1" />
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DiameterBText}" />
-                        <TextBlock Grid.Row="2" Text="Effective diameter:" Margin="0,1,8,1" />
-                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding EffectiveText}" FontWeight="SemiBold" />
-                        <TextBlock Grid.Row="3" Text="Centre spacing:" Margin="0,1,8,1" />
-                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SpacingText}" />
-                    </Grid>
-                </GroupBox>
-
-                <GroupBox Header="Hook preset">
-                    <StackPanel>
-                        <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding Preset}" DisplayMemberPath="DisplayName" />
-                        <TextBlock Text="{Binding PresetProvenance}" Style="{StaticResource Muted}" FontSize="11" Margin="0,3,0,4" />
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="70" />
-                                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
-                            <TextBlock Text="Inside bend diameter (mm):" Margin="0,2,6,2" VerticalAlignment="Center" />
-                            <TextBox Grid.Column="1" Text="{Binding MandrelText, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsMandrelManual, Converter={StaticResource Not}}" Margin="0,2" />
-                            <TextBlock Grid.Row="1" Text="Straight tail length (mm):" Margin="0,2,6,2" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TailText, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsTailManual, Converter={StaticResource Not}}" Margin="0,2" />
-                            <TextBlock Grid.Row="2" Text="Clear gap to bar (mm):" Margin="0,2,6,2" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding GapText, UpdateSourceTrigger=PropertyChanged}" Margin="0,2" />
-                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Rfit:" Margin="12,2,4,2" />
-                            <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding FitRadiusText}" Margin="0,2" />
-                            <TextBlock Grid.Row="1" Grid.Column="2" Text="Rmandrel:" Margin="12,2,4,2" />
-                            <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding MandrelRadiusText}" Margin="0,2" />
-                            <TextBlock Grid.Row="2" Grid.Column="2" Text="Centreline radius:" Margin="12,2,4,2" />
-                            <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding CentrelineRadiusText}" FontWeight="SemiBold" Margin="0,2" />
-                            <TextBlock Grid.Row="3" Grid.Column="2" Text="Clearance:" Margin="12,2,4,2" />
-                            <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding ClearanceText}" Margin="0,2" />
-                        </Grid>
-                    </StackPanel>
-                </GroupBox>
-                <TextBlock Text="{Binding Messages}" Style="{StaticResource Warning}" />
+                <TextBlock Text="{Binding RulesNote}" Style="{StaticResource Muted}" FontSize="11" Margin="0,6,0,0" />
+                <TextBlock Text="{Binding LineweightText}" Style="{StaticResource Muted}" FontSize="11" />
+                <TextBlock Text="{Binding Messages}" Style="{StaticResource Warning}" Margin="0,4,0,0" />
             </StackPanel>
 
-            <p:PathPreview Grid.Column="1" Shapes="{Binding Preview}" Message="Select two bars to preview" Height="300" VerticalAlignment="Top" />
+            <p:PathPreview Grid.Column="1" Shapes="{Binding Preview}" Message="Select bars to preview" Height="280" VerticalAlignment="Top" />
         </Grid>
     </DockPanel>
 </Window>

@@ -22,13 +22,13 @@ namespace MDraftingHeper.Core.Tests
         {
             var path = TempFile();
             var s = new UserSettings();
-            s.Tie.AngleDegrees = 180;
+            s.Tie.AngleB = 180;
             s.Layers.Tie = "MY_TIES";
             SettingsStore.Save(path, s);
             SettingsStore.Save(path, s); // replace an existing file
             var back = SettingsStore.Load(path, out var problem);
             Assert.Null(problem);
-            Assert.Equal(180, back.Tie.AngleDegrees);
+            Assert.Equal(180, back.Tie.AngleB);
             Assert.Equal("MY_TIES", back.Layers.Tie);
         }
 
@@ -45,7 +45,9 @@ namespace MDraftingHeper.Core.Tests
             var partial = SettingsStore.Load(path, out problem);
             Assert.NotNull(partial.Rebar);
             Assert.Equal(0.1, partial.Rebar.DiameterTolerance);
-            Assert.Equal("project-bend-detail", partial.Tie.PresetId);
+            Assert.Equal(135, partial.Tie.AngleA);          // missing per-end angles fall back to 135°
+            Assert.Equal(135, partial.Tie.AngleB);
+            Assert.Equal("OpenTie", partial.Tie.Mode);
             Assert.False(partial.Steel.CentreAxes);
             Assert.False(partial.Steel.ProfileLabel);
         }
@@ -78,17 +80,18 @@ namespace MDraftingHeper.Core.Tests
         }
 
         [Fact]
-        public void ProjectBendDetail_IsDefaultInBothTieWorkflows()
+        public void TieAndHook_UsesEc2DraftingRules_RectangularKeepsProjectPreset()
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "HookPresets", "hook-presets.json");
             var presets = HookPresetReader.ReadFile(path, out var problem);
             Assert.Null(problem);
 
-            var tie = new TieViewModel(presets);
-            Assert.Equal("project-bend-detail", tie.Preset.Id);
-            Assert.Equal("100", tie.TailText);
-            Assert.True(tie.IsMandrelManual);
-            Assert.False(tie.IsTailManual);
+            // Tie & Hook has no preset choice: mandrel and tails are calculated automatically.
+            var tie = new TieViewModel();
+            Assert.Equal(40, tie.InsideMandrelDiameter);    // H10: 4φ
+            Assert.Equal(100, tie.TailLengthA);              // 135°: max(10φ, 70)
+            tie.AngleB = HookAngle.Deg180;
+            Assert.Equal(50, tie.TailLengthB);               // 180°: max(5φ, 50)
 
             var rectangular = new RectangularViewModel(presets);
             Assert.Equal("project-bend-detail", rectangular.AutoPreset.Id);

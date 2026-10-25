@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Autodesk.AutoCAD.ApplicationServices;
@@ -108,21 +109,25 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             var units = UnitContext.Resolve(doc);
             if (units == null) return;
             var settings = MdhApp.Settings;
-            var vm = new TieViewModel(ProfileCache.HookPresets);
+            var vm = new TieViewModel();
             RestoreTieSettings(vm, settings.Tie);
 
-            PlaneFrame frame = null;
+            PlaneFrame openFrame = null, hoopFrame = null;
             bool select = false;
             while (true)
             {
                 if (select)
                 {
-                    var bars = SelectBars(doc, units);
                     select = false;
-                    if (bars != null)
+                    if (vm.IsHoop)
                     {
-                        frame = bars.Value.frame;
-                        vm.SetBars(bars.Value.ca, bars.Value.da, bars.Value.cb, bars.Value.db);
+                        var hoop = SelectHoopBars(doc, units);
+                        if (hoop != null) { hoopFrame = hoop.Value.frame; vm.SetHoopBars(hoop.Value.bars); }
+                    }
+                    else
+                    {
+                        var bars = SelectBars(doc, units);
+                        if (bars != null) { openFrame = bars.Value.frame; vm.SetBars(bars.Value.ca, bars.Value.da, bars.Value.cb, bars.Value.db); }
                     }
                 }
 
@@ -133,18 +138,45 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 if (vm.Action == DialogAction.Select) { select = true; continue; }
                 if (vm.Action != DialogAction.Commit || vm.Result?.Path == null) return;
 
+                var frame = vm.IsHoop ? hoopFrame : openFrame;
                 var layer = settings.Layers.Tie;
                 using (var tr = doc.Database.TransactionManager.StartTransaction())
                 {
                     DrawingGuards.EnsureLayer(tr, doc.Database, layer, 1);
-                    var pl = TieWriter.CreatePolyline(frame, vm.Result, vm.TieSize, layer);
-                    TieWriter.Append(tr, doc.Database, pl, vm.BuildInput(), vm.Result, vm.TieSize, vm.Preset?.Id);
+                    TieWriter.Append(tr, doc.Database, TieWriter.CreatePolyline(frame, vm.Result, vm.TieSize, layer));
                     tr.Commit();
                 }
-                MdhApp.SaveSettings();
-                doc.Editor.WriteMessage("\nTie drawn (" + vm.TieSize.Name + ", " + (int)vm.SelectedAngle.Angle + "° hooks, Dref " +
-                                        vm.Result.ReferenceDiameter.ToString("0.##", CultureInfo.InvariantCulture) + " mm).");
+                doc.Editor.WriteMessage("\n" + (vm.IsHoop ? "Closed hoop" : "Tie") + " drawn (" + vm.TieSize.Name + ", hooks " +
+                                        (int)vm.AngleA + "°/" + (int)vm.AngleB + "°, bends sized for Ø" +
+                                        vm.Result.ReferenceDiameter.ToString("0.##", CultureInfo.InvariantCulture) + ").");
                 return;
+            }
+        }
+
+        private static (PlaneFrame frame, List<HoopBar> bars)? SelectHoopBars(Document doc, UnitContext units)
+        {
+            var ed = doc.Editor;
+            var pso = new PromptSelectionOptions { MessageForAdding = "\nSelect the longitudinal bar circles for the hoop: " };
+            var ps = ed.GetSelection(pso, new SelectionFilter(new[] { new TypedValue((int)DxfCode.Start, "CIRCLE") }));
+            if (ps.Status != PromptStatus.OK) return null;
+            var ids = ps.Value.GetObjectIds();
+            if (ids.Length < 3) throw new MdhUserException("A closed hoop needs at least three bar circles.");
+
+            using (var tr = doc.Database.TransactionManager.StartOpenCloseTransaction())
+            {
+                var circles = ids.Select(id => (Circle)tr.GetObject(id, OpenMode.ForRead)).ToList();
+                var frame = PlaneFrame.FromCircle(circles[0], units);
+                var bars = new List<HoopBar>();
+                int skipped = 0;
+                foreach (var c in circles)
+                {
+                    if (!(c.Radius > 0) || !frame.Contains(c, out _)) { skipped++; continue; }
+                    bars.Add(new HoopBar(frame.ToCore(c.Center), units.ToMm(2 * c.Radius)));
+                }
+                tr.Commit();
+                if (skipped > 0) ed.WriteMessage("\n" + skipped + " circle(s) not in the plane of the first one were ignored.");
+                if (bars.Count < 3) throw new MdhUserException("A closed hoop needs at least three coplanar bar circles.");
+                return (frame, bars);
             }
         }
 
@@ -190,29 +222,22 @@ namespace MDraftingHeper.AutoCAD2021.Commands
 
         private static void RestoreTieSettings(TieViewModel vm, Core.Settings.TieSettings s)
         {
-            vm.SelectedAngle = vm.AngleOptions.FirstOrDefault(o => (int)o.Angle == s.AngleDegrees) ?? vm.SelectedAngle;
+            if (Enum.TryParse(s.Mode, out TieMode mode)) vm.Mode = mode;
+            if (Enum.IsDefined(typeof(HookAngle), s.AngleA)) vm.AngleA = (HookAngle)s.AngleA;
+            if (Enum.IsDefined(typeof(HookAngle), s.AngleB)) vm.AngleB = (HookAngle)s.AngleB;
             vm.TieSize = TieBarSize.Find(s.TieSize) ?? vm.TieSize;
             if (Enum.TryParse(s.Ends, out HookEnds ends)) vm.Ends = ends;
-            vm.Preset = vm.Presets.FirstOrDefault(p => p.Id == s.PresetId) ?? vm.Preset;
             vm.GapText = s.ClearGap.ToString(CultureInfo.InvariantCulture);
-            if (vm.IsMandrelManual)
-                vm.MandrelText = s.ManualInsideMandrelDiameter.ToString(CultureInfo.InvariantCulture);
-            if (vm.IsTailManual)
-                vm.TailText = s.ManualTailLength.ToString(CultureInfo.InvariantCulture);
         }
 
         private static void StoreTieSettings(TieViewModel vm, Core.Settings.TieSettings s)
         {
-            var input = vm.BuildInput();
-            s.AngleDegrees = (int)vm.SelectedAngle.Angle;
+            s.Mode = vm.Mode.ToString();
+            s.AngleA = (int)vm.AngleA;
+            s.AngleB = (int)vm.AngleB;
             s.TieSize = vm.TieSize.Name;
             s.Ends = vm.Ends.ToString();
-            s.PresetId = vm.Preset?.Id;
-            s.ClearGap = input.ClearGap;
-            if (vm.IsMandrelManual)
-                s.ManualInsideMandrelDiameter = input.InsideMandrelDiameter;
-            if (vm.IsTailManual)
-                s.ManualTailLength = input.TailLength;
+            s.ClearGap = vm.BuildInput().ClearGap;
         }
 
         // ------------------------------------------------------------------ Steel Section

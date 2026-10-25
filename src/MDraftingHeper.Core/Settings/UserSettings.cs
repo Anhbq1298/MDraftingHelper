@@ -32,13 +32,13 @@ namespace MDraftingHeper.Core.Settings
     [DataContract]
     public sealed class TieSettings
     {
-        [DataMember] public int AngleDegrees { get; set; } = 135;
+        /// <summary>"OpenTie" or "ClosedHoop".</summary>
+        [DataMember] public string Mode { get; set; } = "OpenTie";
+        [DataMember] public int AngleA { get; set; } = 135;
+        [DataMember] public int AngleB { get; set; } = 135;
         [DataMember] public string TieSize { get; set; } = "H10";
         [DataMember] public string Ends { get; set; } = "Both";
-        [DataMember] public string PresetId { get; set; } = "project-bend-detail";
         [DataMember] public double ClearGap { get; set; }
-        [DataMember] public double ManualInsideMandrelDiameter { get; set; } = 40;
-        [DataMember] public double ManualTailLength { get; set; } = 100;
     }
 
     [DataContract]
@@ -58,7 +58,7 @@ namespace MDraftingHeper.Core.Settings
     [DataContract]
     public sealed class UserSettings
     {
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 3;
 
         [DataMember(Order = 0)] public int Version { get; set; } = CurrentVersion;
         [DataMember] public LayerSettings Layers { get; set; } = new LayerSettings();
@@ -69,7 +69,6 @@ namespace MDraftingHeper.Core.Settings
         /// <summary>Restores defaults for sections that a partial or old file left empty.</summary>
         public UserSettings Normalised()
         {
-            int loadedVersion = Version;
             Layers = Layers ?? new LayerSettings();
             if (string.IsNullOrWhiteSpace(Layers.RebarTable)) Layers.RebarTable = "MDH_REBAR_TABLE";
             if (string.IsNullOrWhiteSpace(Layers.Tie)) Layers.Tie = "MDH_TIE";
@@ -81,7 +80,10 @@ namespace MDraftingHeper.Core.Settings
             Rebar = Rebar ?? new RebarSettings();
             Tie = Tie ?? new TieSettings();
             Steel = Steel ?? new SteelSettings();
-            if (loadedVersion < 2) Tie.PresetId = "project-bend-detail";
+            // Files from before per-end angles have no AngleA/AngleB (deserialised as 0).
+            if (Tie.AngleA != 90 && Tie.AngleA != 135 && Tie.AngleA != 180) Tie.AngleA = 135;
+            if (Tie.AngleB != 90 && Tie.AngleB != 135 && Tie.AngleB != 180) Tie.AngleB = 135;
+            if (Tie.Mode != "OpenTie" && Tie.Mode != "ClosedHoop") Tie.Mode = "OpenTie";
             Steel.CentreAxes = false;
             Steel.ProfileLabel = false;
             Version = CurrentVersion;

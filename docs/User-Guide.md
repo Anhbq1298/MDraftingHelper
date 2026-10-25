@@ -18,21 +18,25 @@ Each tool opens its own small dialog. When the tool needs a selection, the dialo
 
 ## Tie & Hook (`MDH_TIE`)
 
-1. The configuration window opens immediately. Choose hook angle (90°, 135°, 180°), tie diameter (H10–H20), hook position (A, B or both) and Flip.
-2. Choose a hook preset:
-   - **Project bend detail (provided)** (default): the straight tail is calculated from data, not command code. Bend angles up to 150° use `max(10φ, 70 mm)`; bend angles above 150° use `max(5φ, 50 mm)`. The inside bend (mandrel) diameter remains editable because the supplied detail does not define it.
-   - **Manual input**: you enter the inside bend (mandrel) diameter and the straight tail length.
-   - **EC2 + Singapore NA (candidate values) — UNVERIFIED**: example rules that have not been checked against the authorised code text. Do not present the result as code-compliant.
-3. Click **Select 2 Circles…**, then pick **Circle A** and **Circle B** (the longitudinal bars; both must lie in one plane). The configuration window reopens with the selected diameters, spacing and preview.
-4. Click **Apply & Draw** to insert the tie immediately. Cancelling the circle selection returns to the configuration window without drawing.
+A 2D drafting tool: it draws tie and hoop **centrelines** around existing longitudinal bar circles. It performs no structural or code checks, no 3D work and no scheduling.
+
+1. Choose **Open Tie** or **Closed Hoop**.
+2. Choose the tie diameter (H10–H20), the **Start A** and **End B** hook angles (90°, 135°, 180°, independently) and, optionally, a clear gap and **Flip direction**.
+   - Open Tie: **Hook position** — both ends, Start A only or End B only.
+   - Closed Hoop: **Closure corner** — the corner bar that carries both hooks.
+3. Click **Select 2 Circles…** (open tie: pick Circle A, then Circle B) or **Select Bars…** (hoop: select the bar circles, e.g. with a window). The window reopens with a live preview.
+4. Click **Apply & Draw**. Cancelling the selection returns to the window without drawing.
+
+Mandrel diameter and tail lengths are calculated automatically and shown read-only, using EC2 **drafting rules**: inside mandrel 4φ for φ ≤ 16 mm, 7φ above; tail max(10φ, 70 mm) for hooks up to 150°, max(5φ, 50 mm) above 150°. These size the drawing only; the result is not a verified EC2 design.
 
 Geometry rules:
 
-- Dref = max(DA, DB) is used for the hooks at **both** ends; each hook stays centred on its own bar, so the smaller bar gets more clearance (shown in the dialog).
-- Centreline bend radius Rc = max(Dref/2 + clear gap + tie/2, mandrel/2 + tie/2). Rfit, Rmandrel, Rc and the clearances are shown separately.
-- The straight tie is tangent to both bends (offset Rc from the line between bar centres). A 180° hook is a semicircle around the bar with its tail running back parallel to the tie.
-- If tails would clash with each other or pass through a bar, drawing is refused; tails are never shortened silently.
-- Output: one lightweight polyline with true arc bulges on layer `MDH_TIE`, with entity lineweight H10 0.18, H12 0.20, H13 0.25, H16 0.25, H20 0.30 mm (graphical only). Hook settings are stored on the polyline (XRecord `MDH_TIE`). The tie does not follow later bar moves.
+- Bar centres never move. The largest selected bar diameter sizes every bend, and the actual tie diameter is used to place the centreline.
+- Straight legs run Ø/2 + clear gap + tie/2 from the bar centres, so the tie touches the largest bar. Where the mandrel bend is larger than the bar, the bar nests in the bend (touching the inside of the arc) instead of the tie being pushed away from it.
+- Open tie: the straight tie runs between the two bars; a 180° hook is a semicircular return with its tail running back parallel to the tie.
+- Closed hoop: wraps the outer bars of the selection (bars inside it are ignored), with one bend per corner. Both hooks sit on the closure corner, each measured from its own leg: 135°/135° gives the usual two parallel tails into the core; a 90° hook laps along the adjacent leg.
+- Invalid drafting output (tails crossing, a tail through a bar, bends too large for the bar spacing) is refused; tails are never shortened silently.
+- Output: one 2D lightweight polyline with true arc bulges on layer `MDH_TIE`, entity lineweight H10 0.18, H12 0.20, H13 0.25, H16 0.25, H20 0.30 mm (graphical only). No metadata is attached, and the polyline does not follow later bar moves.
 
 ## Steel Section (`MDH_STEEL`)
 

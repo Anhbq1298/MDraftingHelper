@@ -16,7 +16,7 @@ namespace MDraftingHeper.Core.Tests
         [Fact]
         public void Tie_CommitThenReopenAndCloseWithX_IsNotCommit()
         {
-            var vm = new TieViewModel(new List<HookPreset> { HookPresetReader.ManualFallback() });
+            var vm = new TieViewModel();
             vm.SetBars(new Point2(0, 0), 20, new Point2(300, 0), 25);
             vm.BeginDialog();
             Assert.True(vm.DrawCommand.CanExecute(null));
