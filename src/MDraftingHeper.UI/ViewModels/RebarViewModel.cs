@@ -18,7 +18,7 @@ namespace MDraftingHeper.UI.ViewModels
         public string TotalArea { get; set; }
     }
 
-    public sealed class RebarViewModel : ViewModelBase
+    public sealed class RebarViewModel : DialogViewModel
     {
         private List<(RebarBar bar, BarPlacement placement)> _bars = new List<(RebarBar, BarPlacement)>();
         private SectionBoundary _boundary;
@@ -33,9 +33,6 @@ namespace MDraftingHeper.UI.ViewModels
             InsertTableCommand = new RelayCommand(() => Finish(DialogAction.Commit), () => CanInsert);
             CloseCommand = new RelayCommand(() => Finish(DialogAction.Close));
         }
-
-        public event Action RequestClose;
-        public DialogAction Action { get; private set; }
 
         public ICommand SelectCommand { get; }
         public ICommand InsertTableCommand { get; }
@@ -137,12 +134,6 @@ namespace MDraftingHeper.UI.ViewModels
             foreach (var n in new[] { nameof(TotalCountText), nameof(AsText), nameof(AgText), nameof(RhoText),
                                       nameof(AsTargetText), nameof(DifferenceText), nameof(CanInsert), nameof(Preview), nameof(Result) })
                 Raise(n);
-        }
-
-        private void Finish(DialogAction a)
-        {
-            Action = a;
-            RequestClose?.Invoke();
         }
     }
 }

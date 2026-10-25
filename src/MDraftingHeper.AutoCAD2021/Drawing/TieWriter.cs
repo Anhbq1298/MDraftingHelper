@@ -24,11 +24,14 @@ namespace MDraftingHeper.AutoCAD2021.Drawing
             }
         }
 
-        /// <summary>An unsaved polyline for preview or output; geometry from the Core result.</summary>
+        /// <summary>
+        /// An unsaved polyline for preview or output; geometry from the Core result. Pass a null layer
+        /// for previews: the layer may not exist yet and previews must not write to the drawing.
+        /// </summary>
         public static Polyline CreatePolyline(PlaneFrame frame, TieResult result, TieBarSize size, string layer)
         {
             var pl = frame.ToPolyline(result.Path);
-            pl.Layer = layer;
+            if (layer != null) pl.Layer = layer;
             pl.LineWeight = LineweightFor(size);
             return pl;
         }
@@ -102,7 +105,7 @@ namespace MDraftingHeper.AutoCAD2021.Drawing
                     var pl = build();
                     if (pl == null) return false;
                     preview.Show(pl);
-                    var ko = new PromptKeywordOptions("\nAccept tie or [Flip] <Accept>: ", "Accept Flip") { AllowNone = true };
+                    var ko = new PromptKeywordOptions("\nAccept tie or [Accept/Flip] <Accept>: ", "Accept Flip") { AllowNone = true };
                     var res = ed.GetKeywords(ko);
                     if (res.Status == PromptStatus.None || (res.Status == PromptStatus.OK && res.StringResult == "Accept")) return true;
                     if (res.Status == PromptStatus.OK && res.StringResult == "Flip") { flip(); continue; }

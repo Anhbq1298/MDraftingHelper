@@ -84,7 +84,6 @@ namespace MDraftingHeper.UI.Preview
                 g.Freeze();
                 dc.DrawGeometry(null, PenFor(shape.Style), g);
             }
-            if (!string.IsNullOrEmpty(Message)) DrawMessage(dc, Message, bottom: true);
         }
 
         private static List<Point2> Sample(Path2 p)
@@ -94,13 +93,13 @@ namespace MDraftingHeper.UI.Preview
             return pts;
         }
 
-        private void DrawMessage(DrawingContext dc, string text, bool bottom = false)
+        /// <summary>Shown only when there is nothing to draw.</summary>
+        private void DrawMessage(DrawingContext dc, string text)
         {
             var ft = new FormattedText(text, System.Globalization.CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
                 new Typeface("Segoe UI"), 11, Brushes.Gainsboro, VisualTreeHelper.GetDpi(this).PixelsPerDip)
             { MaxTextWidth = Math.Max(10, ActualWidth - 16) };
-            double y = bottom ? ActualHeight - ft.Height - 4 : (ActualHeight - ft.Height) / 2;
-            dc.DrawText(ft, new Point(8, y));
+            dc.DrawText(ft, new Point(8, (ActualHeight - ft.Height) / 2));
         }
 
         private static Pen PenFor(PreviewStyle s)

@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
   Authors the MDraftingHeper steel Dynamic Block templates in a real AutoCAD 2021 session
   and saves them to assets\DynamicBlocks\MDH_SteelSections.dwg.
@@ -35,7 +35,10 @@ function Invoke-AcadScript([string]$name, [string]$body, [string]$drawing) {
     $logDir = Join-Path $work ("log_" + $name)
     New-Item -ItemType Directory -Force $logDir | Out-Null
     $scr = Join-Path $work ($name + ".scr")
-    $header = "FILEDIA 0`r`nCMDECHO 1`r`n(setvar `"LOGFILEPATH`" `"$(To-Lisp $logDir)/`")`r`nLOGFILEON`r`n"
+    $header = "FILEDIA 0`r`nCMDECHO 1`r`n(setq mdh:oldlogpath (getvar `"LOGFILEPATH`") mdh:oldlogmode (getvar `"LOGFILEMODE`"))`r`n(setvar `"LOGFILEPATH`" `"$(To-Lisp $logDir)/`")`r`nLOGFILEON`r`n"
+    # LOGFILEMODE/LOGFILEPATH are persistent user settings: restore them before AutoCAD quits.
+    $restore = "(setvar `"LOGFILEMODE`" mdh:oldlogmode)(setvar `"LOGFILEPATH`" mdh:oldlogpath)`r`n"
+    $body = [regex]::Replace($body, "(?m)^QUIT", { param($m) $restore + "QUIT" })
     Set-Content $scr -Encoding ascii -Value ($header + $body)
     $argList = if ($drawing) { "`"$drawing`" /nologo /b `"$scr`"" } else { "/nologo /t acadiso.dwt /b `"$scr`"" }
     $p = Start-Process -FilePath $acad -ArgumentList $argList -PassThru

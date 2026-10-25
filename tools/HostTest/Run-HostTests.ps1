@@ -19,7 +19,10 @@ function L([string]$p) { $p -replace '\\', '/' }
 function Run([string]$name, [string]$body, [string]$drawing) {
     $logDir = Join-Path $work ("log_" + $name); New-Item -ItemType Directory -Force $logDir | Out-Null
     $scr = Join-Path $work ($name + ".scr")
-    Set-Content $scr -Encoding ascii -Value ("FILEDIA 0`r`nCMDECHO 1`r`n(setvar `"LOGFILEPATH`" `"$(L $logDir)/`")`r`nLOGFILEON`r`n" + $body)
+    # LOGFILEMODE/LOGFILEPATH are persistent user settings: restore them before AutoCAD quits.
+    $restore = "(setvar `"LOGFILEMODE`" mdh:oldlogmode)(setvar `"LOGFILEPATH`" mdh:oldlogpath)`r`n"
+    $body = [regex]::Replace($body, "(?m)^QUIT", { param($m) $restore + "QUIT" })
+    Set-Content $scr -Encoding ascii -Value ("FILEDIA 0`r`nCMDECHO 1`r`n(setq mdh:oldlogpath (getvar `"LOGFILEPATH`") mdh:oldlogmode (getvar `"LOGFILEMODE`"))`r`n(setvar `"LOGFILEPATH`" `"$(L $logDir)/`")`r`nLOGFILEON`r`n" + $body)
     $a = if ($drawing) { "`"$drawing`" /nologo /b `"$scr`"" } else { "/nologo /t acadiso.dwt /b `"$scr`"" }
     $p = Start-Process $acad -ArgumentList $a -PassThru
     if (-not $p.WaitForExit($TimeoutSec * 1000)) { $p | Stop-Process -Force; Write-Warning "$name timed out" }
@@ -45,8 +48,8 @@ SAVEAS 2018 "$(L $dwg)"
 QUIT
 "@
 $log1 = Run "session1" $s1 $null
-# Session 2: let startup finish (Idle creates the Ribbon tab) before checking, without forcing it.
-$log2 = if (Test-Path $dwg) { Run "session2" "DELAY 5000`r`nMDH_SELFTEST_RIBBON`r`nMDH_SELFTEST_REOPEN`r`nQUIT Y`r`n" $dwg } else { @("MDH-SELFTEST FAIL session1 did not save $dwg") }
+# Session 2: reopen. (The Idle-driven Ribbon startup path cannot run inside a /b script; it is checked by Run-RibbonTest.ps1.)
+$log2 = if (Test-Path $dwg) { Run "session2" "MDH_SELFTEST_REOPEN`r`nQUIT Y`r`n" $dwg } else { @("MDH-SELFTEST FAIL session1 did not save $dwg") }
 
 $all = @($log1) + @($log2)
 Set-Content (Join-Path $work "hosttest.log") $all

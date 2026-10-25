@@ -33,7 +33,7 @@ namespace MDraftingHeper.UI.ViewModels
         }
     }
 
-    public sealed class TieViewModel : ViewModelBase
+    public sealed class TieViewModel : DialogViewModel
     {
         private HookAngleOption _angle;
         private TieBarSize _tieSize;
@@ -59,9 +59,6 @@ namespace MDraftingHeper.UI.ViewModels
             CancelCommand = new RelayCommand(() => Finish(DialogAction.Close));
             Recalculate();
         }
-
-        public event Action RequestClose;
-        public DialogAction Action { get; private set; }
 
         public ICommand SelectBarsCommand { get; }
         public ICommand DrawCommand { get; }
@@ -191,12 +188,6 @@ namespace MDraftingHeper.UI.ViewModels
             foreach (var n in new[] { nameof(FitRadiusText), nameof(MandrelRadiusText), nameof(CentrelineRadiusText), nameof(ClearanceText),
                                       nameof(Messages), nameof(CanDraw), nameof(Preview), nameof(LineweightText), nameof(Result) })
                 Raise(n);
-        }
-
-        private void Finish(DialogAction a)
-        {
-            Action = a;
-            RequestClose?.Invoke();
         }
     }
 }

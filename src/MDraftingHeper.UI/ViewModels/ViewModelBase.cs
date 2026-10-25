@@ -55,4 +55,25 @@ namespace MDraftingHeper.UI.ViewModels
 
     /// <summary>What the dialog asks the CAD command to do after it closes.</summary>
     public enum DialogAction { None, Select, Commit, Close }
+
+    /// <summary>
+    /// A view model shown repeatedly by a command loop (dialog → model-space pick → dialog).
+    /// <see cref="Action"/> is reset every time the dialog opens, so closing it with the window's
+    /// X button (no command button) always reads as <see cref="DialogAction.None"/>, never as a stale
+    /// Commit/Select left over from the previous round.
+    /// </summary>
+    public abstract class DialogViewModel : ViewModelBase
+    {
+        public event Action RequestClose;
+        public DialogAction Action { get; private set; }
+
+        /// <summary>Called by the window when it opens.</summary>
+        public void BeginDialog() => Action = DialogAction.None;
+
+        protected void Finish(DialogAction a)
+        {
+            Action = a;
+            RequestClose?.Invoke();
+        }
+    }
 }

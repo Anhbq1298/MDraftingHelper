@@ -9,6 +9,7 @@ namespace MDraftingHeper.UI.Views
         {
             InitializeComponent();
             DataContext = vm;
+            vm.BeginDialog(); // a fresh round: closing with X must not repeat the previous action
             vm.RequestClose += Close;
             Closed += (s, e) => vm.RequestClose -= Close;
         }

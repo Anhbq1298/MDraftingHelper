@@ -32,7 +32,7 @@ namespace MDraftingHeper.UI.ViewModels
         public double Value => TryParse(_text, out var v) ? v : double.NaN;
     }
 
-    public sealed class SteelViewModel : ViewModelBase
+    public sealed class SteelViewModel : DialogViewModel
     {
         private readonly ProfileLibrary _library;
         private SteelFamily _family;
@@ -53,8 +53,6 @@ namespace MDraftingHeper.UI.ViewModels
             Family = SteelFamily.UB;
         }
 
-        public event Action RequestClose;
-        public DialogAction Action { get; private set; }
         public ICommand InsertCommand { get; }
         public ICommand CancelCommand { get; }
 
@@ -232,12 +230,6 @@ namespace MDraftingHeper.UI.ViewModels
             foreach (var n in new[] { nameof(Provenance), nameof(Messages), nameof(AreaText), nameof(CanInsert),
                                       nameof(Preview), nameof(LabelText), nameof(MatchedProfile) })
                 Raise(n);
-        }
-
-        private void Finish(DialogAction a)
-        {
-            Action = a;
-            RequestClose?.Invoke();
         }
     }
 }

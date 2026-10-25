@@ -135,7 +135,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
                 var layer = settings.Layers.Tie;
                 var f = frame;
                 bool accepted = TiePreview.Confirm(doc.Editor,
-                    () => vm.Result?.Path == null ? null : TieWriter.CreatePolyline(f, vm.Result, vm.TieSize, layer),
+                    () => vm.Result?.Path == null ? null : TieWriter.CreatePolyline(f, vm.Result, vm.TieSize, null),
                     vm.ToggleFlip);
                 StoreTieSettings(vm, settings.Tie);
                 if (!accepted) { select = false; continue; } // Esc: nothing written, back to the dialog

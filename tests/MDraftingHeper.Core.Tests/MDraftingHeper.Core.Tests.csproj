@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MDraftingHeper.Core\MDraftingHeper.Core.csproj" />
+    <ProjectReference Include="..\..\src\MDraftingHeper.UI\MDraftingHeper.UI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

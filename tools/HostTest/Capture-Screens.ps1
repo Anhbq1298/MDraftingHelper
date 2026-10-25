@@ -40,29 +40,28 @@ try {
     $doc.SendCommand("MDH_SELFTEST_STEEL2`n"); Wait-Quiet
     # Show the UB instance edited to Custom (H=450 restored by STEEL2, so pick the first UB) and the ribbon tab.
     $doc.SendCommand("(command `"_.ZOOM`" `"_W`" `"2700,-400`" `"6300,700`")`n"); Wait-Quiet
-    $doc.SendCommand("(sssetfirst nil (ssget `"_C`" '(4790 -10) '(4810 10)))`n"); Wait-Quiet
+    $doc.SendCommand("(sssetfirst nil (ssget `"_C`" '(4790 -10) '(4810 10) '((0 . `"INSERT`"))))`n"); Wait-Quiet
     $doc.PostCommand("_PROPERTIES`n"); Start-Sleep -Seconds 3
     Activate
     Shot "01_properties_palette_ub" | Out-Null
     $doc.SendCommand("(sssetfirst nil nil)`n"); Wait-Quiet
 
-    foreach ($c in @(@("MDH_STEEL", "02_steel_dialog"), @("MDH_TIE", "03_tie_selecting"), @("MDH_REBAR", "05_rebar_selecting"))) {
-        $doc.PostCommand($c[0] + "`n"); Start-Sleep -Seconds 4
-        Activate
-        Shot $c[1] | Out-Null
-        if ($c[0] -eq "MDH_TIE") {
-            # Pick the two tie test bars by coordinates (tilted plane is not visible here), so cancel and
-            # show the dialog with no bars instead: Esc at the bar prompt returns.
-            [System.Windows.Forms.SendKeys]::SendWait("{ESC}"); Start-Sleep -Seconds 2
-        }
-        if ($c[0] -eq "MDH_REBAR") {
-            [System.Windows.Forms.SendKeys]::SendWait("{ESC}"); Start-Sleep -Seconds 2
-        }
-        if ($c[0] -eq "MDH_STEEL") {
-            [System.Windows.Forms.SendKeys]::SendWait("{ESC}"); Start-Sleep -Seconds 2
-        }
-        Wait-Quiet
-    }
+    # Steel dialog
+    $doc.PostCommand("MDH_STEEL`n"); Start-Sleep -Seconds 4; Activate
+    Shot "02_steel_dialog" | Out-Null
+    [System.Windows.Forms.SendKeys]::SendWait("{ESC}"); Start-Sleep -Seconds 2; Wait-Quiet
+
+    # Tie dialog: two coplanar bars, picked on their circumference.
+    $doc.SendCommand("(command `"_.CIRCLE`" `"0,-2000`" `"10`" `"_.CIRCLE`" `"300,-2000`" `"12.5`" `"_.ZOOM`" `"_W`" `"-200,-2300`" `"500,-1700`")`n"); Wait-Quiet
+    $doc.PostCommand("(command `"MDH_TIE`" `"10,-2000`" `"312.5,-2000`")`n"); Start-Sleep -Seconds 5; Activate
+    Shot "03_tie_dialog" | Out-Null
+    [System.Windows.Forms.SendKeys]::SendWait("{ESC}"); Start-Sleep -Seconds 2; Wait-Quiet
+
+    # Rebar dialog: self-test section at 0..400 x 0..600 (window-select circles, pick the bottom edge).
+    $doc.SendCommand("(command `"_.ZOOM`" `"_W`" `"-300,-100`" `"700,700`")`n"); Wait-Quiet
+    $doc.PostCommand("(command `"MDH_REBAR`" `"_C`" `"-150,-50`" `"450,650`" `"`" `"0,150`")`n"); Start-Sleep -Seconds 5; Activate
+    Shot "04_rebar_dialog" | Out-Null
+    [System.Windows.Forms.SendKeys]::SendWait("{ESC}"); Start-Sleep -Seconds 2; Wait-Quiet
 }
 finally {
     try { foreach ($d in @($app.Documents)) { $d.Close($false) } } catch { }
