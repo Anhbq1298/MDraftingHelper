@@ -27,7 +27,7 @@ namespace MDraftingHeper.AutoCAD2021.App
                 RibbonManager.Start();
                 SteelSync.Start();
                 AcApp.DocumentManager.MdiActiveDocument?.Editor.WriteMessage(
-                    "\nMDraftingHeper loaded: MDH_REBAR, MDH_TIE, MDH_STEEL.");
+                    "\nMDraftingHeper loaded: MDH_REBAR, MDH_TIE, MDH_STEEL, MDH_RECT.");
             }
             catch (System.Exception ex)
             {

@@ -32,7 +32,11 @@ namespace MDraftingHeper.AutoCAD2021.Blocks
                         lib.Issues.Add(new ProfileImportIssue(Path.GetFileName(f), "Could not read file: " + ex.Message, true));
                     }
                 }
-                foreach (var i in lib.Issues) Log.Warn("Profile import: " + i);
+                // Errors individually; warnings (e.g. ~1,000 rule-based hollow-section radii) as one summary line.
+                foreach (var i in lib.Issues.Where(x => x.IsError)) Log.Warn("Profile import: " + i);
+                int warnings = lib.Issues.Count(x => !x.IsError);
+                Log.Info("Profile libraries: " + lib.Profiles.Count + " profiles from " + files.Count + " files; " +
+                         lib.Issues.Count(x => x.IsError) + " rejected records, " + warnings + " warnings (e.g. assumed corner radii).");
                 _library = lib;
                 _libraryStamp = stamp;
                 return lib;

@@ -15,6 +15,9 @@ namespace MDraftingHeper.Core.Hooks
 
         public double TieDiameter { get; set; } = 10;
         public HookAngle Angle { get; set; } = HookAngle.Deg135;
+        /// <summary>Optional per-end angles. When omitted, <see cref="Angle"/> is used.</summary>
+        public HookAngle? AngleA { get; set; }
+        public HookAngle? AngleB { get; set; }
         public HookEnds Ends { get; set; } = HookEnds.Both;
 
         /// <summary>False: the tie runs on the left of A→B. True: on the right.</summary>
@@ -105,7 +108,8 @@ namespace MDraftingHeper.Core.Hooks
             // Sense of rotation around B when travelling +u on the n side: clockwise for the
             // left side (n = +perp), counter-clockwise when flipped.
             double s = input.Flip ? 1 : -1;
-            double theta = GeometryMath.ToRadians((int)input.Angle);
+            double thetaA = GeometryMath.ToRadians((int)(input.AngleA ?? input.Angle));
+            double thetaB = GeometryMath.ToRadians((int)(input.AngleB ?? input.Angle));
             bool hookA = input.Ends != HookEnds.EndB;
             bool hookB = input.Ends != HookEnds.EndA;
 
@@ -114,26 +118,27 @@ namespace MDraftingHeper.Core.Hooks
             var cb = input.CenterB;
             var ta = ca + n * rc;
             var tb = cb + n * rc;
-            double bulge = Path2.BulgeFromSweep(s * theta);
+            double bulgeA = Path2.BulgeFromSweep(s * thetaA);
+            double bulgeB = Path2.BulgeFromSweep(s * thetaB);
 
             if (hookA)
             {
                 // Hook A traversed away from the tie rotates opposite to hook B; the path is
                 // written from the tail end, so the arc runs in the same sense as at B.
-                var rimA = ca + n.Rotate(-s * theta) * rc;
-                var tailDirA = (-u).Rotate(-s * theta);
+                var rimA = ca + n.Rotate(-s * thetaA) * rc;
+                var tailDirA = (-u).Rotate(-s * thetaA);
                 var tailEndA = rimA + tailDirA * input.TailLength;
                 if (input.TailLength > 1e-9) vertices.Add(new PathVertex(tailEndA));
-                vertices.Add(new PathVertex(rimA, bulge));
+                vertices.Add(new PathVertex(rimA, bulgeA));
                 result.TailDirectionA = tailDirA;
             }
             vertices.Add(new PathVertex(ta));
 
             if (hookB)
             {
-                vertices.Add(new PathVertex(tb, bulge));
-                var rimB = cb + n.Rotate(s * theta) * rc;
-                var tailDirB = u.Rotate(s * theta);
+                vertices.Add(new PathVertex(tb, bulgeB));
+                var rimB = cb + n.Rotate(s * thetaB) * rc;
+                var tailDirB = u.Rotate(s * thetaB);
                 vertices.Add(new PathVertex(rimB));
                 if (input.TailLength > 1e-9) vertices.Add(new PathVertex(rimB + tailDirB * input.TailLength));
                 result.TailDirectionB = tailDirB;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -15,6 +15,7 @@ using MDraftingHeper.AutoCAD2021.Ribbon;
 using MDraftingHeper.AutoCAD2021.Selection;
 using MDraftingHeper.Core.Hooks;
 using MDraftingHeper.Core.Rebar;
+using MDraftingHeper.Core.Rectangular;
 using MDraftingHeper.Core.Steel;
 using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
@@ -48,6 +49,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             Guard("ribbon", () => TestRibbon());
             Guard("rebar", () => TestRebar(doc));
             Guard("tie", () => TestTie(doc));
+            Guard("rectangular", () => TestRectangular(doc));
             Guard("steel", () => TestSteel(doc));
             Guard("wblock", () => TestWblock(doc));
             doc.Editor.WriteMessage("\nMDH-SELFTEST SUMMARY pass=" + _pass + " fail=" + _fail);
@@ -59,6 +61,50 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             try { a(); }
             catch (System.Exception ex) { Check(name + " threw", false, ex.GetType().Name + ": " + ex.Message); Log.Error("selftest " + name, ex); }
         }
+
+        // ---------------------------------------------------------------- rectangular column
+
+        private static void TestRectangular(Document doc)
+        {
+            var s = new RectangularSectionModel();
+            s.FaceParameters.BarsOnBFace = 5;
+            s.FaceParameters.BarsOnHFace = 4;
+            var layout = LayoutChangeCoordinator.CommitFaceLayout(s, true);
+            Check("rectangular face layout valid", layout.IsValid, layout.Summary);
+            Check("rectangular unique physical-bar count", s.LongitudinalBars.Count == 14, s.LongitudinalBars.Count.ToString());
+            Check("rectangular restraint audit", RestraintAuditService.Audit(s).UnrestrainedNames.Count == 0,
+                RestraintAuditService.Audit(s).Validation.Summary);
+            bool geometry = s.TieBars.All(t => RectangularTieGeometryBuilder.Build(s, t).Validation.IsValid);
+            Check("rectangular tie geometry valid", geometry);
+
+            using (var tr = doc.Database.TransactionManager.StartTransaction())
+            {
+                DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_SECTION", 7);
+                DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_REBAR", 1);
+                DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_TIE", 2);
+                DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_AXES", 8);
+                DrawingGuards.EnsureLayer(tr, doc.Database, "MDH_LABEL", 7);
+                var ids = RectangularSectionWriter.Insert(tr, doc.Database, new RectangularInsertOptions
+                {
+                    Section = s, InsertionPoint = new Point3d(9000, 2500, 0),
+                    Ucs = Matrix3d.Rotation(Math.PI / 7, Vector3d.ZAxis, Point3d.Origin),
+                    RotationRadians = Math.PI / 9, Units = UnitContextForTests.Millimetres,
+                    Axes = true, Dimensions = true, SectionLayer = "MDH_SECTION", RebarLayer = "MDH_REBAR",
+                    TieLayer = "MDH_TIE", AxesLayer = "MDH_AXES", LabelLayer = "MDH_LABEL"
+                });
+                var entities = ids.Select(id => tr.GetObject(id, OpenMode.ForRead)).ToList();
+                Check("rectangular CAD circles equal actual bars", entities.OfType<Circle>().Count() == s.LongitudinalBars.Count,
+                    entities.OfType<Circle>().Count().ToString());
+                Check("rectangular CAD output has true arc polylines", entities.OfType<Polyline>().Any(p =>
+                    Enumerable.Range(0, p.NumberOfVertices).Any(i => Math.Abs(p.GetBulgeAt(i)) > 1e-9)));
+                Check("rectangular CAD output has two native dimensions", entities.OfType<Dimension>().Count() == 2,
+                    entities.OfType<Dimension>().Count().ToString());
+                tr.Commit();
+            }
+        }
+
+        [CommandMethod("MDH", "MDH_SELFTEST_RECT", CommandFlags.Modal)]
+        public void RectangularSelfTest() => MdhCommands.Run(doc => Guard("rectangular", () => TestRectangular(doc)));
 
         private static void TestRibbon()
         {
@@ -364,8 +410,8 @@ namespace MDraftingHeper.AutoCAD2021.Commands
         [CommandMethod("MDH", "MDH_SELFTEST_UNDO2", CommandFlags.Modal)]
         public void Undo2() => MdhCommands.Run(doc =>
         {
-            SetDims(doc, _undoBlock, ("B", 150.0));
-            doc.Editor.WriteMessage("\nMDH-SELFTEST INFO undo block B set to 150");
+            SetDims(doc, _undoBlock, ("B", 155.0)); // 155 is not a catalogue width, so the label must turn Custom
+            doc.Editor.WriteMessage("\nMDH-SELFTEST INFO undo block B set to 155");
         });
 
         /// <summary>Checks B and the label without creating an undo marker (so REDO still applies).</summary>

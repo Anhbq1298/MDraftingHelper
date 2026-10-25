@@ -32,12 +32,23 @@ namespace MDraftingHeper.UI.ViewModels
         public double Value => TryParse(_text, out var v) ? v : double.NaN;
     }
 
+    /// <summary>One row of the profile list: a library profile, or the "(Custom dimensions)" entry.</summary>
+    public sealed class ProfileItem
+    {
+        public ProfileItem(SteelProfile profile) { Profile = profile; }
+        public SteelProfile Profile { get; }
+        public bool IsCustom => Profile == null;
+        public string Display => Profile == null ? "(Custom dimensions)" : Profile.DisplayName;
+        public override string ToString() => Display;
+    }
+
     public sealed class SteelViewModel : DialogViewModel
     {
         private readonly ProfileLibrary _library;
         private SteelFamily _family;
         private string _search = "";
         private SteelProfile _profile;
+        private ProfileItem _item;
         private bool _isCustom;
         private bool _suppress;
         private InsertionAnchor _anchor = InsertionAnchor.Centroid;
@@ -59,7 +70,8 @@ namespace MDraftingHeper.UI.ViewModels
         public string LibraryNote { get; }
         public IList<SteelFamily> Families { get; } = SteelFamilies.All.ToList();
         public IList<InsertionAnchor> Anchors { get; } = new[] { InsertionAnchor.Centroid, InsertionAnchor.TopLeft, InsertionAnchor.BottomCentre };
-        public ObservableCollection<SteelProfile> Profiles { get; } = new ObservableCollection<SteelProfile>();
+        /// <summary>"(Custom dimensions)" first, then the family's library profiles matching the search.</summary>
+        public ObservableCollection<ProfileItem> Profiles { get; } = new ObservableCollection<ProfileItem>();
         public ObservableCollection<DimensionRow> Dimensions { get; } = new ObservableCollection<DimensionRow>();
 
         public SteelFamily Family
@@ -69,10 +81,10 @@ namespace MDraftingHeper.UI.ViewModels
             {
                 _family = value;
                 Raise();
+                _profile = null;
                 RefreshProfiles();
-                var first = Profiles.FirstOrDefault();
-                if (first != null) SelectedProfile = first;
-                else { IsCustom = true; LoadRows(null); }
+                // Default to the first catalogue size (fields locked); Custom only when the family has none.
+                SelectedItem = Profiles.FirstOrDefault(i => !i.IsCustom) ?? Profiles[0];
             }
         }
 
@@ -82,31 +94,47 @@ namespace MDraftingHeper.UI.ViewModels
             set { if (Set(ref _search, value)) RefreshProfiles(); }
         }
 
-        public SteelProfile SelectedProfile
+        /// <summary>
+        /// Selecting a library profile loads its dimensions and locks them; selecting "(Custom dimensions)"
+        /// unlocks the fields, starting from the values currently shown.
+        /// </summary>
+        public ProfileItem SelectedItem
         {
-            get => _profile;
+            get => _item;
             set
             {
                 if (value == null) return;
-                _profile = value;
-                _isCustom = false;
-                LoadRows(value);
-                Raise(); Raise(nameof(IsCustom));
+                _item = value;
+                if (value.IsCustom)
+                {
+                    _isCustom = true;
+                    LoadRows(null); // keep the values currently shown as the starting point
+                }
+                else
+                {
+                    _profile = value.Profile;
+                    // A profile without a published radius cannot be inserted as-is: let the user complete it.
+                    _isCustom = value.Profile.RadiusStatus == CornerRadiusStatus.Missing;
+                    LoadRows(value.Profile);
+                }
+                Raise(); Raise(nameof(IsCustom)); Raise(nameof(SelectedProfile));
             }
         }
 
-        /// <summary>Custom: dimensions are user-entered and not tied to a library profile.</summary>
-        public bool IsCustom
+        /// <summary>The selected library profile, or null while "(Custom dimensions)" is selected.</summary>
+        public SteelProfile SelectedProfile => _item != null && !_item.IsCustom ? _profile : null;
+
+        /// <summary>Selects a library profile of the current family by id; false if it is not in the list.</summary>
+        public bool SelectProfileById(string id)
         {
-            get => _isCustom;
-            set
-            {
-                if (!Set(ref _isCustom, value)) return;
-                if (!value && _profile != null) LoadRows(_profile);
-                Update();
-            }
+            var item = Profiles.FirstOrDefault(i => !i.IsCustom && string.Equals(i.Profile.Id, id, StringComparison.OrdinalIgnoreCase));
+            if (item == null) return false;
+            SelectedItem = item;
+            return true;
         }
 
+        /// <summary>Custom: dimensions are user-entered (fields unlocked) and not tied to a library profile.</summary>
+        public bool IsCustom => _isCustom;
         public InsertionAnchor Anchor { get => _anchor; set { if (Set(ref _anchor, value)) Raise(nameof(Preview)); } }
         public string RotationText { get => _rotationText; set { if (Set(ref _rotationText, value)) Update(); } }
         public double RotationDegrees => TryParse(_rotationText, out var r) ? r : double.NaN;
@@ -127,13 +155,13 @@ namespace MDraftingHeper.UI.ViewModels
         {
             get
             {
-                if (_isCustom || _profile == null) return "Custom dimensions (not from a library profile).";
+                if (_profile == null || (_isCustom && _item != null && _item.IsCustom)) return "Custom dimensions (not from a library profile).";
                 var p = _profile;
                 var s = "Source: " + p.Source + (string.IsNullOrEmpty(p.SourceVersion) ? "" : " (" + p.SourceVersion + ")");
                 if (!string.IsNullOrEmpty(p.Standard)) s += "  Standard: " + p.Standard;
                 if (p.IsDemonstration) s += "  DEMONSTRATION DATA — not for production.";
                 if (p.RadiusStatus == CornerRadiusStatus.Assumed) s += "  Radius r is ASSUMED, not published.";
-                if (p.RadiusStatus == CornerRadiusStatus.Missing) s += "  Radius r is MISSING from the source; enter a value (switches to Custom).";
+                if (p.RadiusStatus == CornerRadiusStatus.Missing) s += "  Radius r is MISSING from the source: fields unlocked to enter it (inserted as Custom).";
                 return s;
             }
         }
@@ -190,10 +218,14 @@ namespace MDraftingHeper.UI.ViewModels
 
         private void RefreshProfiles()
         {
-            var keep = _profile;
             Profiles.Clear();
-            foreach (var p in _library.Search(_family, _search)) Profiles.Add(p);
-            if (keep != null && Profiles.Contains(keep)) { _profile = keep; Raise(nameof(SelectedProfile)); }
+            var custom = new ProfileItem(null);
+            Profiles.Add(custom);
+            foreach (var p in _library.Search(_family, _search)) Profiles.Add(new ProfileItem(p));
+            // Keep the current choice selected when it is still listed.
+            if (_item == null) return;
+            var keep = _item.IsCustom ? custom : Profiles.FirstOrDefault(i => !i.IsCustom && i.Profile == _item.Profile);
+            if (keep != null) { _item = keep; Raise(nameof(SelectedItem)); }
         }
 
         private void LoadRows(SteelProfile p)
@@ -208,23 +240,14 @@ namespace MDraftingHeper.UI.ViewModels
                 row.Changed = OnRowChanged;
                 Dimensions.Add(row);
             }
-            if (p != null && p.RadiusStatus == CornerRadiusStatus.Missing) _isCustom = true;
             _suppress = false;
             Update();
         }
 
         private void OnRowChanged()
         {
-            if (_suppress) return;
-            // Editing a library value makes the section Custom unless it still matches.
-            if (!_isCustom && _profile != null && _library.Match(Section, 0.0005, _profile.Id) != _profile)
-            {
-                _isCustom = true;
-                Raise(nameof(IsCustom));
-            }
-            Update();
+            if (!_suppress) Update();
         }
-
         private void Update()
         {
             foreach (var n in new[] { nameof(Provenance), nameof(Messages), nameof(AreaText), nameof(CanInsert),

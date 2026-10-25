@@ -13,6 +13,7 @@ using MDraftingHeper.AutoCAD2021.Metadata;
 using MDraftingHeper.AutoCAD2021.Selection;
 using MDraftingHeper.Core.Geometry;
 using MDraftingHeper.Core.Hooks;
+using MDraftingHeper.Core.Rectangular;
 using MDraftingHeper.Core.Steel;
 using MDraftingHeper.UI.ViewModels;
 using MDraftingHeper.UI.Views;
@@ -236,8 +237,7 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             var s = MdhApp.Settings.Steel;
             var vm = new SteelViewModel(ProfileCache.Library, ProfileCache.LibraryNote);
             if (SteelFamilies.TryParse(s.Family, out var fam)) vm.Family = fam;
-            var remembered = vm.Profiles.FirstOrDefault(p => p.Id == s.ProfileId);
-            if (remembered != null) vm.SelectedProfile = remembered;
+            if (!string.IsNullOrEmpty(s.ProfileId)) vm.SelectProfileById(s.ProfileId);
             if (Enum.TryParse(s.Anchor, out InsertionAnchor anchor)) vm.Anchor = anchor;
             vm.RotationText = s.RotationDegrees.ToString(CultureInfo.InvariantCulture);
             vm.CentreAxes = s.CentreAxes;
@@ -285,6 +285,71 @@ namespace MDraftingHeper.AutoCAD2021.Commands
             int n = SteelSync.ReconcileAll(doc, onlyIfChanged: false);
             doc.Editor.WriteMessage("\nMDraftingHeper: " + n + " steel section record(s) updated from current geometry.");
         });
+
+        // ------------------------------------------------------------------ Quick Draw Rectangular
+
+        [CommandMethod("MDH", "MDH_RECT", CommandFlags.Modal)]
+        public void Rectangular() => Run(RectangularFlow);
+
+        private static void RectangularFlow(Document doc)
+        {
+            DrawingGuards.EnsureWritable(doc);
+            var units = UnitContext.Resolve(doc);
+            if (units == null) return;
+            var vm = new RectangularViewModel();
+            while (true)
+            {
+                Dialogs.Show(new RectangularWindow(vm));
+                if (vm.Action != DialogAction.Commit) return;
+                var validation = vm.ValidateFinal();
+                if (!validation.IsValid)
+                {
+                    doc.Editor.WriteMessage("\nMDraftingHeper: " + validation.Summary.Replace("\n", " "));
+                    continue;
+                }
+                var point = doc.Editor.GetPoint(new PromptPointOptions("\nRectangular section insertion point: "));
+                if (point.Status != PromptStatus.OK) continue;
+                var ao = new PromptAngleOptions("\nSection rotation <0>: ")
+                {
+                    BasePoint = point.Value,
+                    UseBasePoint = true,
+                    DefaultValue = 0,
+                    UseDefaultValue = true
+                };
+                var angle = doc.Editor.GetAngle(ao);
+                if (angle.Status != PromptStatus.OK && angle.Status != PromptStatus.None) continue;
+                double rotation = angle.Status == PromptStatus.None ? 0 : angle.Value;
+                var layers = MdhApp.Settings.Layers;
+                using (var tr = doc.Database.TransactionManager.StartTransaction())
+                {
+                    DrawingGuards.EnsureLayer(tr, doc.Database, layers.Section, 7);
+                    DrawingGuards.EnsureLayer(tr, doc.Database, layers.LongitudinalRebar, 1);
+                    DrawingGuards.EnsureLayer(tr, doc.Database, layers.Tie, 2);
+                    DrawingGuards.EnsureLayer(tr, doc.Database, layers.Axes, 8);
+                    DrawingGuards.EnsureLayer(tr, doc.Database, layers.Label, 7);
+                    RectangularSectionWriter.Insert(tr, doc.Database, new RectangularInsertOptions
+                    {
+                        Section = vm.Section,
+                        InsertionPoint = point.Value.TransformBy(doc.Editor.CurrentUserCoordinateSystem),
+                        Ucs = doc.Editor.CurrentUserCoordinateSystem,
+                        RotationRadians = rotation,
+                        Units = units,
+                        Axes = vm.ShowAxes,
+                        Dimensions = vm.ShowDimensions,
+                        SectionLayer = layers.Section,
+                        RebarLayer = layers.LongitudinalRebar,
+                        TieLayer = layers.Tie,
+                        AxesLayer = layers.Axes,
+                        LabelLayer = layers.Label
+                    });
+                    tr.Commit();
+                }
+                var audit = RestraintAuditService.Audit(vm.Section);
+                doc.Editor.WriteMessage("\nRectangular section inserted as one undo operation." +
+                    (audit.UnrestrainedNames.Count == 0 ? " Restraint audit complete." : " Incomplete restraint: " + string.Join(", ", audit.UnrestrainedNames) + "."));
+                return;
+            }
+        }
 
         // ------------------------------------------------------------------ shared
 

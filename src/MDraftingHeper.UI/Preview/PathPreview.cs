@@ -7,15 +7,20 @@ using MDraftingHeper.Core.Geometry;
 
 namespace MDraftingHeper.UI.Preview
 {
-    public enum PreviewStyle { Section, Bar, Tie, Axis, Boundary, Flagged }
+    public enum PreviewStyle { Section, Bar, Tie, Axis, Boundary, Flagged, Selected }
 
     /// <summary>A Core path to draw in a preview, with a role that sets its pen.</summary>
     public sealed class PreviewShape
     {
         public Path2 Path { get; }
         public PreviewStyle Style { get; }
+        public string Label { get; }
+        public Point2? LabelPoint { get; }
 
-        public PreviewShape(Path2 path, PreviewStyle style) { Path = path; Style = style; }
+        public PreviewShape(Path2 path, PreviewStyle style, string label = null, Point2? labelPoint = null)
+        {
+            Path = path; Style = style; Label = label; LabelPoint = labelPoint;
+        }
     }
 
     /// <summary>
@@ -51,6 +56,7 @@ namespace MDraftingHeper.UI.Preview
         private static readonly Pen AxisPen = FrozenPen(Color.FromRgb(0x9A, 0x9A, 0x9A), 0.8, dashed: true);
         private static readonly Pen BoundaryPen = FrozenPen(Color.FromRgb(0x7C, 0xD6, 0x8A), 1.4);
         private static readonly Pen FlaggedPen = FrozenPen(Color.FromRgb(0xFF, 0x5C, 0x5C), 1.6);
+        private static readonly Pen SelectedPen = FrozenPen(Color.FromRgb(0xFF, 0x66, 0xCC), 2.6);
 
         protected override void OnRender(DrawingContext dc)
         {
@@ -84,6 +90,15 @@ namespace MDraftingHeper.UI.Preview
                 g.Freeze();
                 dc.DrawGeometry(null, PenFor(shape.Style), g);
             }
+            foreach (var item in sampled.Where(x => !string.IsNullOrWhiteSpace(x.s.Label)))
+            {
+                var anchor = item.s.LabelPoint ?? item.pts[0];
+                var ft = new FormattedText(item.s.Label, System.Globalization.CultureInfo.CurrentUICulture,
+                    FlowDirection.LeftToRight, new Typeface("Segoe UI"), 10, Brushes.White,
+                    VisualTreeHelper.GetDpi(this).PixelsPerDip);
+                var at = Map(anchor);
+                dc.DrawText(ft, new Point(at.X + 4, at.Y - ft.Height / 2));
+            }
         }
 
         private static List<Point2> Sample(Path2 p)
@@ -111,6 +126,7 @@ namespace MDraftingHeper.UI.Preview
                 case PreviewStyle.Axis: return AxisPen;
                 case PreviewStyle.Boundary: return BoundaryPen;
                 case PreviewStyle.Flagged: return FlaggedPen;
+                case PreviewStyle.Selected: return SelectedPen;
                 default: return SectionPen;
             }
         }

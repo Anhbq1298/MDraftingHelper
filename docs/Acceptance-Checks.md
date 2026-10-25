@@ -2,7 +2,7 @@
 
 Status as of 2026-10-25. Machine: Windows 11, AutoCAD 2021 (R24.0) full. "Host" means the check ran inside AutoCAD 2021 with the add-in loaded from the installed bundle. A Core test pass is **not** evidence of AutoCAD behaviour; both are listed separately.
 
-## 1. Automated tests: 50/50 pass (47 Core + 3 dialog-round regressions)
+## 1. Automated tests: 71/71 pass
 
 `dotnet test tests\MDraftingHeper.Core.Tests` covers:
 
@@ -10,6 +10,7 @@ Status as of 2026-10-25. Machine: Windows 11, AutoCAD 2021 (R24.0) full. "Host" 
 - **Tie:** all three angles × flip are tangent-continuous; exact sweeps; arcs centred on the actual bars; Dref = max(DA, DB) at both ends; 90/135/180 tail directions; flip mirroring; rotation + translation invariance; single-hook ends; degenerate input; clashing tails rejected (not shortened); preset rule selection.
 - **Steel:** CHS/RHS/SHS/I validation (void, corner, fillet overlap); geometric areas against closed-form formulas; anchor offsets; demo fixture loads with provenance; shipped open libraries (1,749 profiles) load without errors, unique ids, family counts, spot checks, standard corner-radius rules; CSV template; unit conversion; inner→outer radius; duplicate ids, missing data, unknown units, invalid geometry, missing source; missing radius kept as missing; profile matching and Custom.
 - **Settings and presets:** round trip; corrupt or partial file falls back to defaults; shipped presets include Manual and none claims verification.
+- **Quick Draw Rectangular:** face counts and corner de-duplication; face/custom naming; actual-area calculation; cover offsets; fresh IDs after face regeneration; rename-only identity/tie preservation; geometry-edit invalidation; custom-mode auto-arrangement refusal; centre/clear distance; restraint audit; stale revision rejection; outer-hoop arc/closure geometry; separate end-hook angles through the shared tie engine.
 
 ## 2. Host-verified in AutoCAD 2021
 
@@ -45,6 +46,8 @@ Defects found by host testing and fixed:
 After those fixes, one interactive run through the dialog → *Preview & Draw* → Flip → Accept wrote exactly one tie polyline with 0.18 mm lineweight and no logged errors. Later keystroke-driven runs (SendKeys) were inconsistent because of timing, so they were discarded as evidence and the script was removed.
 
 ## 3. Implemented but not verified in the host
+
+- Quick Draw Rectangular native writer self-test and Ribbon button are implemented but await the next installed-bundle host run. Core/UI build and automated tests passed; the editor, popup interaction, rotated placement, native dimensions and one-step Undo still need the real AutoCAD host check.
 
 - Tie transient preview: Esc in the preview returning to the dialog with nothing written, and one U removing a completed tie. Check manually: `MDH_TIE`, pick two circles, *Preview & Draw*, Esc → dialog, Cancel → no new polyline. Repeat with Enter → one polyline on `MDH_TIE`; `U` → removed.
 - Clicking *Insert Table* and *Insert Block…* in the dialogs (the underlying writers are host-tested).

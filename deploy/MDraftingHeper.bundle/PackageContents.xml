@@ -4,7 +4,7 @@
     AutodeskProduct="AutoCAD"
     ProductType="Application"
     Name="MDraftingHeper"
-    Description="2D drafting helpers: rebar percentage, tie and hook, native dynamic steel sections."
+    Description="2D drafting helpers: rebar percentage, tie and hook, native dynamic steel sections, rectangular RC column sections."
     AppVersion="0.1.0"
     Author="MDraftingHeper"
     ProductCode="{6F3C2A1E-8B4D-4C7A-9E21-5D0B7A4C3F91}"
@@ -26,6 +26,7 @@
         <Command Global="MDH_REBAR" Local="MDH_REBAR" />
         <Command Global="MDH_TIE" Local="MDH_TIE" />
         <Command Global="MDH_STEEL" Local="MDH_STEEL" />
+        <Command Global="MDH_RECT" Local="MDH_RECT" />
         <Command Global="MDH_STEELSYNC" Local="MDH_STEELSYNC" />
       </Commands>
     </ComponentEntry>

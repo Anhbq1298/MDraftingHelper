@@ -1,6 +1,6 @@
 # Installing MDraftingHeper
 
-MDraftingHeper adds a **MDraftingHeper** tab to the AutoCAD Ribbon with three tools: Rebar Percentage, Tie & Hook, and Steel Section.
+MDraftingHeper adds a **MDraftingHeper** tab to the AutoCAD Ribbon with four tools: Rebar Percentage, Tie & Hook, Steel Section, and Quick Draw Rectangular.
 
 ## Requirements
 
@@ -15,7 +15,7 @@ MDraftingHeper adds a **MDraftingHeper** tab to the AutoCAD Ribbon with three to
 3. Double-click **`Install.cmd`** in the extracted folder.
    - If Windows shows "Windows protected your PC", click *More info* → *Run anyway*.
    - The window should end with **Installation complete.** Press any key to close it.
-4. Start AutoCAD 2021. The **MDraftingHeper** tab appears on the Ribbon, with *Rebar Percentage*, *Tie & Hook* and *Steel Section*.
+4. Start AutoCAD 2021. The **MDraftingHeper** tab appears on the Ribbon, with *Rebar Percentage*, *Tie & Hook*, *Steel Section* and *Quick Draw Rectangular*.
 
 If AutoCAD shows a security message about loading MDraftingHeper, choose **Always Load**.
 
@@ -23,6 +23,7 @@ If AutoCAD shows a security message about loading MDraftingHeper, choose **Alway
 
 - Type `MDH_STEEL` at the AutoCAD command line. The Steel Section dialog should open.
 - Insert a section, select it and press **Ctrl+1**. The **Custom** group in the Properties palette lists its dimensions (for example H, B, tw, tf, r). Change a value and the shape updates.
+- Type `MDH_RECT` to open Quick Draw Rectangular. Commit a valid bar/tie layout, click **Draw in AutoCAD**, then pick the insertion point and rotation.
 
 ## Update to a newer version
 
@@ -45,4 +46,5 @@ Close AutoCAD and double-click **`Uninstall.cmd`**. Your drawings are not affect
 
 - The steel profiles (UB/UC, IPE/HE A/B/M, CHS/SHS/RHS hot finished and cold formed) come from open datasets, not a manufacturer catalogue. Check critical sizes against your supplier's data. Hot-finished SHS/RHS are drawn with inner corner radius r − t (0.5 t), smaller than the 1.0 t of EN 10210-2.
 - The "EC2 + Singapore NA" hook preset is **unverified**. Use *Manual input* unless the values have been checked.
+- Quick Draw Rectangular uses the same hook geometry as Tie & Hook. Its restraint audit and configurable 150 mm distance convention are drafting aids, not structural-design certification.
 - Installed files: `%APPDATA%\Autodesk\ApplicationPlugins\MDraftingHeper.bundle`. Settings and logs: `%APPDATA%\MDraftingHeper` and `%LOCALAPPDATA%\MDraftingHeper`.

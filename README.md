@@ -1,12 +1,13 @@
 # MDraftingHeper
 
-AutoCAD 2021 (R24.0, x64) add-in for 2D structural drafting. One Ribbon tab, **MDraftingHeper**, with three tools:
+AutoCAD 2021 (R24.0, x64) add-in for 2D structural drafting. One Ribbon tab, **MDraftingHeper**, with four tools:
 
 | Button | Command | What it does |
 | --- | --- | --- |
 | Rebar Percentage | `MDH_REBAR` | Counts rebar Circles inside a closed boundary and inserts a native Table with As, Ag and ρ |
 | Tie & Hook | `MDH_TIE` | Draws a tie between two bar Circles with 90°/135°/180° hooks as a lightweight polyline with true arcs |
 | Steel Section | `MDH_STEEL` | Inserts CHS, SHS, RHS, UB and UC sections as native Dynamic Blocks whose dimensions are edited in Properties (Ctrl+1) |
+| Quick Draw Rectangular | `MDH_RECT` | Drafts a rectangular RC column section with named longitudinal bars, audited ties, labels, axes and dimensions |
 
 C# / .NET Framework 4.8 / WPF. Scope is 2D drafting only; no design checks.
 
@@ -54,3 +55,4 @@ Docs: [setup](docs/mcp/setup.md), [architecture](docs/mcp/architecture.md), [tro
 - The shipped steel profiles (1,749: UB/UC, IPE/HE, CHS/SHS/RHS) come from openly licensed datasets (MPL-2.0 / MIT, see `src/MDraftingHeper.Data/Profiles/THIRD-PARTY-NOTICES.md`). They are not a manufacturer catalogue: check critical sizes. Dlubal library data is not included (no reuse licence); other data can be imported as JSON/CSV.
 - The "EC2 + Singapore NA" hook preset is **unverified** candidate values. Use the Manual preset until verified rules are entered.
 - The rebar table is a snapshot. Ties do not follow moved bars.
+- Quick Draw Rectangular is a drafting and restraint-arrangement aid, not a PMM, shear-capacity or longitudinal-member design check. Its default 150 mm centre-to-centre rule is an explicit preview assumption, not a verified code interpretation.

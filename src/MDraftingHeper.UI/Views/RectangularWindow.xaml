@@ -1,0 +1,110 @@
+<Window x:Class="MDraftingHeper.UI.Views.RectangularWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="clr-namespace:MDraftingHeper.UI.Preview"
+        Title="MDraftingHeper — Quick Draw Rectangular" FontFamily="Segoe UI" FontSize="12"
+        Width="1120" Height="760" MinWidth="920" MinHeight="650"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Window.Resources><ResourceDictionary Source="DialogStyles.xaml" /></Window.Resources>
+    <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="Draw in AutoCAD…" Command="{Binding DrawCommand}" IsDefault="True" />
+            <Button Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True" />
+        </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="410" /><ColumnDefinition Width="8" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <DockPanel Grid.Column="0">
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
+                    <CheckBox Content="Axes" IsChecked="{Binding ShowAxes}" Margin="0,0,14,0" />
+                    <CheckBox Content="Dimensions in CAD" IsChecked="{Binding ShowDimensions}" />
+                </StackPanel>
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding Summary}" FontWeight="SemiBold" Margin="0,6,0,0" />
+                <p:PathPreview Shapes="{Binding Preview}" Message="Commit a valid layout" />
+            </DockPanel>
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center" />
+            <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <GroupBox Header="Geometry &amp; Cover">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="75" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="75" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="75" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="B (mm):" VerticalAlignment="Center" Margin="0,0,5,0" /><TextBox Grid.Column="1" Text="{Binding WidthText}" />
+                            <TextBlock Grid.Column="2" Text="H (mm):" VerticalAlignment="Center" Margin="12,0,5,0" /><TextBox Grid.Column="3" Text="{Binding HeightText}" />
+                            <TextBlock Grid.Column="4" Text="Cover (mm):" VerticalAlignment="Center" Margin="12,0,5,0" /><TextBox Grid.Column="5" Text="{Binding CoverText}" />
+                            <Button Grid.Column="6" Content="Apply Layout" Command="{Binding ApplyLayoutCommand}" HorizontalAlignment="Right" />
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Header="Longitudinal Reinforcement">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <RadioButton Content="Specify by Face" IsChecked="{Binding IsFaceMode}" Margin="0,0,18,0" />
+                                <RadioButton Content="Custom Coordinates" IsChecked="{Binding IsCustomMode}" />
+                            </StackPanel>
+                            <Grid IsEnabled="{Binding IsFaceMode}" Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="55" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="65" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="55" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="65" /></Grid.ColumnDefinitions>
+                                <TextBlock Text="Bars/B face:" VerticalAlignment="Center" /><TextBox Grid.Column="1" Text="{Binding BarsOnBText}" Margin="5,0,0,0" />
+                                <TextBlock Grid.Column="2" Text="Ø B:" VerticalAlignment="Center" Margin="12,0,0,0" /><TextBox Grid.Column="3" Text="{Binding BDiameterText}" Margin="5,0,0,0" />
+                                <TextBlock Grid.Column="4" Text="Bars/H face:" VerticalAlignment="Center" Margin="12,0,0,0" /><TextBox Grid.Column="5" Text="{Binding BarsOnHText}" Margin="5,0,0,0" />
+                                <TextBlock Grid.Column="6" Text="Ø H:" VerticalAlignment="Center" Margin="12,0,0,0" /><TextBox Grid.Column="7" Text="{Binding HDiameterText}" Margin="5,0,0,0" />
+                            </Grid>
+                            <DockPanel Margin="0,0,0,3">
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" IsEnabled="{Binding IsCustomMode}">
+                                    <Button Content="Add" Click="AddBar_Click" /><Button Content="Edit" Click="EditBar_Click" />
+                                    <Button Content="Delete" Command="{Binding DeleteBarCommand}" />
+                                </StackPanel>
+                                <TextBlock Text="Longitudinal Bars" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            </DockPanel>
+                            <DataGrid ItemsSource="{Binding Bars}" SelectedItem="{Binding SelectedBar}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" Height="165">
+                                <DataGrid.Style>
+                                    <Style TargetType="DataGrid">
+                                        <Style.Triggers><DataTrigger Binding="{Binding IsFaceMode}" Value="True"><Setter Property="Opacity" Value="0.72" /></DataTrigger></Style.Triggers>
+                                    </Style>
+                                </DataGrid.Style>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Bar Name" Binding="{Binding BarName}" Width="*" />
+                                    <DataGridTextColumn Header="Ø (mm)" Binding="{Binding Diameter}" Width="70" />
+                                    <DataGridTextColumn Header="X (mm)" Binding="{Binding X}" Width="75" />
+                                    <DataGridTextColumn Header="Y (mm)" Binding="{Binding Y}" Width="75" />
+                                    <DataGridTextColumn Header="Face" Binding="{Binding Face}" Width="105" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="Auto Tie Settings" IsEnabled="{Binding IsFaceMode}">
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="90" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="150" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="90" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <CheckBox Content="Enabled" IsChecked="{Binding AutoTiesEnabled}" VerticalAlignment="Center" />
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding TieSizes}" SelectedItem="{Binding AutoTieSize}" Margin="8,0,0,0" />
+                            <TextBlock Grid.Column="2" Text="Limit (mm):" Margin="12,0,5,0" VerticalAlignment="Center" /><TextBox Grid.Column="3" Text="{Binding LimitText}" Width="60" HorizontalAlignment="Left" />
+                            <ComboBox Grid.Column="3" ItemsSource="{Binding DistanceConventions}" SelectedItem="{Binding DistanceConvention}" Margin="68,0,0,0" />
+                            <TextBlock Grid.Column="4" Text="Hooks:" Margin="12,0,5,0" VerticalAlignment="Center" /><ComboBox Grid.Column="5" ItemsSource="{Binding HookAngles}" SelectedItem="{Binding AutoHook}" />
+                            <Button Grid.Column="6" Content="Generate / Replace Auto Ties" Command="{Binding GenerateTiesCommand}" HorizontalAlignment="Right" />
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox>
+                        <GroupBox.Header>
+                            <DockPanel Width="620"><TextBlock Text="Tie Bars" FontWeight="SemiBold" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Content="Add Stirrup" Click="AddTie_Click" /><Button Content="Edit" Click="EditTie_Click" />
+                                    <Button Content="Delete" Command="{Binding DeleteTieCommand}" />
+                                </StackPanel>
+                            </DockPanel>
+                        </GroupBox.Header>
+                        <DataGrid x:Name="TieGrid" ItemsSource="{Binding Ties}" SelectedItem="{Binding SelectedTie}" SelectionChanged="TieGrid_SelectionChanged"
+                                  AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" Height="155">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Tie" Binding="{Binding TieName}" Width="45" /><DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="80" />
+                                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="85" /><DataGridTextColumn Header="Bar A / references" Binding="{Binding BarA}" Width="*" />
+                                <DataGridTextColumn Header="Bar B" Binding="{Binding BarB}" Width="70" /><DataGridTextColumn Header="Ø" Binding="{Binding Diameter}" Width="48" />
+                                <DataGridTextColumn Header="Hook A" Binding="{Binding HookA}" Width="58" /><DataGridTextColumn Header="Hook B" Binding="{Binding HookB}" Width="58" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <TextBlock Text="{Binding Message}" Style="{StaticResource Warning}" MinHeight="34" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</Window>

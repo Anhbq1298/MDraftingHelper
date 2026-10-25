@@ -1,6 +1,6 @@
 # MDraftingHeper user guide
 
-All geometry is in millimetres. In a drawing whose INSUNITS is not millimetres, Rebar and Tie ask once per drawing whether to convert (INSUNITS itself is never changed); Steel requires a millimetre drawing. Unitless drawings (INSUNITS=0) ask whether to interpret units as millimetres.
+All geometry is in millimetres. In a drawing whose INSUNITS is not millimetres, Rebar, Tie and Quick Draw Rectangular ask once per drawing whether to convert (INSUNITS itself is never changed); Steel requires a millimetre drawing. Unitless drawings (INSUNITS=0) ask whether to interpret units as millimetres.
 
 Each tool opens its own small dialog. When the tool needs a selection, the dialog closes, you pick in model space, and it reopens. Esc at any prompt cancels safely; nothing is written until you confirm. Every completed insertion is one Undo step.
 
@@ -85,6 +85,22 @@ JSON schema version 1:
 
 Units may be mm, cm, m or in. `cornerRadiusConvention` (outer/inner) is required for SHS/RHS; inner radii are converted to outer. `cornerRadiusStatus` is published, assumed or missing; a missing radius must be entered before insertion. Published area/mass are kept separate from the area computed from the drafted geometry.
 
+## Quick Draw Rectangular (`MDH_RECT`)
+
+1. Enter section width B, height H and concrete cover. Cover is measured to the **outside face of the outer tie**.
+2. Choose one longitudinal mode:
+   - **Specify by Face:** enter counts and diameters for opposite B and H faces, then Apply Layout. Corners are generated once (`C-TL`, `C-TR`, `C-BL`, `C-BR`); intermediate bars use `T1…`, `B1…`, `L1…`, `R1…`.
+   - **Custom Coordinates:** add uniquely named individual bars with diameter, X and Y. X/Y are local coordinates about the section centre. Rename-only edits preserve tie references; diameter/coordinate/add/delete changes clear every old tie.
+3. In face mode, configure the tie size and the explicitly labelled centre-to-centre or clear-distance restraint assumption, then **Generate / Replace Auto Ties**. Automatic arrangement is disabled in Custom Coordinates mode.
+4. Use the Tie Bars heading toolbar to add, edit or delete ties. The picker contains longitudinal bars only; click Circle A then Circle B, or use the named lists. Separate Hook A/Hook B and Flip regenerate through the same geometry engine used by `MDH_TIE`.
+5. Check the live bar count, As and ρ, then **Draw in AutoCAD**. Pick an insertion point and rotation.
+
+The longitudinal table remains visible in both modes and is read-only in face mode. The Tie Bars table is the final output list: insertion does not silently regenerate deleted/edited ties. A committed layout change increments its revision and atomically invalidates all previous ties; stale/missing references or impossible hook geometry block insertion. The status reports names that fail the final restraint audit.
+
+Output consists of a concrete boundary, actual rebar Circles, true-bulge tie polylines, bar/tie labels, optional axes and native dimensions. Preview and CAD use the same Core paths. One insertion is one Undo step, and cancelling placement writes nothing.
+
+This tool is for 2D drafting and restraint arrangement. It does not perform PMM, shear capacity or longitudinal member design. The default 150 mm centre-to-centre limit is a visible, configurable preview assumption and is not claimed as a verified code interpretation.
+
 ## Layers and settings
 
-Default layers: `MDH_REBAR_TABLE`, `MDH_TIE`, `MDH_STEEL`, `MDH_AXES`, `MDH_LABEL`. Existing layers keep their properties; locked or frozen layers are refused with a message. Names and other defaults can be changed in `%APPDATA%\MDraftingHeper\settings.json`.
+Default layers: `MDH_REBAR_TABLE`, `MDH_REBAR`, `MDH_SECTION`, `MDH_TIE`, `MDH_STEEL`, `MDH_AXES`, `MDH_LABEL`. Existing layers keep their properties; locked or frozen layers are refused with a message. Names and other defaults can be changed in `%APPDATA%\MDraftingHeper\settings.json`.

@@ -26,9 +26,9 @@
             <DockPanel Grid.Column="0" Margin="0,0,8,0">
                 <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding Families}" SelectedItem="{Binding Family}" Margin="0,0,0,4" />
                 <TextBox DockPanel.Dock="Top" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" ToolTip="Search profiles" />
-                <CheckBox DockPanel.Dock="Bottom" Content="Custom dimensions" IsChecked="{Binding IsCustom}" Margin="0,4,0,0" />
                 <TextBlock DockPanel.Dock="Bottom" Text="{Binding LibraryNote}" Style="{StaticResource Muted}" FontSize="11" />
-                <ListBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}" DisplayMemberPath="DisplayName" Height="230" />
+                <ListBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedItem}" DisplayMemberPath="Display" Height="260" VerticalAlignment="Top"
+                         ToolTip="Pick a catalogue size (dimensions locked) or (Custom dimensions) to type your own" />
             </DockPanel>
 
             <StackPanel Grid.Column="1" Margin="0,0,8,0">
@@ -38,12 +38,13 @@
                             <Grid Margin="0,1">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="80" /></Grid.ColumnDefinitions>
                                 <TextBlock Text="{Binding Description}" VerticalAlignment="Center" />
-                                <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Grid.Column="1" Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding DataContext.IsCustom, RelativeSource={RelativeSource AncestorType=Window}}" />
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="All dimensions in mm. r is the OUTER corner radius for SHS/RHS (inner = r − t) and the root radius for UB/UC."
+                <TextBlock Text="Locked for catalogue sizes; select (Custom dimensions) in the list to edit. All dimensions in mm. r is the OUTER corner radius for SHS/RHS (inner = r − t) and the root radius for UB/UC."
                            Style="{StaticResource Muted}" FontSize="11" Margin="0,3,0,6" />
                 <Grid Margin="0,0,0,4">
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="110" /></Grid.ColumnDefinitions>

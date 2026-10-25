@@ -77,6 +77,7 @@ With the bundle installed and AutoCAD closed:
 ```powershell
 .\tools\HostTest\Run-HostTests.ps1     # MDH_SELFTEST*, undo/redo, save + reopen (batch script)
 .\tools\HostTest\Run-RibbonTest.ps1    # Ribbon startup, workspace switch, second drawing (COM)
+.\tools\HostTest\Run-RectangularTest.ps1 # current Debug DLL: rectangular native writer in isolated AutoCAD
 .\tools\HostTest\Capture-Screens.ps1   # screenshots of Properties palette and dialogs
 ```
 

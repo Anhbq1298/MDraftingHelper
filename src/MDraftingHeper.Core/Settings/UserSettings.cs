@@ -14,6 +14,8 @@ namespace MDraftingHeper.Core.Settings
         [DataMember] public string Steel { get; set; } = "MDH_STEEL";
         [DataMember] public string Axes { get; set; } = "MDH_AXES";
         [DataMember] public string Label { get; set; } = "MDH_LABEL";
+        [DataMember] public string Section { get; set; } = "MDH_SECTION";
+        [DataMember] public string LongitudinalRebar { get; set; } = "MDH_REBAR";
     }
 
     [DataContract]
@@ -68,6 +70,13 @@ namespace MDraftingHeper.Core.Settings
         public UserSettings Normalised()
         {
             Layers = Layers ?? new LayerSettings();
+            if (string.IsNullOrWhiteSpace(Layers.RebarTable)) Layers.RebarTable = "MDH_REBAR_TABLE";
+            if (string.IsNullOrWhiteSpace(Layers.Tie)) Layers.Tie = "MDH_TIE";
+            if (string.IsNullOrWhiteSpace(Layers.Steel)) Layers.Steel = "MDH_STEEL";
+            if (string.IsNullOrWhiteSpace(Layers.Axes)) Layers.Axes = "MDH_AXES";
+            if (string.IsNullOrWhiteSpace(Layers.Label)) Layers.Label = "MDH_LABEL";
+            if (string.IsNullOrWhiteSpace(Layers.Section)) Layers.Section = "MDH_SECTION";
+            if (string.IsNullOrWhiteSpace(Layers.LongitudinalRebar)) Layers.LongitudinalRebar = "MDH_REBAR";
             Rebar = Rebar ?? new RebarSettings();
             Tie = Tie ?? new TieSettings();
             Steel = Steel ?? new SteelSettings();

@@ -112,6 +112,7 @@ namespace MDraftingHeper.AutoCAD2021.Ribbon
             source.Items.Add(Button("Rebar\nPercentage", "MDH_REBAR", "rebar", "Count rebar Circles in a section boundary and calculate the reinforcement ratio."));
             source.Items.Add(Button("Tie &\nHook", "MDH_TIE", "tie", "Draw a tie with 90°, 135° or 180° hooks between two longitudinal bars."));
             source.Items.Add(Button("Steel\nSection", "MDH_STEEL", "steel", "Insert CHS, SHS, RHS, UB or UC sections as native Dynamic Blocks."));
+            source.Items.Add(Button("Quick Draw\nRectangular", "MDH_RECT", "rebar", "Draft a rectangular reinforced-concrete column section with named bars and ties."));
             tab.Panels.Add(new RibbonPanel { Source = source });
             return tab;
         }
